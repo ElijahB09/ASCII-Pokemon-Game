@@ -26,6 +26,7 @@ int main(int argc, char *argv[]) {
         for (j = 0; j < 80; j++) {
             if (i == 0 || j == 0 || i == 20 || j == 79) {
                 map[i][j] = '%';
+                elevationMap[i][j] = 9;
             } else {
                 for (k = 0; k < 10; k++) {
                     // Need to randomize terrain, there are :, ^, %, ., and ~
@@ -34,21 +35,27 @@ int main(int argc, char *argv[]) {
                         switch (k % 5) { // Should go between 0 - 4
                             case 0:
                                 map[i][j] = ':';
+                                elevationMap[i][j] = 1;
                                 break;
                             case 1:
                                 map[i][j] = '^';
+                                elevationMap[i][j] = 2;
                                 break;
                             case 2:
                                 map[i][j] = '%';
+                                elevationMap[i][j] = 3;
                                 break;
                             case 3:
                                 map[i][j] = '~';
+                                elevationMap[i][j] = 4;
                                 break;
                             case 4:
                                 map[i][j] = '.';
+                                elevationMap[i][j] = 5;
                         }
                     } else if (map[i][j] != ':' && map[i][j] != '^' && map[i][j] != '%' && map[i][j] != '~' && map[i][j] != '.') {
                         map[i][j] = '_';
+                        elevationMap[i][j] = 0;
                     }
                 }
             }
@@ -58,6 +65,13 @@ int main(int argc, char *argv[]) {
     for (i = 0; i < 21; i++) {
         for (j = 0; j < 80; j++) {
             printf("%c", map[i][j]);
+        }
+        printf("\n");
+    }
+
+    for (i = 0; i < 21; i++) {
+        for (j = 0; j < 80; j++) {
+            printf("%d", elevationMap[i][j]);
         }
         printf("\n");
     }
