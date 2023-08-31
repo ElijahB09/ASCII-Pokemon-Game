@@ -7,6 +7,9 @@ int main(int argc, char *argv[]) {
 
     for (i = 0; i < 21; i++) {
         for (j = 0; j < 80; j++) {
+            if (i == 0 || j == 0 || i == 20 || j == 79) {
+                map[i][j] = '%';
+            }
             map[i][j] = '.';
         }
     }
