@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#define MAX_SIZE 2048
+#define MAX_SIZE 4096
 
 typedef struct {
     int x_coord;
     int y_coord;
     int elevation;
     char terrainPiece;
+    int processed;
 } terrainCell;
 
 terrainCell queue[MAX_SIZE];
@@ -127,9 +128,10 @@ int main(int argc, char *argv[]) {
         currentCell = dequeue();
         currentCellXCoord = currentCell.x_coord;
         currentCellYCoord = currentCell.y_coord;
+        currentCell.processed = 1;
         for (i = 0; i < 3; i++) {
             for (j = 0; j < 3; j++) {
-                if (map[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].terrainPiece == '_' && (i - 1 != 0 && j - 1 != 0)) {
+                if (map[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].terrainPiece == '_') {
                     map[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].terrainPiece = currentCell.terrainPiece;
                     map[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].elevation = currentCell.elevation;
                     enqueue(map[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)]);
