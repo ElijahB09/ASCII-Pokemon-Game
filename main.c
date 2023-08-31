@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
                                 break;
                             case 2:
                                 map[i][j] = '%';
-                                elevationMap[i][j] = 3;
+                                elevationMap[i][j] = 9;
                                 break;
                             case 3:
                                 map[i][j] = '~';
