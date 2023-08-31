@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#define MAX_SIZE 4096
+#define MAX_SIZE 2048
 
 typedef struct {
     int x_coord;
@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
                     // Need to randomize terrain, there are :, ^, %, ., and ~
                     // Current plan, 10 coords, 5 terrain types, 2 seed coords for each
                     if (j == rand_x_coords[k] && i == rand_y_coords[k]) {
-                        switch (k % 5) { // Should go between 0 - 4
+                        switch (k % 6) { // Should go between 0 - 4
                             case 0:
                                 map[i][j].terrainPiece = ':';
                                 map[i][j].elevation = 2;
@@ -89,14 +89,22 @@ int main(int argc, char *argv[]) {
                                 randomCells[k].y_coord = i;
                                 break;
                             case 2:
-                                map[i][j].terrainPiece = '%';
-                                map[i][j].elevation = 9;
-                                randomCells[k].terrainPiece = '%';
-                                randomCells[k].elevation = 9;
+                                map[i][j].terrainPiece = ':';
+                                map[i][j].elevation = 2;
+                                randomCells[k].terrainPiece = ':';
+                                randomCells[k].elevation = 2;
                                 randomCells[k].x_coord = j;
                                 randomCells[k].y_coord = i;
                                 break;
                             case 3:
+                                map[i][j].terrainPiece = '.';
+                                map[i][j].elevation = 1;
+                                randomCells[k].terrainPiece = '.';
+                                randomCells[k].elevation = 1;
+                                randomCells[k].x_coord = j;
+                                randomCells[k].y_coord = i;
+                                break;
+                            case 4:
                                 map[i][j].terrainPiece = '~';
                                 map[i][j].elevation = 5;
                                 randomCells[k].terrainPiece = '~';
@@ -104,11 +112,11 @@ int main(int argc, char *argv[]) {
                                 randomCells[k].x_coord = j;
                                 randomCells[k].y_coord = i;
                                 break;
-                            case 4:
-                                map[i][j].terrainPiece = '.';
-                                map[i][j].elevation = 1;
-                                randomCells[k].terrainPiece = '.';
-                                randomCells[k].elevation = 1;
+                            case 5:
+                                map[i][j].terrainPiece = '%';
+                                map[i][j].elevation = 9;
+                                randomCells[k].terrainPiece = '%';
+                                randomCells[k].elevation = 9;
                                 randomCells[k].x_coord = j;
                                 randomCells[k].y_coord = i;
                                 break;
