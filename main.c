@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
                 for (k = 0; k < 10; k++) {
                     if (j == rand_x_coords[k] && i == rand_y_coords[k]) {
                         map[i][j] = '#';
-                    } else {
+                    } else if (map[i][j] != '#') {
                         map[i][j] = '.';
                     }
                 }
