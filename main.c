@@ -4,10 +4,10 @@
 
 int main(int argc, char *argv[]) {
     char map[21][80];
+    int elevationMap[21][80];
     int i;
     int j;
     int k;
-    int l;
     int rand_x_coords[10];
     int rand_y_coords[10];
     srand((unsigned int) time(NULL));
@@ -28,11 +28,27 @@ int main(int argc, char *argv[]) {
                 map[i][j] = '%';
             } else {
                 for (k = 0; k < 10; k++) {
-                    // A # symbol for now denotes a seed for terrain
+                    // Need to randomize terrain, there are :, ^, %, ., and ~
+                    // Current plan, 10 coords, 5 terrain types, 2 seed coords for each
                     if (j == rand_x_coords[k] && i == rand_y_coords[k]) {
-                        map[i][j] = '#';
-                    } else if (map[i][j] != '#') {
-                        map[i][j] = '.';
+                        switch (k % 5) { // Should go between 0 - 4
+                            case 0:
+                                map[i][j] = ':';
+                                break;
+                            case 1:
+                                map[i][j] = '^';
+                                break;
+                            case 2:
+                                map[i][j] = '%';
+                                break;
+                            case 3:
+                                map[i][j] = '~';
+                                break;
+                            case 4:
+                                map[i][j] = '.';
+                        }
+                    } else if (map[i][j] != ':' && map[i][j] != '^' && map[i][j] != '%' && map[i][j] != '~' && map[i][j] != '.') {
+                        map[i][j] = '_';
                     }
                 }
             }
