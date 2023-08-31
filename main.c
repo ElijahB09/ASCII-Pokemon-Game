@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#define MAX_SIZE 255
 
 typedef struct {
     int x_coord;
@@ -9,14 +10,40 @@ typedef struct {
     char terrainPiece;
 } terrainCell;
 
+terrainCell queue[MAX_SIZE];
+int front = -1;
+int rear = -1;
+
+void enqueue(terrainCell element) {
+    if (rear == MAX_SIZE - 1) {
+        printf("Queue is full");
+        return;
+    }
+    if (front == -1) {
+        front = 0;
+    }
+    rear++;
+    queue[rear] = element;
+}
+
+terrainCell dequeue() {
+    if (front == -1 || front > rear) {
+        printf("Queue is empty");
+    } else {
+        terrainCell element = queue[front];
+        front++;
+        return element;
+    }
+}
+
 int main(int argc, char *argv[]) {
     terrainCell map[21][80];
+    terrainCell randomCells[10];
     int i;
     int j;
     int k;
     int rand_x_coords[10];
     int rand_y_coords[10];
-    //time_t t;
 
     srand((unsigned int)time(NULL));
 
@@ -24,11 +51,6 @@ int main(int argc, char *argv[]) {
     for (i = 0; i < 10; i++) {
         rand_x_coords[i] = (rand() % 77) + 1;
         rand_y_coords[i] = (rand() % 18) + 1;
-    }
-
-    for (i = 0; i < 10; i++) {
-        printf("x-coord: %d\n", rand_x_coords[i]);
-        printf("y-coord: %d\n", rand_y_coords[i]);
     }
 
     for (i = 0; i < 21; i++) {
@@ -50,28 +72,53 @@ int main(int argc, char *argv[]) {
                             case 0:
                                 map[i][j].terrainPiece = ':';
                                 map[i][j].elevation = 2;
+                                randomCells[k].terrainPiece = ':';
+                                randomCells[k].elevation = 2;
+                                randomCells[k].x_coord = j;
+                                randomCells[k].y_coord = i;
                                 break;
                             case 1:
                                 map[i][j].terrainPiece = '^';
                                 map[i][j].elevation = 3;
+                                randomCells[k].terrainPiece = '^';
+                                randomCells[k].elevation = 3;
+                                randomCells[k].x_coord = j;
+                                randomCells[k].y_coord = i;
                                 break;
                             case 2:
                                 map[i][j].terrainPiece = '%';
                                 map[i][j].elevation = 9;
+                                randomCells[k].terrainPiece = '%';
+                                randomCells[k].elevation = 9;
+                                randomCells[k].x_coord = j;
+                                randomCells[k].y_coord = i;
                                 break;
                             case 3:
                                 map[i][j].terrainPiece = '~';
                                 map[i][j].elevation = 5;
+                                randomCells[k].terrainPiece = '~';
+                                randomCells[k].elevation = 5;
+                                randomCells[k].x_coord = j;
+                                randomCells[k].y_coord = i;
                                 break;
                             case 4:
                                 map[i][j].terrainPiece = '.';
                                 map[i][j].elevation = 1;
+                                randomCells[k].terrainPiece = '.';
+                                randomCells[k].elevation = 1;
+                                randomCells[k].x_coord = j;
+                                randomCells[k].y_coord = i;
                                 break;
                         }
                     }
                 }
             }
         }
+    }
+
+    for (i = 0; i < 10; i++) {
+        enqueue(randomCells[i]);
+        printf("%c\n", randomCells[i].terrainPiece);
     }
 
     for (i = 0; i < 21; i++) {
