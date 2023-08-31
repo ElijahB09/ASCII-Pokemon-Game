@@ -8,7 +8,6 @@ typedef struct {
     int y_coord;
     int elevation;
     char terrainPiece;
-    int processed;
 } terrainCell;
 
 terrainCell queue[MAX_SIZE];
@@ -128,7 +127,6 @@ int main(int argc, char *argv[]) {
         currentCell = dequeue();
         currentCellXCoord = currentCell.x_coord;
         currentCellYCoord = currentCell.y_coord;
-        currentCell.processed = 1;
         for (i = 0; i < 3; i++) {
             for (j = 0; j < 3; j++) {
                 if (map[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].terrainPiece == '_') {
