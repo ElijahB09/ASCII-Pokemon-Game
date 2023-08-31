@@ -16,9 +16,9 @@ int main(int argc, char *argv[]) {
     int k;
     int rand_x_coords[10];
     int rand_y_coords[10];
-    time_t t;
+    //time_t t;
 
-    srand(time(&t));
+    srand((unsigned int)time(NULL));
 
     // Generate 10 random points on the map between 1 - 19 and 1 - 78 exclusive
     for (i = 0; i < 10; i++) {
@@ -35,6 +35,9 @@ int main(int argc, char *argv[]) {
         for (j = 0; j < 80; j++) {
             map[i][j].x_coord = j;
             map[i][j].y_coord = i;
+            // Using default vals for each cell of _ and 0
+            map[i][j].terrainPiece = '_';
+            map[i][j].elevation = 0;
             if (i == 0 || j == 0 || i == 20 || j == 79) {
                 map[i][j].terrainPiece = '%';
                 map[i][j].elevation = 9;
@@ -65,9 +68,6 @@ int main(int argc, char *argv[]) {
                                 map[i][j].elevation = 1;
                                 break;
                         }
-                    } else if (map[i][j].terrainPiece != ':' && map[i][j].terrainPiece != '^' && map[i][j].terrainPiece != '%' && map[i][j].terrainPiece != '~' && map[i][j].terrainPiece != '.') {
-                        map[i][j].terrainPiece = '_';
-                        map[i][j].elevation = 0;
                     }
                 }
             }
