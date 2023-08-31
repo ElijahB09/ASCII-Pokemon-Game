@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#define MAX_SIZE 255
+#define MAX_SIZE 2048
 
 typedef struct {
     int x_coord;
@@ -129,10 +129,10 @@ int main(int argc, char *argv[]) {
         currentCellYCoord = currentCell.y_coord;
         for (i = 0; i < 3; i++) {
             for (j = 0; j < 3; j++) {
-                if (map[currentCellXCoord + (i - 1)][currentCellYCoord + (j - 1)].terrainPiece == '_' && (i - 1 != 0 && j - 1 != 0)) {
-                    map[currentCellXCoord + (i - 1)][currentCellYCoord + (j - 1)].terrainPiece = currentCell.terrainPiece;
-                    map[currentCellXCoord + (i - 1)][currentCellYCoord + (j - 1)].elevation = currentCell.elevation;
-                    enqueue(map[currentCellXCoord + (i - 1)][currentCellYCoord + (j - 1)]);
+                if (map[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].terrainPiece == '_' && (i - 1 != 0 && j - 1 != 0)) {
+                    map[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].terrainPiece = currentCell.terrainPiece;
+                    map[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].elevation = currentCell.elevation;
+                    enqueue(map[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)]);
                 }
             }
         }
