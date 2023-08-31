@@ -39,6 +39,9 @@ terrainCell dequeue() {
 int main(int argc, char *argv[]) {
     terrainCell map[21][80];
     terrainCell randomCells[10];
+    terrainCell currentCell;
+    int currentCellXCoord;
+    int currentCellYCoord;
     int i;
     int j;
     int k;
@@ -118,7 +121,21 @@ int main(int argc, char *argv[]) {
 
     for (i = 0; i < 10; i++) {
         enqueue(randomCells[i]);
-        printf("%c\n", randomCells[i].terrainPiece);
+    }
+
+    while (!(front == -1 || front > rear)) {
+        currentCell = dequeue();
+        currentCellXCoord = currentCell.x_coord;
+        currentCellYCoord = currentCell.y_coord;
+        for (i = 0; i < 3; i++) {
+            for (j = 0; j < 3; j++) {
+                if (map[currentCellXCoord + (i - 1)][currentCellYCoord + (j - 1)].terrainPiece == '_' && (i - 1 != 0 && j - 1 != 0)) {
+                    map[currentCellXCoord + (i - 1)][currentCellYCoord + (j - 1)].terrainPiece = currentCell.terrainPiece;
+                    map[currentCellXCoord + (i - 1)][currentCellYCoord + (j - 1)].elevation = currentCell.elevation;
+                    enqueue(map[currentCellXCoord + (i - 1)][currentCellYCoord + (j - 1)]);
+                }
+            }
+        }
     }
 
     for (i = 0; i < 21; i++) {
