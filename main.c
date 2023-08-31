@@ -9,8 +9,9 @@ int main(int argc, char *argv[]) {
         for (j = 0; j < 80; j++) {
             if (i == 0 || j == 0 || i == 20 || j == 79) {
                 map[i][j] = '%';
+            } else {
+                map[i][j] = '.';
             }
-            map[i][j] = '.';
         }
     }
 
