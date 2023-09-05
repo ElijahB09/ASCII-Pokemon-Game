@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#define MAX_SIZE 2048
-#define NUM_RAN_COORDS 20
-#define MAX_ELEVATION 99
+#define QUEUE_SIZE 2048
+#define NUM_RAN_COORDS 30
+#define MAX_ELEVATION 9999
 #define INFINITY 9999
 
 typedef struct {
@@ -14,31 +14,79 @@ typedef struct {
 } terrainCell;
 
 typedef struct {
-    int front;
-    int rear;
-    terrainCell arr[MAX_SIZE];
-} queue;
+    int front, rear, size;
+    unsigned capacity;
+    terrainCell * array;
+} Queue;
 
-void enqueue(queue *arr, terrainCell element) {
-    if (arr->rear == MAX_SIZE - 1) {
-        printf("Queue is full");
-        return;
-    }
-    if (arr->front == -1) {
-        arr->front = 0;
-    }
-    arr->rear++;
-    arr->arr[arr->rear] = element;
+// function to create a queue
+// of given capacity.
+// It initializes size of queue as 0
+Queue* createQueue(unsigned capacity)
+{
+    Queue* queue = (Queue*)malloc(
+            sizeof(Queue));
+    queue->capacity = capacity;
+    queue->front = queue->size = 0;
+
+    // This is important, see the enqueue
+    queue->rear = capacity - 1;
+    queue->array = (terrainCell *)malloc(
+            queue->capacity * sizeof(int));
+    return queue;
 }
 
-terrainCell dequeue(queue *arr) {
-    if (arr->front == -1 || arr->front > arr->rear) {
+// Queue is full when size becomes
+// equal to the capacity
+int isFull(Queue* queue)
+{
+    return (queue->size == queue->capacity);
+}
+
+// Queue is empty when size is 0
+int isEmpty(Queue* queue)
+{
+    return (queue->size == 0);
+}
+
+// Function to add an item to the queue.
+// It changes rear and size
+void enqueue(Queue* queue, terrainCell item)
+{
+    if (isFull(queue))
+        return;
+    queue->rear = (queue->rear + 1)
+                  % queue->capacity;
+    queue->array[queue->rear] = item;
+    queue->size = queue->size + 1;
+}
+
+// Function to remove an item from queue.
+// It changes front and size
+terrainCell dequeue(Queue* queue)
+{
+    if (isEmpty(queue))
         printf("Queue is empty");
-    } else {
-        terrainCell element = arr->arr[arr->front];
-        arr->front++;
-        return element;
-    }
+    terrainCell item = queue->array[queue->front];
+    queue->front = (queue->front + 1) % queue->capacity;
+    queue->size = queue->size - 1;
+    return item;
+}
+
+// Function to get front of queue
+terrainCell front(Queue* queue)
+{
+    if (isEmpty(queue))
+        printf("Queue is empty");
+    return queue->array[queue->front];
+}
+
+// Function to get rear of queue
+terrainCell rear(Queue* queue)
+{
+    if (isEmpty(queue))
+        printf("Queue is empty");
+    return queue->array[queue->rear];
 }
 
 void dijkstra(terrainCell Graph[21][80], int main_axis, int start) {
@@ -107,7 +155,7 @@ int main(int argc, char *argv[]) {
     int rand_path_right;
     int rand_path_up;
     int rand_path_down;
-    queue seeding_queue;
+    Queue* seeding_queue = createQueue(QUEUE_SIZE);
 
     srand((unsigned int)time(NULL));
 
@@ -160,7 +208,7 @@ int main(int argc, char *argv[]) {
                                 break;
                             case 5:
                                 map[i][j].terrainPiece = '%';
-                                map[i][j].elevation = 9;
+                                map[i][j].elevation = 6;
                                 randomCells[k] = map[i][j];
                                 break;
                         }
@@ -171,11 +219,11 @@ int main(int argc, char *argv[]) {
     }
 
     for (i = 0; i < NUM_RAN_COORDS; i++) {
-        enqueue(&seeding_queue, randomCells[i]);
+        enqueue(seeding_queue, randomCells[i]);
     }
 
-    while (!(seeding_queue.front == -1 || seeding_queue.front > seeding_queue.rear)) {
-        currentCell = dequeue(&seeding_queue);
+    while (!(seeding_queue->front == -1 || seeding_queue->front > seeding_queue->rear)) {
+        currentCell = dequeue(seeding_queue);
         currentCellXCoord = currentCell.x_coord;
         currentCellYCoord = currentCell.y_coord;
         for (i = 0; i < 3; i++) {
@@ -183,7 +231,7 @@ int main(int argc, char *argv[]) {
                 if (map[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].terrainPiece == '_') {
                     map[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].terrainPiece = currentCell.terrainPiece;
                     map[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].elevation = currentCell.elevation;
-                    enqueue(&seeding_queue, map[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)]);
+                    enqueue(seeding_queue, map[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)]);
                 }
             }
         }
@@ -216,6 +264,8 @@ int main(int argc, char *argv[]) {
         }
         printf("\n");
     }
+
+    printf("Coord 1, 1\nElevation: %d, Character: %c, X-coord: %d, Y-coord: %d", map[1][1].elevation, map[1][1].terrainPiece, map[1][1].x_coord, map[1][1].y_coord);
 
     return 0;
 }
