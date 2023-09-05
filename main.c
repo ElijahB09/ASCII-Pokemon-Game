@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 #define MAX_SIZE 2048
+#define NUM_RAN_COORDS 20
+#define MAX_ELEVATION 99
 
 typedef struct {
     int x_coord;
@@ -10,48 +12,55 @@ typedef struct {
     char terrainPiece;
 } terrainCell;
 
-terrainCell queue[MAX_SIZE];
-int front = -1;
-int rear = -1;
+typedef struct {
+    int front;
+    int rear;
+    terrainCell arr[MAX_SIZE];
+} queue;
 
-void enqueue(terrainCell element) {
-    if (rear == MAX_SIZE - 1) {
+void enqueue(queue *arr, terrainCell element) {
+    if (arr->rear == MAX_SIZE - 1) {
         printf("Queue is full");
         return;
     }
-    if (front == -1) {
-        front = 0;
+    if (arr->front == -1) {
+        arr->front = 0;
     }
-    rear++;
-    queue[rear] = element;
+    arr->rear++;
+    arr->arr[arr->rear] = element;
 }
 
-terrainCell dequeue() {
-    if (front == -1 || front > rear) {
+terrainCell dequeue(queue *arr) {
+    if (arr->front == -1 || arr->front > arr->rear) {
         printf("Queue is empty");
     } else {
-        terrainCell element = queue[front];
-        front++;
+        terrainCell element = arr->arr[arr->front];
+        arr->front++;
         return element;
     }
 }
 
 int main(int argc, char *argv[]) {
     terrainCell map[21][80];
-    terrainCell randomCells[10];
+    terrainCell randomCells[NUM_RAN_COORDS];
     terrainCell currentCell;
     int currentCellXCoord;
     int currentCellYCoord;
     int i;
     int j;
     int k;
-    int rand_x_coords[10];
-    int rand_y_coords[10];
+    int rand_x_coords[NUM_RAN_COORDS];
+    int rand_y_coords[NUM_RAN_COORDS];
+    int rand_path_left;
+    int rand_path_right;
+    int rand_path_up;
+    int rand_path_down;
+    queue seeding_queue;
 
     srand((unsigned int)time(NULL));
 
-    // Generate 10 random points on the map between 1 - 19 and 1 - 78 exclusive
-    for (i = 0; i < 10; i++) {
+    // Generate 20 random points on the map between 1 - 78 and 1 - 19 exclusive
+    for (i = 0; i < NUM_RAN_COORDS; i++) {
         rand_x_coords[i] = (rand() % 77) + 1;
         rand_y_coords[i] = (rand() % 18) + 1;
     }
@@ -65,13 +74,13 @@ int main(int argc, char *argv[]) {
             map[i][j].elevation = 0;
             if (i == 0 || j == 0 || i == 20 || j == 79) {
                 map[i][j].terrainPiece = '%';
-                map[i][j].elevation = 9;
+                map[i][j].elevation = MAX_ELEVATION;
             } else {
-                for (k = 0; k < 10; k++) {
+                for (k = 0; k < NUM_RAN_COORDS; k++) {
                     // Need to randomize terrain, there are :, ^, %, ., and ~
-                    // Current plan, 10 coords, 5 terrain types, 2 seed coords for each
+                    // Current plan, 20 coords, 5 terrain types, many seed coords hopefully generates interesting terrain
                     if (j == rand_x_coords[k] && i == rand_y_coords[k]) {
-                        switch (k % 6) { // Should go between 0 - 4
+                        switch (k % 6) { // Should go between 0 - 5
                             case 0:
                                 map[i][j].terrainPiece = ':';
                                 map[i][j].elevation = 2;
@@ -89,10 +98,10 @@ int main(int argc, char *argv[]) {
                                 randomCells[k].y_coord = i;
                                 break;
                             case 2:
-                                map[i][j].terrainPiece = ':';
-                                map[i][j].elevation = 2;
-                                randomCells[k].terrainPiece = ':';
-                                randomCells[k].elevation = 2;
+                                map[i][j].terrainPiece = '.';
+                                map[i][j].elevation = 1;
+                                randomCells[k].terrainPiece = '.';
+                                randomCells[k].elevation = 1;
                                 randomCells[k].x_coord = j;
                                 randomCells[k].y_coord = i;
                                 break;
@@ -127,12 +136,12 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    for (i = 0; i < 10; i++) {
-        enqueue(randomCells[i]);
+    for (i = 0; i < NUM_RAN_COORDS; i++) {
+        enqueue(&seeding_queue, randomCells[i]);
     }
 
-    while (!(front == -1 || front > rear)) {
-        currentCell = dequeue();
+    while (!(seeding_queue.front == -1 || seeding_queue.front > seeding_queue.rear)) {
+        currentCell = dequeue(&seeding_queue);
         currentCellXCoord = currentCell.x_coord;
         currentCellYCoord = currentCell.y_coord;
         for (i = 0; i < 3; i++) {
@@ -140,11 +149,30 @@ int main(int argc, char *argv[]) {
                 if (map[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].terrainPiece == '_') {
                     map[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].terrainPiece = currentCell.terrainPiece;
                     map[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].elevation = currentCell.elevation;
-                    enqueue(map[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)]);
+                    enqueue(&seeding_queue, map[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)]);
                 }
             }
         }
     }
+
+    rand_path_left = (rand() % 18) + 1;
+    rand_path_right = (rand() % 18) + 1;
+    rand_path_up = (rand() % 77) + 1;
+    rand_path_down = (rand() % 77) + 1;
+
+    map[rand_path_left][0].terrainPiece = '#';
+    map[rand_path_left][0].elevation = 0;
+
+    map[rand_path_right][79].terrainPiece = '#';
+    map[rand_path_right][79].elevation = 0;
+
+    map[0][rand_path_up].terrainPiece = '#';
+    map[0][rand_path_up].elevation = 0;
+
+    map[20][rand_path_down].terrainPiece = '#';
+    map[20][rand_path_down].elevation = 0;
+
+    printf("Left: %d, Right: %d, Up: %d, Down: %d\n", rand_path_left, rand_path_right, rand_path_up, rand_path_down);
 
     for (i = 0; i < 21; i++) {
         for (j = 0; j < 80; j++) {
