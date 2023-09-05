@@ -4,6 +4,7 @@
 #define MAX_SIZE 2048
 #define NUM_RAN_COORDS 20
 #define MAX_ELEVATION 99
+#define INFINITY 9999
 
 typedef struct {
     int x_coord;
@@ -39,6 +40,57 @@ terrainCell dequeue(queue *arr) {
         return element;
     }
 }
+
+void dijkstra(terrainCell Graph[21][80], int main_axis, int start) {
+    int cost[21][80], distance[main_axis], pred[main_axis];
+    int visited[main_axis], count, mindistance, nextnode, i, j;
+
+    // Creating cost matrix
+    for (i = 0; i < main_axis; i++) {
+        for (j = 0; j < main_axis; j++) {
+            cost[i][j] = Graph[i][j].elevation;
+        }
+    }
+
+    for (i = 0; i < main_axis; i++) {
+        distance[i] = cost[start][i];
+        pred[i] = start;
+        visited[i] = 0;
+    }
+
+    distance[start] = 0;
+    visited[start] = 1;
+    count = 1;
+
+    while (count < main_axis - 1) {
+        mindistance = INFINITY;
+
+        for (i = 0; i < main_axis; i++) {
+            if (distance[i] < mindistance && !visited[i]) {
+                mindistance = distance[i];
+                nextnode = i;
+            }
+        }
+
+        visited[nextnode] = 1;
+        for (i = 0; i < main_axis; i++) {
+            if (!visited[i]) {
+                if (mindistance + cost[nextnode][i] < distance[i]) {
+                    distance[i] = mindistance + cost[nextnode][i];
+                    pred[i] = nextnode;
+                }
+            }
+        }
+        count++;
+    }
+
+    // Printing the distance
+    for (i = 0; i < main_axis; i++)
+        if (i != start) {
+            printf("\nDistance from source to %d: %d", i, distance[i]);
+        }
+}
+
 
 int main(int argc, char *argv[]) {
     terrainCell map[21][80];
@@ -84,50 +136,32 @@ int main(int argc, char *argv[]) {
                             case 0:
                                 map[i][j].terrainPiece = ':';
                                 map[i][j].elevation = 2;
-                                randomCells[k].terrainPiece = ':';
-                                randomCells[k].elevation = 2;
-                                randomCells[k].x_coord = j;
-                                randomCells[k].y_coord = i;
+                                randomCells[k] = map[i][j];
                                 break;
                             case 1:
                                 map[i][j].terrainPiece = '^';
                                 map[i][j].elevation = 3;
-                                randomCells[k].terrainPiece = '^';
-                                randomCells[k].elevation = 3;
-                                randomCells[k].x_coord = j;
-                                randomCells[k].y_coord = i;
+                                randomCells[k] = map[i][j];
                                 break;
                             case 2:
                                 map[i][j].terrainPiece = '.';
                                 map[i][j].elevation = 1;
-                                randomCells[k].terrainPiece = '.';
-                                randomCells[k].elevation = 1;
-                                randomCells[k].x_coord = j;
-                                randomCells[k].y_coord = i;
+                                randomCells[k] = map[i][j];
                                 break;
                             case 3:
                                 map[i][j].terrainPiece = '.';
                                 map[i][j].elevation = 1;
-                                randomCells[k].terrainPiece = '.';
-                                randomCells[k].elevation = 1;
-                                randomCells[k].x_coord = j;
-                                randomCells[k].y_coord = i;
+                                randomCells[k] = map[i][j];
                                 break;
                             case 4:
                                 map[i][j].terrainPiece = '~';
                                 map[i][j].elevation = 5;
-                                randomCells[k].terrainPiece = '~';
-                                randomCells[k].elevation = 5;
-                                randomCells[k].x_coord = j;
-                                randomCells[k].y_coord = i;
+                                randomCells[k] = map[i][j];
                                 break;
                             case 5:
                                 map[i][j].terrainPiece = '%';
                                 map[i][j].elevation = 9;
-                                randomCells[k].terrainPiece = '%';
-                                randomCells[k].elevation = 9;
-                                randomCells[k].x_coord = j;
-                                randomCells[k].y_coord = i;
+                                randomCells[k] = map[i][j];
                                 break;
                         }
                     }
@@ -173,6 +207,8 @@ int main(int argc, char *argv[]) {
     map[20][rand_path_down].elevation = 0;
 
     printf("Left: %d, Right: %d, Up: %d, Down: %d\n", rand_path_left, rand_path_right, rand_path_up, rand_path_down);
+
+    //dijkstra(map, 80, rand_path_left);
 
     for (i = 0; i < 21; i++) {
         for (j = 0; j < 80; j++) {
