@@ -4,19 +4,22 @@
 #define QUEUE_SIZE 2048
 #define NUM_RAN_COORDS 30
 #define MAX_ELEVATION 9999
-#define INFINITY 9999
+#define MAX_DISTANCE 9999
 
 typedef struct {
     int x_coord;
     int y_coord;
     int elevation;
     char terrainPiece;
+    int visited;
+    int distance_from_left;
+    int distance_from_up;
 } terrainCell;
 
 typedef struct {
     int front, rear, size;
     unsigned capacity;
-    terrainCell * array;
+    terrainCell *array;
 } Queue;
 
 // function to create a queue
@@ -89,56 +92,45 @@ terrainCell rear(Queue* queue)
     return queue->array[queue->rear];
 }
 
-void dijkstra(terrainCell Graph[21][80], int main_axis, int start) {
-    int cost[21][80], distance[main_axis], pred[main_axis];
-    int visited[main_axis], count, mindistance, nextnode, i, j;
-
-    // Creating cost matrix
-    for (i = 0; i < main_axis; i++) {
-        for (j = 0; j < main_axis; j++) {
-            cost[i][j] = Graph[i][j].elevation;
-        }
+int getNeighborCells(terrainCell *map[21][80], terrainCell *neighbors, terrainCell cell) {
+    int increment = 0;
+    switch (cell.x_coord) {
+        case 0:
+            neighbors[0] = *map[cell.y_coord][cell.x_coord + 1];
+            increment++;
+            break;
+        case 79:
+            // We just break on 79 cause the path is over
+            break;
     }
-
-    for (i = 0; i < main_axis; i++) {
-        distance[i] = cost[start][i];
-        pred[i] = start;
-        visited[i] = 0;
+    switch (cell.y_coord) {
+        case 0:
+            neighbors[0] = *map[cell.y_coord + 1][cell.x_coord];
+            increment++;
+            break;
+        case 20:
+            // We break on 20 as the path is over
+            break;
     }
-
-    distance[start] = 0;
-    visited[start] = 1;
-    count = 1;
-
-    while (count < main_axis - 1) {
-        mindistance = INFINITY;
-
-        for (i = 0; i < main_axis; i++) {
-            if (distance[i] < mindistance && !visited[i]) {
-                mindistance = distance[i];
-                nextnode = i;
-            }
-        }
-
-        visited[nextnode] = 1;
-        for (i = 0; i < main_axis; i++) {
-            if (!visited[i]) {
-                if (mindistance + cost[nextnode][i] < distance[i]) {
-                    distance[i] = mindistance + cost[nextnode][i];
-                    pred[i] = nextnode;
-                }
-            }
-        }
-        count++;
-    }
-
-    // Printing the distance
-    for (i = 0; i < main_axis; i++)
-        if (i != start) {
-            printf("\nDistance from source to %d: %d", i, distance[i]);
-        }
+    return increment;
 }
 
+void path_builder(terrainCell *map[21][80], int left, int right, int up, int down) {
+    terrainCell neighbors[4];
+    terrainCell current;
+    int k;
+    int num_neighbors;
+
+    Queue* path = createQueue(QUEUE_SIZE);
+    enqueue(path, *map[left][0]);
+    while (!isEmpty(path)) {
+        current = dequeue(path);
+        num_neighbors = getNeighborCells(*map, neighbors, current);
+        for (k = 0; k < num_neighbors; k++) {
+
+        }
+    }
+}
 
 int main(int argc, char *argv[]) {
     terrainCell map[21][80];
@@ -172,9 +164,13 @@ int main(int argc, char *argv[]) {
             // Using default vals for each cell of _ and 0
             map[i][j].terrainPiece = '_';
             map[i][j].elevation = 0;
+            map[i][j].visited = 0;
+            map[i][j].distance_from_left = MAX_DISTANCE;
+            map[i][j].distance_from_up = MAX_DISTANCE;
             if (i == 0 || j == 0 || i == 20 || j == 79) {
                 map[i][j].terrainPiece = '%';
                 map[i][j].elevation = MAX_ELEVATION;
+                map[i][j].visited = 1;
             } else {
                 for (k = 0; k < NUM_RAN_COORDS; k++) {
                     // Need to randomize terrain, there are :, ^, %, ., and ~
@@ -244,19 +240,21 @@ int main(int argc, char *argv[]) {
 
     map[rand_path_left][0].terrainPiece = '#';
     map[rand_path_left][0].elevation = 0;
+    map[rand_path_left][0].distance_from_left = 0;
 
     map[rand_path_right][79].terrainPiece = '#';
     map[rand_path_right][79].elevation = 0;
 
     map[0][rand_path_up].terrainPiece = '#';
     map[0][rand_path_up].elevation = 0;
+    map[0][rand_path_up].distance_from_up = 0;
 
     map[20][rand_path_down].terrainPiece = '#';
     map[20][rand_path_down].elevation = 0;
 
     printf("Left: %d, Right: %d, Up: %d, Down: %d\n", rand_path_left, rand_path_right, rand_path_up, rand_path_down);
 
-    //dijkstra(map, 80, rand_path_left);
+    path_builder(map, rand_path_left, rand_path_right, rand_path_up, rand_path_down);
 
     for (i = 0; i < 21; i++) {
         for (j = 0; j < 80; j++) {
