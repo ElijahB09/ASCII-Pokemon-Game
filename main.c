@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#define QUEUE_SIZE 2048
+#define QUEUE_SIZE 4096
 #define NUM_RAN_COORDS 30
 #define MAX_ELEVATION 99
 
@@ -14,14 +14,14 @@ typedef struct {
 
 typedef struct {
     int front, rear, size;
-    int capacity;
-    terrainCell *array;
+    unsigned capacity;
+    terrainCell * array;
 } Queue;
 
 // function to create a queue
 // of given capacity.
 // It initializes size of queue as 0
-Queue* createQueue(int capacity)
+Queue* createQueue(unsigned capacity)
 {
     Queue* queue = (Queue*)malloc(
             sizeof(Queue));
@@ -54,7 +54,8 @@ void enqueue(Queue* queue, terrainCell item)
 {
     if (isFull(queue))
         return;
-    queue->rear = queue->rear + 1 % queue->capacity;
+    queue->rear = (queue->rear + 1)
+                  % queue->capacity;
     queue->array[queue->rear] = item;
     queue->size = queue->size + 1;
 }
@@ -111,7 +112,7 @@ int main(int argc, char *argv[]) {
 
     srand((unsigned int) time(NULL));
 
-    // Generate 20 random points on the map between 1 - 78 and 1 - 19 exclusive
+    // Generate 30 random points on the map between 1 - 78 and 1 - 19 exclusive
     for (i = 0; i < NUM_RAN_COORDS; i++) {
         rand_x_coords[i] = (rand() % 77) + 1;
         rand_y_coords[i] = (rand() % 18) + 1;
@@ -169,11 +170,9 @@ int main(int argc, char *argv[]) {
             }
         }
     }
-
     for (i = 0; i < NUM_RAN_COORDS; i++) {
         enqueue(seeding_queue, randomCells[i]);
     }
-
     while (!(seeding_queue->front == -1 || seeding_queue->front > seeding_queue->rear)) {
         *currentCell = dequeue(seeding_queue);
         currentCellXCoord = currentCell->x_coord;
