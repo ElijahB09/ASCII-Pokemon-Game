@@ -2,13 +2,12 @@
 #include <stdlib.h>
 #include <time.h>
 #define QUEUE_SIZE 4096
+#define HEAP_SIZE 8192
 #define NUM_RAN_COORDS 30
 #define MAX_ELEVATION 99
 
 typedef struct {
-    int x_coord;
-    int y_coord;
-    int elevation;
+    int x_coord, y_coord, elevation, distance, previous_x, previous_y;
     char terrainPiece;
 } terrainCell;
 
@@ -18,9 +17,93 @@ typedef struct {
     terrainCell * array;
 } Queue;
 
-// function to create a queue
-// of given capacity.
-// It initializes size of queue as 0
+typedef struct {
+    terrainCell *arr;
+    int size, capacity;
+} MinHeap;
+
+MinHeap* buildMinHeap(int capacity) {
+    MinHeap* heap = (MinHeap *)malloc(sizeof(MinHeap));
+
+    if (heap == NULL) {
+        printf("Uh oh, computer broke");
+        return NULL;
+    }
+
+    heap->size = 0;
+    heap->capacity = capacity;
+
+    heap->arr = (terrainCell *)malloc(capacity * sizeof(terrainCell));
+    if (heap->arr == NULL) {
+        printf("Uh oh, computer broke");
+        return NULL;
+    }
+
+    return heap;
+}
+
+void insertHelper(MinHeap* heap, int index) {
+    int parent = (index - 1) / 2;
+
+    if (heap->arr[parent].elevation > heap->arr[index].elevation) {
+        terrainCell temp = heap->arr[parent];
+        heap->arr[parent] = heap->arr[index];
+        heap->arr[index] = temp;
+
+        insertHelper(heap, parent);
+    }
+}
+
+void insert(MinHeap* heap, terrainCell element) {
+    if (heap->size < heap->capacity) {
+        heap->arr[heap->size] = element;
+        insertHelper(heap, heap->size);
+        heap->size++;
+    }
+}
+
+void minHeapify(MinHeap * heap, int index)
+{
+    int left = index * 2 + 1;
+    int right = index * 2 + 2;
+    int min = index;
+
+    if (left >= heap->size || left < 0)
+        left = -1;
+    if (right >= heap->size || right < 0)
+        right = -1;
+
+    if (left != -1 && heap->arr[left].elevation < heap->arr[index].elevation)
+        min = left;
+    if (right != -1 && heap->arr[right].elevation < heap->arr[index].elevation)
+        min = right;
+
+    if (min != index) {
+        terrainCell temp = heap->arr[min];
+        heap->arr[min] = heap->arr[index];
+        heap->arr[index] = temp;
+
+        minHeapify(heap, min);
+    }
+}
+
+terrainCell extractMin(MinHeap* heap)
+{
+    terrainCell deleteItem;
+
+    if (heap->size == 0) {
+        printf("\nHeap id empty.");
+        return deleteItem;
+    }
+
+    deleteItem = heap->arr[0];
+    heap->arr[0] = heap->arr[heap->size - 1];
+    heap->size--;
+
+    minHeapify(heap, 0);
+    return deleteItem;
+}
+
 Queue* createQueue(unsigned capacity)
 {
     Queue* queue = (Queue*)malloc(
@@ -35,21 +118,16 @@ Queue* createQueue(unsigned capacity)
     return queue;
 }
 
-// Queue is full when size becomes
-// equal to the capacity
 int isFull(Queue* queue)
 {
     return (queue->size == queue->capacity);
 }
 
-// Queue is empty when size is 0
 int isEmpty(Queue* queue)
 {
     return (queue->size == 0);
 }
 
-// Function to add an item to the queue.
-// It changes rear and size
 void enqueue(Queue* queue, terrainCell item)
 {
     if (isFull(queue))
@@ -60,8 +138,6 @@ void enqueue(Queue* queue, terrainCell item)
     queue->size = queue->size + 1;
 }
 
-// Function to remove an item from queue.
-// It changes front and size
 terrainCell dequeue(Queue* queue)
 {
     if (isEmpty(queue))
@@ -72,7 +148,6 @@ terrainCell dequeue(Queue* queue)
     return item;
 }
 
-// Function to get front of queue
 terrainCell front(Queue* queue)
 {
     if (isEmpty(queue))
@@ -80,7 +155,6 @@ terrainCell front(Queue* queue)
     return queue->array[queue->front];
 }
 
-// Function to get rear of queue
 terrainCell rear(Queue* queue)
 {
     if (isEmpty(queue))
@@ -88,9 +162,67 @@ terrainCell rear(Queue* queue)
     return queue->array[queue->rear];
 }
 
-//void Dijkstra(int x, int y, terrainCell map[y][x], int elevations[y][x], terrainCell start) {
-//
-//}
+int getNeighbors(int x, int y, terrainCell map[y][x], terrainCell cell, terrainCell* neighbors) {
+    int numNeighbors;
+
+    numNeighbors = 1;
+    if (cell.x_coord == 0) {
+        neighbors[0] = map[cell.y_coord][cell.x_coord + 1];
+    } else if (cell.y_coord == 0) {
+        neighbors[0] = map[cell.y_coord + 1][cell.x_coord];
+    } else if (cell.x_coord == 79) {
+        neighbors[0] = map[cell.y_coord][cell.x_coord - 1];
+    } else if (cell.y_coord == 20) {
+        neighbors[0] = map[cell.y_coord - 1][cell.x_coord];
+    } else {
+        neighbors[0] = map[cell.y_coord][cell.x_coord + 1];
+        neighbors[0] = map[cell.y_coord][cell.x_coord - 1];
+        neighbors[0] = map[cell.y_coord + 1][cell.x_coord];
+        neighbors[0] = map[cell.y_coord - 1][cell.x_coord];
+        numNeighbors = 4;
+    }
+
+    return numNeighbors;
+}
+
+void Dijkstra(int x, int y, terrainCell map[y][x], int elevations[y][x], terrainCell start, terrainCell end) {
+    int i, j, numNeighbors, tempDistance;
+    MinHeap *heap = malloc(sizeof (MinHeap));
+    terrainCell *temp = malloc(sizeof (terrainCell));
+    terrainCell (*neighbors) = malloc(sizeof (terrainCell[4]));
+
+    for (i = 0; i < y; i++) {
+        for (j = 0; j < x; j++) {
+            map[i][j].distance = 9999;
+        }
+    }
+    start.distance = 0;
+
+    heap = buildMinHeap(HEAP_SIZE);
+    insert(heap, start);
+
+    while (heap->size != 0) {
+        *temp = extractMin(heap);
+        if (temp == &end) {
+            while (temp != &start) {
+                map[temp->previous_y][temp->previous_x].elevation = 0;
+                map[temp->previous_y][temp->previous_x].terrainPiece = '#';
+                *temp = map[temp->previous_y][temp->previous_x];
+            }
+            break;
+        }
+        numNeighbors = getNeighbors(x, y, map, *temp, neighbors);
+        for (i = 0; i < numNeighbors; i ++) {
+            tempDistance = temp->distance + neighbors[i].elevation;
+            if (tempDistance < neighbors[i].distance) {
+                neighbors[i].distance = tempDistance;
+                neighbors[i].previous_x = temp->x_coord;
+                neighbors[i].previous_y = temp->y_coord;
+                insert(heap, neighbors[i]);
+            }
+        }
+    }
+}
 
 int main(int argc, char *argv[]) {
     terrainCell (*map)[80] = malloc(sizeof (terrainCell[21][80]));
@@ -207,7 +339,7 @@ int main(int argc, char *argv[]) {
 
     printf("Left: %d, Right: %d, Up: %d, Down: %d\n", rand_path_left, rand_path_right, rand_path_up, rand_path_down);
 
-    //Dijkstra(80, 21, map, elevations, map[rand_path_left][0]);
+//    Dijkstra(80, 21, map, elevations, map[rand_path_left][0], map[rand_path_right][79]);
 
     for (i = 0; i < 21; i++) {
         for (j = 0; j < 80; j++) {
