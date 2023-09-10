@@ -214,6 +214,42 @@ int getNeighbors(int x, int y, terrainCell map[y][x], terrainCell cell, terrainC
     return numNeighbors;
 }
 
+void buildPokeStuff(int x, int y, terrainCell map[y][x]) {
+    int pokemart_coord, pokestop_coord, num_neighbors, i, j, k, m, n;
+    terrainCell neighbors[4];
+    int pokemart_placed, pokestop_placed = 0;
+
+    // Lower possible values because I want these to be more in the middle, not at edges
+    pokemart_coord = (rand() % 65) + 5;
+    pokestop_coord = (rand() % 65) + 5;
+    printf("Pokemart: %d\nPokestop: %d\n\n", pokemart_coord, pokestop_coord);
+
+    for (i = 0; i < y; i++) {
+        for (j = 0; j < x; j++) {
+            if (j == pokemart_coord && map[i][j].terrainPiece == '#') {
+                num_neighbors = getNeighbors(x, y, map, map[i][j], neighbors);
+                for (k = 0; k < num_neighbors; k++) {
+                    if (neighbors[k].terrainPiece != '#' && neighbors[k].terrainPiece != 'S' && pokemart_placed == 0) {
+                        map[neighbors[k].y_coord][neighbors[k].x_coord].terrainPiece = 'M';
+                        map[neighbors[k].y_coord][neighbors[k].x_coord].elevation = MAX_ELEVATION;
+                        pokemart_placed = 1;
+                    }
+                }
+            }
+            else if (j == pokestop_coord && map[i][j].terrainPiece == '#') {
+                num_neighbors = getNeighbors(x, y, map, map[i][j], neighbors);
+                for (k = 0; k < num_neighbors; k++) {
+                    if (neighbors[k].terrainPiece != '#' && neighbors[k].terrainPiece != 'M' && pokestop_placed == 0) {
+                        map[neighbors[k].y_coord][neighbors[k].x_coord].terrainPiece = 'S';
+                        map[neighbors[k].y_coord][neighbors[k].x_coord].elevation = MAX_ELEVATION;
+                        pokestop_placed = 1;
+                    }
+                }
+            }
+        }
+    }
+}
+
 void Dijkstra(int x, int y, terrainCell map[y][x], terrainCell start, terrainCell end) {
     int i, j, numNeighbors, tempDistance;
     MinHeap *heap;
@@ -254,9 +290,9 @@ void Dijkstra(int x, int y, terrainCell map[y][x], terrainCell start, terrainCel
             }
         }
     }
-    printf("Finished Path finding\n\n");
+    //printf("Finished Path finding\n\n");
     temp = map[end.y_coord][end.x_coord];
-    printf("x-coord: %d\ny-coord: %d\nprevious-x: %d\nprevious-y: %d\n\n", temp.x_coord, temp.y_coord, temp.previous_x, temp.previous_y);
+    //printf("x-coord: %d\ny-coord: %d\nprevious-x: %d\nprevious-y: %d\n\n", temp.x_coord, temp.y_coord, temp.previous_x, temp.previous_y);
     while ((temp.x_coord != start.x_coord) || (temp.y_coord != start.y_coord)) {
         map[temp.previous_y][temp.previous_x].elevation = 0;
         map[temp.previous_y][temp.previous_x].terrainPiece = '#';
@@ -271,17 +307,7 @@ int main(int argc, char *argv[]) {
     terrainCell (*map)[80] = malloc(sizeof (terrainCell) * 21 * 80);
     terrainCell (*randomCells) = malloc(sizeof (terrainCell[NUM_RAN_COORDS]));
     terrainCell (*currentCell) = malloc(sizeof (terrainCell));
-    int currentCellXCoord;
-    int currentCellYCoord;
-    int i;
-    int j;
-    int k;
-    int rand_x_coords[NUM_RAN_COORDS];
-    int rand_y_coords[NUM_RAN_COORDS];
-    int rand_path_left;
-    int rand_path_right;
-    int rand_path_up;
-    int rand_path_down;
+    int currentCellXCoord, currentCellYCoord, i, j, k, rand_x_coords[NUM_RAN_COORDS], rand_y_coords[NUM_RAN_COORDS], rand_path_left, rand_path_right, rand_path_up, rand_path_down;
     Queue* seeding_queue = createQueue(QUEUE_SIZE);
 
     srand((unsigned int) time(NULL));
@@ -379,10 +405,10 @@ int main(int argc, char *argv[]) {
     map[20][rand_path_down].terrainPiece = '#';
     map[20][rand_path_down].elevation = 0;
 
-    printf("Left: %d, Right: %d, Up: %d, Down: %d\n", rand_path_left, rand_path_right, rand_path_up, rand_path_down);
-
     Dijkstra(80, 21, map, map[rand_path_left][0], map[rand_path_right][79]);
     Dijkstra(80, 21, map, map[0][rand_path_up], map[20][rand_path_down]);
+
+    buildPokeStuff(80, 21, map);
 
     for (i = 0; i < 21; i++) {
         for (j = 0; j < 80; j++) {
