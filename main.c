@@ -4,7 +4,7 @@
 #define QUEUE_SIZE 2048
 #define HEAP_SIZE 8192
 #define NUM_RAN_COORDS 30
-#define MAX_ELEVATION 99
+#define MAX_ELEVATION 999
 #define INFINITY 8192
 
 typedef struct {
@@ -257,10 +257,11 @@ void Dijkstra(int x, int y, terrainCell map[y][x], terrainCell start, terrainCel
     printf("Finished Path finding\n\n");
     temp = map[end.y_coord][end.x_coord];
     printf("x-coord: %d\ny-coord: %d\nprevious-x: %d\nprevious-y: %d\n\n", temp.x_coord, temp.y_coord, temp.previous_x, temp.previous_y);
-    while ((temp.x_coord != start.x_coord) && (temp.y_coord != start.y_coord)) {
+    while ((temp.x_coord != start.x_coord) || (temp.y_coord != start.y_coord)) {
         map[temp.previous_y][temp.previous_x].elevation = 0;
         map[temp.previous_y][temp.previous_x].terrainPiece = '#';
         temp = map[temp.previous_y][temp.previous_x];
+        //printf("Temp previous coords\nx: %d\ny: %d\n\n", temp.previous_x, temp.previous_y);
     }
 
     free(heap);
@@ -329,12 +330,12 @@ int main(int argc, char *argv[]) {
                                 break;
                             case 4:
                                 map[i][j].terrainPiece = '~';
-                                map[i][j].elevation = 5;
+                                map[i][j].elevation = 3;
                                 randomCells[k] = map[i][j];
                                 break;
                             case 5:
                                 map[i][j].terrainPiece = '%';
-                                map[i][j].elevation = 6;
+                                map[i][j].elevation = 4;
                                 randomCells[k] = map[i][j];
                                 break;
                         }
@@ -380,14 +381,8 @@ int main(int argc, char *argv[]) {
 
     printf("Left: %d, Right: %d, Up: %d, Down: %d\n", rand_path_left, rand_path_right, rand_path_up, rand_path_down);
 
-    for (i = 0; i < 21; i++) {
-        for (j = 0; j < 80; j++) {
-            printf("%c", map[i][j].terrainPiece);
-        }
-        printf("\n");
-    }
-
     Dijkstra(80, 21, map, map[rand_path_left][0], map[rand_path_right][79]);
+    Dijkstra(80, 21, map, map[0][rand_path_up], map[20][rand_path_down]);
 
     for (i = 0; i < 21; i++) {
         for (j = 0; j < 80; j++) {
