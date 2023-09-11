@@ -317,8 +317,8 @@ void buildPokeStuff(int x, int y, terrainCell map[y][x]) {
         }
         else {
             if (map[pokecenter_y_coord - 1][pokecenter_x_coord - 1].terrainPiece != '#' && map[pokecenter_y_coord - 1][pokecenter_x_coord - 1].terrainPiece != 'M' && map[pokecenter_y_coord - 1][pokecenter_x_coord - 1].terrainPiece != 'C') {
-                if (map[pokecenter_y_coord - 1][pokecenter_x_coord].terrainPiece != '#' && map[pokecenter_y_coord - 1][pokecenter_x_coord].terrainPiece != 'M' && map[pokecenter_y_coord - 1][pokecenter_x_coord].terrainPiece != 'C') {
-                    if (map[pokecenter_y_coord][pokecenter_x_coord - 1].terrainPiece != '#' && map[pokecenter_y_coord][pokecenter_x_coord - 1].terrainPiece != 'M' && map[pokecenter_y_coord][pokecenter_x_coord - 1].terrainPiece != 'C') {
+                if (map[pokecenter_y_coord - 1][pokecenter_x_coord].terrainPiece != '#' && map[pokecenter_y_coord - 1][pokecenter_x_coord].terrainPiece != 'M' && map[pokecenter_y_coord - 1][pokecenter_x_coord].terrainPiece != 'C' && pokemart_x_coord != pokecenter_x_coord) {
+                    if (map[pokecenter_y_coord][pokecenter_x_coord - 1].terrainPiece != '#' && map[pokecenter_y_coord][pokecenter_x_coord - 1].terrainPiece != 'M' && map[pokecenter_y_coord][pokecenter_x_coord - 1].terrainPiece != 'C' && pokemart_x_coord != pokecenter_x_coord) {
                         map[pokecenter_y_coord][pokecenter_x_coord].terrainPiece = 'C';
                         map[pokecenter_y_coord - 1][pokecenter_x_coord].terrainPiece = 'C';
                         map[pokecenter_y_coord][pokecenter_x_coord - 1].terrainPiece = 'C';
