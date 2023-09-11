@@ -214,9 +214,8 @@ int getNeighbors(int x, int y, terrainCell map[y][x], terrainCell cell, terrainC
     return numNeighbors;
 }
 
-void buildRoadsToPokeStuff(int x, int y, terrainCell map[y][x], int pokeMX, int pokeMY, int pokeCX, int pokeCY, int pokeMO, int pokeCO) {
+void buildRoadsToPokeStuff(int x, int y, terrainCell map[y][x], int pokeMX, int pokeMY, int pokeCX, int pokeCY) {
     int i, j, k, numNeighbors, mart_done, center_done;
-    int pokemartXCoords[4], pokemartYCoords[4], pokecenterXCoords[4], pokecenterYCoords[4];
     terrainCell neighbors[4];
     mart_done = center_done = 0;
 
@@ -237,150 +236,22 @@ void buildRoadsToPokeStuff(int x, int y, terrainCell map[y][x], int pokeMX, int 
     }
 
     if (mart_done == 0) {
-        switch (pokeMO) {
-            case 0:
-                pokemartXCoords[0] = pokeMX;
-                pokemartYCoords[0] = pokeMY;
-
-                pokemartXCoords[1] = pokeMX;
-                pokemartYCoords[1] = pokeMY - 1;
-
-                pokemartXCoords[2] = pokeMX - 1;
-                pokemartYCoords[2] = pokeMY;
-
-                pokemartXCoords[3] = pokeMX - 1;
-                pokemartYCoords[3] = pokeMY - 1;
-                break;
-            case 1:
-                pokemartXCoords[0] = pokeMX;
-                pokemartYCoords[0] = pokeMY;
-
-                pokemartXCoords[1] = pokeMX;
-                pokemartYCoords[1] = pokeMY - 1;
-
-                pokemartXCoords[2] = pokeMX + 1;
-                pokemartYCoords[2] = pokeMY;
-
-                pokemartXCoords[3] = pokeMX + 1;
-                pokemartYCoords[3] = pokeMY - 1;
-                break;
-            case 2:
-                pokemartXCoords[0] = pokeMX;
-                pokemartYCoords[0] = pokeMY;
-
-                pokemartXCoords[1] = pokeMX - 1;
-                pokemartYCoords[1] = pokeMY;
-
-                pokemartXCoords[2] = pokeMX;
-                pokemartYCoords[2] = pokeMY + 1;
-
-                pokemartXCoords[3] = pokeMX - 1;
-                pokemartYCoords[3] = pokeMY + 1;
-                break;
-            case 3:
-                pokemartXCoords[0] = pokeMX;
-                pokemartYCoords[0] = pokeMY;
-
-                pokemartXCoords[1] = pokeMX + 1;
-                pokemartYCoords[1] = pokeMY;
-
-                pokemartXCoords[2] = pokeMX;
-                pokemartYCoords[2] = pokeMY + 1;
-
-                pokemartXCoords[3] = pokeMX + 1;
-                pokemartYCoords[3] = pokeMY + 1;
-                break;
-        }
-        if (pokeMO == 0 || pokeMO == 1) {
-            for (i = 0; i < y; i++) {
-                if (map[i][pokeMX].terrainPiece == '#' && i - 1 > pokeMY) {
-                    for (j = pokeMY + 1; j < i; j++) {
-                        map[j][pokeMX].terrainPiece = '#';
-                        map[j][pokeMX].elevation = 0;
-                    }
-                }
-                else if (map[i][pokemartXCoords[1]].terrainPiece == '#' && i + 1 < pokemartYCoords[1]) {
-                    for (j = pokemartYCoords[1] - 1; j > i; j--) {
-                        map[j][pokemartXCoords[1]].terrainPiece = '#';
-                        map[j][pokemartXCoords[1]].elevation = 0;
-                    }
+        for (i = 0; i < y; i++) {
+            if (map[i][pokeMX].terrainPiece == '#' && i - 1 > pokeMY) {
+                for (j = pokeMY + 1; j < i; j++) {
+                    map[j][pokeMX].terrainPiece = '#';
+                    map[j][pokeMX].elevation = 0;
                 }
             }
-        } else if (pokeMO == 2 || pokeMO == 3) {
-            for (i = 0; i < y; i++) {
-                if (map[i][pokemartXCoords[2]].terrainPiece == '#' && i - 1 > pokemartYCoords[2]) {
-                    for (j = pokemartYCoords[2] + 1; j < i; j++) {
-                        map[j][pokemartXCoords[2]].terrainPiece = '#';
-                        map[j][pokemartXCoords[2]].elevation = 0;
-                    }
-                }
-                else if (map[i][pokeMX].terrainPiece == '#' && i + 1 < pokeMY) {
-                    for (j = pokeMY - 1; j > i; j--) {
-                        map[j][pokeMX].terrainPiece = '#';
-                        map[j][pokeMX].elevation = 0;
-                    }
+            else if (map[i][pokeMX].terrainPiece == '#' && i + 1 < pokeMY - 1) {
+                for (j = pokeMY - 2; j > i; j--) {
+                    map[j][pokeMX].terrainPiece = '#';
+                    map[j][pokeMX].elevation = 0;
                 }
             }
         }
     }
-
     if (center_done == 0) {
-        switch (pokeCO) {
-            case 0:
-                pokecenterXCoords[0] = pokeCX;
-                pokecenterYCoords[0] = pokeCY;
-
-                pokecenterXCoords[1] = pokeCX;
-                pokecenterYCoords[1] = pokeCY - 1;
-
-                pokecenterXCoords[2] = pokeCX - 1;
-                pokecenterYCoords[2] = pokeCY;
-
-                pokecenterXCoords[3] = pokeCX - 1;
-                pokecenterYCoords[3] = pokeCY - 1;
-                break;
-            case 1:
-                pokecenterXCoords[0] = pokeCX;
-                pokecenterYCoords[0] = pokeCY;
-
-                pokecenterXCoords[1] = pokeCX;
-                pokecenterYCoords[1] = pokeCY - 1;
-
-                pokecenterXCoords[2] = pokeCX + 1;
-                pokecenterYCoords[2] = pokeCY;
-
-                pokecenterXCoords[3] = pokeCX + 1;
-                pokecenterYCoords[3] = pokeCY - 1;
-                break;
-            case 2:
-                pokecenterXCoords[0] = pokeCX;
-                pokecenterYCoords[0] = pokeCY;
-
-                pokecenterXCoords[1] = pokeCX;
-                pokecenterYCoords[1] = pokeCY + 1;
-
-                pokecenterXCoords[2] = pokeCX - 1;
-                pokecenterYCoords[2] = pokeCY;
-
-                pokecenterXCoords[3] = pokeCX - 1;
-                pokecenterYCoords[3] = pokeCY + 1;
-                break;
-            case 3:
-                pokecenterXCoords[0] = pokeCX;
-                pokecenterYCoords[0] = pokeCY;
-
-                pokecenterXCoords[1] = pokeCX;
-                pokecenterYCoords[1] = pokeCY + 1;
-
-                pokecenterXCoords[2] = pokeCX + 1;
-                pokecenterYCoords[2] = pokeCY;
-
-                pokecenterXCoords[3] = pokeCX + 1;
-                pokecenterYCoords[3] = pokeCY + 1;
-                break;
-        }
-    }
-    if (pokeCO == 0 || pokeCO == 1) {
         for (i = 0; i < y; i++) {
             if (map[i][pokeCX].terrainPiece == '#' && i - 1 > pokeCY) {
                 for (j = pokeCY + 1; j < i; j++) {
@@ -388,23 +259,8 @@ void buildRoadsToPokeStuff(int x, int y, terrainCell map[y][x], int pokeMX, int 
                     map[j][pokeCX].elevation = 0;
                 }
             }
-            else if (map[i][pokecenterXCoords[1]].terrainPiece == '#' && i + 1 < pokecenterYCoords[1]) {
-                for (j = pokecenterYCoords[1] - 1; j > i; j--) {
-                    map[j][pokecenterXCoords[1]].terrainPiece = '#';
-                    map[j][pokecenterXCoords[1]].elevation = 0;
-                }
-            }
-        }
-    } else if (pokeCO == 2 || pokeCO == 3) {
-        for (i = 0; i < y; i++) {
-            if (map[i][pokecenterXCoords[1]].terrainPiece == '#' && i - 1 > pokecenterYCoords[1]) {
-                for (j = pokecenterYCoords[1] + 1; j < i; j++) {
-                    map[j][pokecenterXCoords[1]].terrainPiece = '#';
-                    map[j][pokecenterXCoords[1]].elevation = 0;
-                }
-            }
-            else if (map[i][pokeCX].terrainPiece == '#' && i + 1 < pokeCY) {
-                for (j = pokeCY - 1; j > i; j--) {
+            else if (map[i][pokeCX].terrainPiece == '#' && i + 1 < pokeCY - 1) {
+                for (j = pokeCY - 2; j > i; j--) {
                     map[j][pokeCX].terrainPiece = '#';
                     map[j][pokeCX].elevation = 0;
                 }
@@ -414,10 +270,9 @@ void buildRoadsToPokeStuff(int x, int y, terrainCell map[y][x], int pokeMX, int 
 }
 
 void buildPokeStuff(int x, int y, terrainCell map[y][x]) {
-    int pokemart_x_coord, pokecenter_x_coord, pokemart_y_coord, pokecenter_y_coord, pokemartOption, pokecenterOption;
+    int pokemart_x_coord, pokecenter_x_coord, pokemart_y_coord, pokecenter_y_coord;
     int pokemart_placed = 0;
     int pokecenter_placed = 0;
-    pokemartOption = pokecenterOption = -1;
 
     // Lower possible values because I want these to be more in the middle, not at edges
     pokemart_x_coord = (rand() % 65) + 5;
@@ -429,7 +284,6 @@ void buildPokeStuff(int x, int y, terrainCell map[y][x]) {
         if (map[pokemart_y_coord][pokemart_x_coord].terrainPiece == '#' || map[pokemart_y_coord][pokemart_x_coord].terrainPiece == 'M' || map[pokemart_y_coord][pokemart_x_coord].terrainPiece == 'C') {
             pokemart_x_coord = (rand() % 65) + 5;
             pokemart_y_coord = (rand() % 15) + 3;
-            continue;
         }
         else {
             if (map[pokemart_y_coord - 1][pokemart_x_coord - 1].terrainPiece != '#' && map[pokemart_y_coord - 1][pokemart_x_coord - 1].terrainPiece != 'M' && map[pokemart_y_coord - 1][pokemart_x_coord - 1].terrainPiece != 'C') {
@@ -440,50 +294,18 @@ void buildPokeStuff(int x, int y, terrainCell map[y][x]) {
                         map[pokemart_y_coord][pokemart_x_coord - 1].terrainPiece = 'M';
                         map[pokemart_y_coord - 1][pokemart_x_coord - 1].terrainPiece = 'M';
                         pokemart_placed = 1;
-                        pokemartOption = 0;
+                    } else {
+                        pokemart_x_coord = (rand() % 65) + 5;
+                        pokemart_y_coord = (rand() % 15) + 3;
                     }
-                }
-            }
-            else if (map[pokemart_y_coord - 1][pokemart_x_coord + 1].terrainPiece != '#' && map[pokemart_y_coord - 1][pokemart_x_coord + 1].terrainPiece != 'M' && map[pokemart_y_coord - 1][pokemart_x_coord + 1].terrainPiece != 'C') {
-                if (map[pokemart_y_coord - 1][pokemart_x_coord].terrainPiece != '#' && map[pokemart_y_coord - 1][pokemart_x_coord].terrainPiece != 'M' && map[pokemart_y_coord - 1][pokemart_x_coord].terrainPiece != 'C') {
-                    if (map[pokemart_y_coord][pokemart_x_coord + 1].terrainPiece != '#' && map[pokemart_y_coord][pokemart_x_coord + 1].terrainPiece != 'M' && map[pokemart_y_coord][pokemart_x_coord + 1].terrainPiece != 'C') {
-                        map[pokemart_y_coord][pokemart_x_coord].terrainPiece = 'M';
-                        map[pokemart_y_coord - 1][pokemart_x_coord].terrainPiece = 'M';
-                        map[pokemart_y_coord][pokemart_x_coord + 1].terrainPiece = 'M';
-                        map[pokemart_y_coord - 1][pokemart_x_coord + 1].terrainPiece = 'M';
-                        pokemart_placed = 1;
-                        pokemartOption = 1;
-                    }
-                }
-            }
-            else if (map[pokemart_y_coord + 1][pokemart_x_coord - 1].terrainPiece != '#' && map[pokemart_y_coord + 1][pokemart_x_coord - 1].terrainPiece != 'M' && map[pokemart_y_coord + 1][pokemart_x_coord - 1].terrainPiece != 'C') {
-                if (map[pokemart_y_coord + 1][pokemart_x_coord].terrainPiece != '#' && map[pokemart_y_coord + 1][pokemart_x_coord].terrainPiece != 'M' && map[pokemart_y_coord + 1][pokemart_x_coord].terrainPiece != 'C') {
-                    if (map[pokemart_y_coord][pokemart_x_coord - 1].terrainPiece != '#' && map[pokemart_y_coord][pokemart_x_coord - 1].terrainPiece != 'M' && map[pokemart_y_coord][pokemart_x_coord - 1].terrainPiece != 'C') {
-                        map[pokemart_y_coord][pokemart_x_coord].terrainPiece = 'M';
-                        map[pokemart_y_coord + 1][pokemart_x_coord].terrainPiece = 'M';
-                        map[pokemart_y_coord][pokemart_x_coord - 1].terrainPiece = 'M';
-                        map[pokemart_y_coord + 1][pokemart_x_coord - 1].terrainPiece = 'M';
-                        pokemart_placed = 1;
-                        pokemartOption = 2;
-                    }
-                }
-            }
-            else if (map[pokemart_y_coord + 1][pokemart_x_coord + 1].terrainPiece != '#' && map[pokemart_y_coord + 1][pokemart_x_coord + 1].terrainPiece != 'M' && map[pokemart_y_coord + 1][pokemart_x_coord + 1].terrainPiece != 'C') {
-                if (map[pokemart_y_coord + 1][pokemart_x_coord].terrainPiece != '#' && map[pokemart_y_coord + 1][pokemart_x_coord].terrainPiece != 'M' && map[pokemart_y_coord + 1][pokemart_x_coord].terrainPiece != 'C') {
-                    if (map[pokemart_y_coord][pokemart_x_coord + 1].terrainPiece != '#' && map[pokemart_y_coord][pokemart_x_coord + 1].terrainPiece != 'M' && map[pokemart_y_coord][pokemart_x_coord + 1].terrainPiece != 'C') {
-                        map[pokemart_y_coord][pokemart_x_coord].terrainPiece = 'M';
-                        map[pokemart_y_coord + 1][pokemart_x_coord].terrainPiece = 'M';
-                        map[pokemart_y_coord][pokemart_x_coord + 1].terrainPiece = 'M';
-                        map[pokemart_y_coord + 1][pokemart_x_coord + 1].terrainPiece = 'M';
-                        pokemart_placed = 1;
-                        pokemartOption = 3;
-                    }
+                } else {
+                    pokemart_x_coord = (rand() % 65) + 5;
+                    pokemart_y_coord = (rand() % 15) + 3;
                 }
             }
             else {
                 pokemart_x_coord = (rand() % 65) + 5;
                 pokemart_y_coord = (rand() % 15) + 3;
-                continue;
             }
         }
     }
@@ -492,7 +314,6 @@ void buildPokeStuff(int x, int y, terrainCell map[y][x]) {
         if (map[pokecenter_y_coord][pokecenter_x_coord].terrainPiece == '#' || map[pokecenter_y_coord][pokecenter_x_coord].terrainPiece == 'M' || map[pokecenter_y_coord][pokecenter_x_coord].terrainPiece == 'C') {
             pokecenter_x_coord = (rand() % 65) + 5;
             pokecenter_y_coord = (rand() % 15) + 3;
-            continue;
         }
         else {
             if (map[pokecenter_y_coord - 1][pokecenter_x_coord - 1].terrainPiece != '#' && map[pokecenter_y_coord - 1][pokecenter_x_coord - 1].terrainPiece != 'M' && map[pokecenter_y_coord - 1][pokecenter_x_coord - 1].terrainPiece != 'C') {
@@ -503,54 +324,22 @@ void buildPokeStuff(int x, int y, terrainCell map[y][x]) {
                         map[pokecenter_y_coord][pokecenter_x_coord - 1].terrainPiece = 'C';
                         map[pokecenter_y_coord - 1][pokecenter_x_coord - 1].terrainPiece = 'C';
                         pokecenter_placed = 1;
-                        pokecenterOption = 0;
+                    } else {
+                        pokecenter_x_coord = (rand() % 65) + 5;
+                        pokecenter_y_coord = (rand() % 15) + 3;
                     }
-                }
-            }
-            else if (map[pokecenter_y_coord - 1][pokecenter_x_coord + 1].terrainPiece != '#' && map[pokecenter_y_coord - 1][pokecenter_x_coord + 1].terrainPiece != 'M' && map[pokecenter_y_coord - 1][pokecenter_x_coord + 1].terrainPiece != 'C') {
-                if (map[pokecenter_y_coord - 1][pokecenter_x_coord].terrainPiece != '#' && map[pokecenter_y_coord - 1][pokecenter_x_coord].terrainPiece != 'M' && map[pokecenter_y_coord - 1][pokecenter_x_coord].terrainPiece != 'C') {
-                    if (map[pokecenter_y_coord][pokecenter_x_coord + 1].terrainPiece != '#' && map[pokecenter_y_coord][pokecenter_x_coord + 1].terrainPiece != 'M' && map[pokecenter_y_coord][pokecenter_x_coord + 1].terrainPiece != 'C') {
-                        map[pokecenter_y_coord][pokecenter_x_coord].terrainPiece = 'C';
-                        map[pokecenter_y_coord - 1][pokecenter_x_coord].terrainPiece = 'C';
-                        map[pokecenter_y_coord][pokecenter_x_coord + 1].terrainPiece = 'C';
-                        map[pokecenter_y_coord - 1][pokecenter_x_coord + 1].terrainPiece = 'C';
-                        pokecenter_placed = 1;
-                        pokecenterOption = 1;
-                    }
-                }
-            }
-            else if (map[pokecenter_y_coord + 1][pokecenter_x_coord - 1].terrainPiece != '#' && map[pokecenter_y_coord + 1][pokecenter_x_coord - 1].terrainPiece != 'M' && map[pokecenter_y_coord + 1][pokecenter_x_coord - 1].terrainPiece != 'C') {
-                if (map[pokecenter_y_coord + 1][pokecenter_x_coord].terrainPiece != '#' && map[pokecenter_y_coord + 1][pokecenter_x_coord].terrainPiece != 'M' && map[pokecenter_y_coord + 1][pokecenter_x_coord].terrainPiece != 'C') {
-                    if (map[pokecenter_y_coord][pokecenter_x_coord - 1].terrainPiece != '#' && map[pokecenter_y_coord][pokecenter_x_coord - 1].terrainPiece != 'M' && map[pokecenter_y_coord][pokecenter_x_coord - 1].terrainPiece != 'C') {
-                        map[pokecenter_y_coord][pokecenter_x_coord].terrainPiece = 'C';
-                        map[pokecenter_y_coord + 1][pokecenter_x_coord].terrainPiece = 'C';
-                        map[pokecenter_y_coord][pokecenter_x_coord - 1].terrainPiece = 'C';
-                        map[pokecenter_y_coord + 1][pokecenter_x_coord - 1].terrainPiece = 'C';
-                        pokecenter_placed = 1;
-                        pokecenterOption = 2;
-                    }
-                }
-            }
-            else if (map[pokecenter_y_coord + 1][pokecenter_x_coord + 1].terrainPiece != '#' && map[pokecenter_y_coord + 1][pokecenter_x_coord + 1].terrainPiece != 'M' && map[pokecenter_y_coord + 1][pokecenter_x_coord + 1].terrainPiece != 'C') {
-                if (map[pokecenter_y_coord + 1][pokecenter_x_coord].terrainPiece != '#' && map[pokecenter_y_coord + 1][pokecenter_x_coord].terrainPiece != 'M' && map[pokecenter_y_coord + 1][pokecenter_x_coord].terrainPiece != 'C') {
-                    if (map[pokecenter_y_coord][pokecenter_x_coord + 1].terrainPiece != '#' && map[pokecenter_y_coord][pokecenter_x_coord + 1].terrainPiece != 'M' && map[pokecenter_y_coord][pokecenter_x_coord + 1].terrainPiece != 'C') {
-                        map[pokecenter_y_coord][pokecenter_x_coord].terrainPiece = 'C';
-                        map[pokecenter_y_coord + 1][pokecenter_x_coord].terrainPiece = 'C';
-                        map[pokecenter_y_coord][pokecenter_x_coord + 1].terrainPiece = 'C';
-                        map[pokecenter_y_coord + 1][pokecenter_x_coord + 1].terrainPiece = 'C';
-                        pokecenter_placed = 1;
-                        pokecenterOption = 3;
-                    }
+                } else {
+                    pokecenter_x_coord = (rand() % 65) + 5;
+                    pokecenter_y_coord = (rand() % 15) + 3;
                 }
             }
             else {
                 pokecenter_x_coord = (rand() % 65) + 5;
                 pokecenter_y_coord = (rand() % 15) + 3;
-                continue;
             }
         }
     }
-    buildRoadsToPokeStuff(x, y, map, pokemart_x_coord, pokemart_y_coord, pokecenter_x_coord, pokecenter_y_coord, pokemartOption, pokecenterOption);
+    buildRoadsToPokeStuff(x, y, map, pokemart_x_coord, pokemart_y_coord, pokecenter_x_coord, pokecenter_y_coord);
 }
 
 void Dijkstra(int x, int y, terrainCell map[y][x], terrainCell start, terrainCell end) {
@@ -593,14 +382,11 @@ void Dijkstra(int x, int y, terrainCell map[y][x], terrainCell start, terrainCel
             }
         }
     }
-    //printf("Finished Path finding\n\n");
     temp = map[end.y_coord][end.x_coord];
-    //printf("x-coord: %d\ny-coord: %d\nprevious-x: %d\nprevious-y: %d\n\n", temp.x_coord, temp.y_coord, temp.previous_x, temp.previous_y);
     while ((temp.x_coord != start.x_coord) || (temp.y_coord != start.y_coord)) {
         map[temp.previous_y][temp.previous_x].elevation = 0;
         map[temp.previous_y][temp.previous_x].terrainPiece = '#';
         temp = map[temp.previous_y][temp.previous_x];
-        //printf("Temp previous coords\nx: %d\ny: %d\n\n", temp.previous_x, temp.previous_y);
     }
 
     free(heap);
@@ -612,8 +398,9 @@ int main(int argc, char *argv[]) {
     terrainCell (*currentCell) = malloc(sizeof (terrainCell));
     int currentCellXCoord, currentCellYCoord, i, j, k, rand_x_coords[NUM_RAN_COORDS], rand_y_coords[NUM_RAN_COORDS], rand_path_left, rand_path_right, rand_path_up, rand_path_down;
     Queue* seeding_queue = createQueue(QUEUE_SIZE);
+    time_t t;
 
-    srand((unsigned int) time(NULL));
+    srand(time(&t));
 
     // Generate 30 random points on the map between 1 - 78 and 1 - 19 exclusive
     for (i = 0; i < NUM_RAN_COORDS; i++) {
