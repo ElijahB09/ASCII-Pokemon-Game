@@ -1,100 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "queue.h"
+#include "minHeap.h"
 #define QUEUE_SIZE 2048
 #define HEAP_SIZE 8192
 #define NUM_RAN_COORDS 30
 #define MAX_ELEVATION 999
 #define INFINITY 8192
-
-typedef struct {
-    terrainCell * arr;
-    int size;
-    unsigned capacity;
-} MinHeap;
-
-MinHeap* buildMinHeap(unsigned capacity) {
-    MinHeap* heap = (MinHeap *)malloc(sizeof(MinHeap));
-
-    if (heap == NULL) {
-        printf("Uh oh, computer broke");
-        return NULL;
-    }
-
-    heap->size = 0;
-    heap->capacity = capacity;
-
-    heap->arr = (terrainCell *)malloc(capacity * sizeof(terrainCell));
-    if (heap->arr == NULL) {
-        printf("Uh oh, computer broke");
-        return NULL;
-    }
-
-    return heap;
-}
-
-void insertHelper(MinHeap* heap, int index) {
-    int parent = (index - 1) / 2;
-
-    if (heap->arr[parent].distance > heap->arr[index].distance) {
-        terrainCell temp = heap->arr[parent];
-        heap->arr[parent] = heap->arr[index];
-        heap->arr[index] = temp;
-
-        insertHelper(heap, parent);
-    }
-}
-
-void insert(MinHeap* heap, terrainCell element) {
-    if (heap->size < heap->capacity) {
-        heap->arr[heap->size] = element;
-        insertHelper(heap, heap->size);
-        heap->size++;
-    }
-}
-
-void minHeapify(MinHeap * heap, int index)
-{
-    int left = index * 2 + 1;
-    int right = index * 2 + 2;
-    int min = index;
-
-    if (left >= heap->size || left < 0)
-        left = -1;
-    if (right >= heap->size || right < 0)
-        right = -1;
-
-    if (left != -1 && heap->arr[left].distance < heap->arr[index].distance)
-        min = left;
-    if (right != -1 && heap->arr[right].distance < heap->arr[index].distance)
-        min = right;
-
-    if (min != index) {
-        terrainCell temp = heap->arr[min];
-        heap->arr[min] = heap->arr[index];
-        heap->arr[index] = temp;
-
-        minHeapify(heap, min);
-    }
-}
-
-terrainCell extractMin(MinHeap* heap)
-{
-    terrainCell deleteItem;
-
-    if (heap->size == 0) {
-        printf("\nHeap id empty.");
-        return deleteItem;
-    }
-
-    deleteItem = heap->arr[0];
-    heap->arr[0] = heap->arr[heap->size - 1];
-    heap->size--;
-
-    minHeapify(heap, 0);
-    return deleteItem;
-}
 
 int getNeighbors(int x, int y, terrainCell map[y][x], terrainCell cell, terrainCell* neighbors) {
     int numNeighbors;

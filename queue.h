@@ -1,5 +1,4 @@
 #ifndef QUEUE_H
-#define QUEUE_#
 
 typedef struct {
     int x_coord, y_coord, elevation, previous_x, previous_y, visited;
