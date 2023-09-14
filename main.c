@@ -7,6 +7,14 @@
 #define NUM_RAN_COORDS 30
 #define MAX_ELEVATION 999
 #define INFINITY 8192
+#define X_BOUND 80
+#define Y_BOUND 21
+
+typedef struct {
+    terrainCell arr[Y_BOUND][X_BOUND];
+    int left_exit, right_exit, up_exit, down_exit;
+    int world_x, world_y, is_created;
+} PokeMap;
 
 int getNeighbors(int x, int y, terrainCell map[y][x], terrainCell cell, terrainCell* neighbors) {
     int numNeighbors;
@@ -14,15 +22,15 @@ int getNeighbors(int x, int y, terrainCell map[y][x], terrainCell cell, terrainC
         neighbors[0] = map[cell.y_coord][cell.x_coord + 1];
         neighbors[1] = map[cell.y_coord + 1][cell.x_coord];
         numNeighbors = 2;
-    } else if (cell.x_coord == 79 && cell.y_coord == 0) {
+    } else if (cell.x_coord == X_BOUND - 1 && cell.y_coord == 0) {
         neighbors[0] = map[cell.y_coord][cell.x_coord - 1];
         neighbors[1] = map[cell.y_coord + 1][cell.x_coord];
         numNeighbors = 2;
-    } else if (cell.x_coord == 0 && cell.y_coord == 20) {
+    } else if (cell.x_coord == 0 && cell.y_coord == Y_BOUND - 1) {
         neighbors[0] = map[cell.y_coord][cell.x_coord + 1];
         neighbors[1] = map[cell.y_coord - 1][cell.x_coord];
         numNeighbors = 2;
-    } else if (cell.x_coord == 79 && cell.y_coord == 20) {
+    } else if (cell.x_coord == X_BOUND - 1 && cell.y_coord == Y_BOUND - 1) {
         neighbors[0] = map[cell.y_coord][cell.x_coord - 1];
         neighbors[1] = map[cell.y_coord - 1][cell.x_coord];
         numNeighbors = 2;
@@ -36,12 +44,12 @@ int getNeighbors(int x, int y, terrainCell map[y][x], terrainCell cell, terrainC
         neighbors[1] = map[cell.y_coord][cell.x_coord + 1];
         neighbors[2] = map[cell.y_coord][cell.x_coord - 1];
         numNeighbors = 3;
-    } else if (cell.x_coord == 79) {
+    } else if (cell.x_coord == X_BOUND - 1) {
         neighbors[0] = map[cell.y_coord][cell.x_coord - 1];
         neighbors[1] = map[cell.y_coord - 1][cell.x_coord];
         neighbors[2] = map[cell.y_coord + 1][cell.x_coord];
         numNeighbors = 3;
-    } else if (cell.y_coord == 20) {
+    } else if (cell.y_coord == Y_BOUND - 1) {
         neighbors[0] = map[cell.y_coord - 1][cell.x_coord];
         neighbors[1] = map[cell.y_coord][cell.x_coord + 1];
         neighbors[2] = map[cell.y_coord][cell.x_coord - 1];
@@ -232,11 +240,12 @@ void Dijkstra(int x, int y, terrainCell map[y][x], terrainCell start, terrainCel
         temp = map[temp.previous_y][temp.previous_x];
     }
 
+    free(heap->arr);
     free(heap);
 }
 
-int main(int argc, char *argv[]) {
-    terrainCell (*map)[80] = malloc(sizeof (terrainCell) * 21 * 80);
+PokeMap* generateMap(int x, int y, PokeMap *world, int map_x, int map_y) {
+    PokeMap *map = malloc(sizeof (PokeMap));
     terrainCell (*randomCells) = malloc(sizeof (terrainCell[NUM_RAN_COORDS]));
     terrainCell (*currentCell) = malloc(sizeof (terrainCell));
     int currentCellXCoord, currentCellYCoord, i, j, k, rand_x_coords[NUM_RAN_COORDS], rand_y_coords[NUM_RAN_COORDS], rand_path_left, rand_path_right, rand_path_up, rand_path_down;
@@ -251,51 +260,51 @@ int main(int argc, char *argv[]) {
         rand_y_coords[i] = (rand() % 18) + 1;
     }
 
-    for (i = 0; i < 21; i++) {
-        for (j = 0; j < 80; j++) {
-            map[i][j].x_coord = j;
-            map[i][j].y_coord = i;
+    for (i = 0; i < Y_BOUND; i++) {
+        for (j = 0; j < X_BOUND; j++) {
+            map->arr[i][j].x_coord = j;
+            map->arr[i][j].y_coord = i;
             // Using default values for each cell of _ and 0
-            map[i][j].terrainPiece = '_';
-            map[i][j].elevation = 0;
-            if (i == 0 || j == 0 || i == 20 || j == 79) {
-                map[i][j].terrainPiece = '%';
-                map[i][j].elevation = MAX_ELEVATION;
+            map->arr[i][j].terrainPiece = '_';
+            map->arr[i][j].elevation = 0;
+            if (i == 0 || j == 0 || i == Y_BOUND - 1 || j == X_BOUND - 1) {
+                map->arr[i][j].terrainPiece = '%';
+                map->arr[i][j].elevation = MAX_ELEVATION;
             } else {
                 for (k = 0; k < NUM_RAN_COORDS; k++) {
                     // Need to randomize terrain, there are :, ^, %, ., and ~
-                    // Current plan, 20 coords, 5 terrain types, many seed coords hopefully generates interesting terrain
+                    // Current plan, Y_BOUND - 1 coords, 5 terrain types, many seed coords hopefully generates interesting terrain
                     if (j == rand_x_coords[k] && i == rand_y_coords[k]) {
                         switch (k % 6) { // Should go between 0 - 5
                             case 0:
-                                map[i][j].terrainPiece = ':';
-                                map[i][j].elevation = 2;
-                                randomCells[k] = map[i][j];
+                                map->arr[i][j].terrainPiece = ':';
+                                map->arr[i][j].elevation = 2;
+                                randomCells[k] = map->arr[i][j];
                                 break;
                             case 1:
-                                map[i][j].terrainPiece = '^';
-                                map[i][j].elevation = 3;
-                                randomCells[k] = map[i][j];
+                                map->arr[i][j].terrainPiece = '^';
+                                map->arr[i][j].elevation = 3;
+                                randomCells[k] = map->arr[i][j];
                                 break;
                             case 2:
-                                map[i][j].terrainPiece = '.';
-                                map[i][j].elevation = 1;
-                                randomCells[k] = map[i][j];
+                                map->arr[i][j].terrainPiece = '.';
+                                map->arr[i][j].elevation = 1;
+                                randomCells[k] = map->arr[i][j];
                                 break;
                             case 3:
-                                map[i][j].terrainPiece = '.';
-                                map[i][j].elevation = 1;
-                                randomCells[k] = map[i][j];
+                                map->arr[i][j].terrainPiece = '.';
+                                map->arr[i][j].elevation = 1;
+                                randomCells[k] = map->arr[i][j];
                                 break;
                             case 4:
-                                map[i][j].terrainPiece = '~';
-                                map[i][j].elevation = 3;
-                                randomCells[k] = map[i][j];
+                                map->arr[i][j].terrainPiece = '~';
+                                map->arr[i][j].elevation = 3;
+                                randomCells[k] = map->arr[i][j];
                                 break;
                             case 5:
-                                map[i][j].terrainPiece = '%';
-                                map[i][j].elevation = 4;
-                                randomCells[k] = map[i][j];
+                                map->arr[i][j].terrainPiece = '%';
+                                map->arr[i][j].elevation = 4;
+                                randomCells[k] = map->arr[i][j];
                                 break;
                         }
                     }
@@ -312,10 +321,10 @@ int main(int argc, char *argv[]) {
         currentCellYCoord = currentCell->y_coord;
         for (i = 0; i < 3; i++) {
             for (j = 0; j < 3; j++) {
-                if (map[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].terrainPiece == '_') {
-                    map[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].terrainPiece = currentCell->terrainPiece;
-                    map[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].elevation = currentCell->elevation;
-                    enqueue(seeding_queue, map[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)]);
+                if (map->arr[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].terrainPiece == '_') {
+                    map->arr[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].terrainPiece = currentCell->terrainPiece;
+                    map->arr[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].elevation = currentCell->elevation;
+                    enqueue(seeding_queue, map->arr[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)]);
                 }
             }
         }
@@ -325,35 +334,71 @@ int main(int argc, char *argv[]) {
     rand_path_right = (rand() % 18) + 1;
     rand_path_up = (rand() % 77) + 1;
     rand_path_down = (rand() % 77) + 1;
+    map->left_exit = rand_path_left;
+    map->right_exit = rand_path_right;
+    map->up_exit = rand_path_up;
+    map->down_exit = rand_path_down;
 
-    map[rand_path_left][0].terrainPiece = '#';
-    map[rand_path_left][0].elevation = 0;
+    map->arr[rand_path_left][0].terrainPiece = '#';
+    map->arr[rand_path_left][0].elevation = 0;
 
-    map[rand_path_right][79].terrainPiece = '#';
-    map[rand_path_right][79].elevation = 0;
+    map->arr[rand_path_right][X_BOUND - 1].terrainPiece = '#';
+    map->arr[rand_path_right][X_BOUND - 1].elevation = 0;
 
-    map[0][rand_path_up].terrainPiece = '#';
-    map[0][rand_path_up].elevation = 0;
+    map->arr[0][rand_path_up].terrainPiece = '#';
+    map->arr[0][rand_path_up].elevation = 0;
 
-    map[20][rand_path_down].terrainPiece = '#';
-    map[20][rand_path_down].elevation = 0;
+    map->arr[Y_BOUND - 1][rand_path_down].terrainPiece = '#';
+    map->arr[Y_BOUND - 1][rand_path_down].elevation = 0;
 
-    Dijkstra(80, 21, map, map[rand_path_left][0], map[rand_path_right][79]);
-    Dijkstra(80, 21, map, map[0][rand_path_up], map[20][rand_path_down]);
+    Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[rand_path_left][0], map->arr[rand_path_right][X_BOUND - 1]);
+    Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[0][rand_path_up], map->arr[Y_BOUND - 1][rand_path_down]);
 
-    buildPokeStuff(80, 21, map);
+    buildPokeStuff(X_BOUND, Y_BOUND, map->arr);
 
-    for (i = 0; i < 21; i++) {
-        for (j = 0; j < 80; j++) {
-            printf("%c", map[i][j].terrainPiece);
-        }
-        printf("\n");
-    }
+    map->world_x = map_x;
+    map->world_y = map_y;
+    map->is_created = 1;
 
-    free(map);
     free(randomCells);
     free(currentCell);
+    free(seeding_queue->array);
     free(seeding_queue);
+
+    return map;
+}
+
+int main(int argc, char *argv[]) {
+    PokeMap world[401][401];
+    PokeMap *currentMap;
+    int current_x, current_y, i, j;
+    char userInput;
+
+    for (i = 0; i < 401; i++) {
+        for (j = 0; j < 401; j++) {
+            world[i][j].is_created = 0;
+        }
+    }
+
+    current_x = current_y = 200;
+    userInput = 'x';
+
+    do {
+        if (userInput == 'l') {
+            current_x--;
+        }
+        currentMap = generateMap(X_BOUND, Y_BOUND, *world, current_x, current_y);
+        printf("You are currently at position (%d, %d). ", currentMap->world_x, currentMap->world_y);
+        scanf("Input command: %c", &userInput);
+    } while (userInput != 'q');
+
+    for (i = 0; i < 401; i++) {
+        for (j = 0; j < 401; j++) {
+            if (world[i][j].is_created == 1) {
+                free(&world[i][j]);
+            }
+        }
+    }
 
     return 0;
 }
