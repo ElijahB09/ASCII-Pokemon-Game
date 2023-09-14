@@ -1,23 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "queue.h"
 #define QUEUE_SIZE 2048
 #define HEAP_SIZE 8192
 #define NUM_RAN_COORDS 30
 #define MAX_ELEVATION 999
 #define INFINITY 8192
-
-typedef struct {
-    int x_coord, y_coord, elevation, previous_x, previous_y, visited;
-    char terrainPiece;
-    long distance;
-} terrainCell;
-
-typedef struct {
-    int front, rear, size;
-    unsigned capacity;
-    terrainCell * array;
-} Queue;
 
 typedef struct {
     terrainCell * arr;
@@ -105,64 +94,6 @@ terrainCell extractMin(MinHeap* heap)
 
     minHeapify(heap, 0);
     return deleteItem;
-}
-
-Queue* createQueue(unsigned capacity)
-{
-    Queue* queue = (Queue*)malloc(
-            sizeof(Queue));
-    queue->capacity = capacity;
-    queue->front = queue->size = 0;
-
-    // This is important, see the enqueue
-    queue->rear = capacity - 1;
-    queue->array = (terrainCell *)malloc(
-            queue->capacity * sizeof(terrainCell));
-    return queue;
-}
-
-int isFull(Queue* queue)
-{
-    return (queue->size == queue->capacity);
-}
-
-int isEmpty(Queue* queue)
-{
-    return (queue->size == 0);
-}
-
-void enqueue(Queue* queue, terrainCell item)
-{
-    if (isFull(queue))
-        return;
-    queue->rear = (queue->rear + 1)
-                  % queue->capacity;
-    queue->array[queue->rear] = item;
-    queue->size = queue->size + 1;
-}
-
-terrainCell dequeue(Queue* queue)
-{
-    if (isEmpty(queue))
-        printf("Queue is empty");
-    terrainCell item = queue->array[queue->front];
-    queue->front = (queue->front + 1) % queue->capacity;
-    queue->size = queue->size - 1;
-    return item;
-}
-
-terrainCell front(Queue* queue)
-{
-    if (isEmpty(queue))
-        printf("Queue is empty");
-    return queue->array[queue->front];
-}
-
-terrainCell rear(Queue* queue)
-{
-    if (isEmpty(queue))
-        printf("Queue is empty");
-    return queue->array[queue->rear];
 }
 
 int getNeighbors(int x, int y, terrainCell map[y][x], terrainCell cell, terrainCell* neighbors) {
