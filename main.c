@@ -91,34 +91,101 @@ void buildRoadsToPokeStuff(int x, int y, terrainCell map[y][x], int pokeMX, int 
         for (i = 0; i < y; i++) {
             if (map[i][pokeMX].terrainPiece == '#' && i - 1 > pokeMY) {
                 for (j = pokeMY + 1; j < i; j++) {
+                    if (map[j][pokeMX].terrainPiece == '#') {
+                        break;
+                    }
                     map[j][pokeMX].terrainPiece = '#';
                     map[j][pokeMX].elevation = 0;
                 }
+                mart_done = 1;
             }
             else if (map[i][pokeMX].terrainPiece == '#' && i + 1 < pokeMY - 1) {
                 for (j = pokeMY - 2; j > i; j--) {
+                    if (map[j][pokeMX].terrainPiece == '#') {
+                        break;
+                    }
                     map[j][pokeMX].terrainPiece = '#';
                     map[j][pokeMX].elevation = 0;
+                }
+                mart_done = 1;
+            }
+        }
+        if (mart_done == 0) {
+            for (i = 0; i < x; i++) {
+                if (map[pokeMY][i].terrainPiece == '#' && i - 1 > pokeMX) {
+                    for (j = pokeMX + 1; j < i; j++) {
+                        if (map[pokeMY][j].terrainPiece == '#') {
+                            break;
+                        }
+                        map[pokeMY][j].terrainPiece = '#';
+                        map[pokeMY][j].elevation = 0;
+                    }
+                    mart_done = 1;
+                }
+                else if (map[pokeMY][i].terrainPiece == '#' && i + 1 < pokeMX - 1) {
+                    for (j = pokeMX - 2; j > i; j--) {
+                        if (map[pokeMY][j].terrainPiece == '#') {
+                            break;
+                        }
+                        map[pokeMY][j].terrainPiece = '#';
+                        map[pokeMY][j].elevation = 0;
+                    }
+                    mart_done = 1;
                 }
             }
         }
     }
+
+
     if (center_done == 0) {
         for (i = 0; i < y; i++) {
             if (map[i][pokeCX].terrainPiece == '#' && i - 1 > pokeCY) {
                 for (j = pokeCY + 1; j < i; j++) {
+                    if (map[j][pokeCX].terrainPiece == '#') {
+                        break;
+                    }
                     map[j][pokeCX].terrainPiece = '#';
                     map[j][pokeCX].elevation = 0;
                 }
+                center_done =  1;
             }
             else if (map[i][pokeCX].terrainPiece == '#' && i + 1 < pokeCY - 1) {
                 for (j = pokeCY - 2; j > i; j--) {
+                    if (map[j][pokeCX].terrainPiece == '#') {
+                        break;
+                    }
                     map[j][pokeCX].terrainPiece = '#';
                     map[j][pokeCX].elevation = 0;
+                }
+                center_done = 1;
+            }
+        }
+        if (center_done == 0) {
+            for (i = 0; i < x; i++) {
+                if (map[pokeCY][i].terrainPiece == '#' && i - 1 > pokeCX) {
+                    for (j = pokeCX + 1; j < i; j++) {
+                        if (map[pokeCY][j].terrainPiece == '#') {
+                            break;
+                        }
+                        map[pokeCY][j].terrainPiece = '#';
+                        map[pokeCY][j].elevation = 0;
+                    }
+                    center_done = 1;
+                }
+                else if (map[pokeCY][i].terrainPiece == '#' && i + 1 < pokeCX - 1) {
+                    for (j = pokeCX - 2; j > i; j--) {
+                        if (map[pokeCY][j].terrainPiece == '#') {
+                            break;
+                        }
+                        map[pokeCY][j].terrainPiece = '#';
+                        map[pokeCY][j].elevation = 0;
+                    }
+                    center_done = 1;
                 }
             }
         }
     }
+
 }
 
 void buildPokeStuff(int x, int y, terrainCell map[y][x]) {
@@ -192,6 +259,41 @@ void buildPokeStuff(int x, int y, terrainCell map[y][x]) {
         }
     }
     buildRoadsToPokeStuff(x, y, map, pokemart_x_coord, pokemart_y_coord, pokecenter_x_coord, pokecenter_y_coord);
+}
+
+void buildPokeStuffFancy(int x, int y, terrainCell map[y][x]) {
+    int rand_mart_x, rand_center_x, i, j, road_start_x, road_end_x, started, ended, road_in_column;
+
+    ended = 0;
+    started = 0;
+    road_in_column = 0;
+
+    // Find where road pieces start and end on an x-axis
+    for (i = 0; i < x; i++) {
+        for (j = 0; j < y; j++) {
+            if (map[j][i].terrainPiece == '#' && started == 0) {
+                road_start_x = i;
+                started = 1;
+                road_in_column = 1;
+            }
+            if (map[j][i].terrainPiece == '#') {
+                road_in_column = 1;
+            }
+        }
+        if (ended == 0 && (started == 1 && (road_in_column == 0 || i == x - 1))) {
+            road_end_x = i - 1;
+            ended = 1;
+        }
+        road_in_column = 0;
+    }
+
+    rand_mart_x = (rand() % road_end_x) + (road_start_x + 2);
+    rand_center_x = (rand() % road_end_x) + (road_start_x + 2);
+    printf("Range start: %d\nRange end: %d\nRandom mart: %d\nRandom center: %d\n",road_start_x, road_end_x, rand_mart_x, rand_center_x);
+
+    while (rand_center_x == rand_mart_x || rand_center_x == rand_mart_x++ || rand_center_x == rand_mart_x--) {
+        rand_center_x = (rand() % road_end_x) + (road_start_x + 2);
+    }
 }
 
 void Dijkstra(int x, int y, terrainCell map[y][x], terrainCell start, terrainCell end) {
@@ -330,10 +432,21 @@ PokeMap* generateMap(int x, int y, PokeMap (*world)[401], int map_x, int map_y) 
     }
     map->world_x = map_x;
     map->world_y = map_y;
-    map->is_created = 1;
 
     if (map_x == 400 && map_y == 400) {
         // lower right
+        rand_path_left = (rand() % 18) + 1;
+        rand_path_up = (rand() % 77) + 1;
+        map->left_exit = rand_path_left;
+        map->up_exit = rand_path_up;
+
+        map->arr[rand_path_left][0].terrainPiece = '#';
+        map->arr[rand_path_left][0].elevation = 0;
+        map->arr[0][rand_path_up].terrainPiece = '#';
+        map->arr[0][rand_path_up].elevation = 0;
+
+        Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[rand_path_left][0], map->arr[0][rand_path_up]);
+        buildPokeStuff(X_BOUND, Y_BOUND, map->arr);
 
     } else if (map_x == 400 && map_y == 0) {
         // Upper right
@@ -377,16 +490,15 @@ PokeMap* generateMap(int x, int y, PokeMap (*world)[401], int map_x, int map_y) 
 
         Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[rand_path_left][0], map->arr[rand_path_right][X_BOUND - 1]);
         Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[0][rand_path_up], map->arr[Y_BOUND - 1][rand_path_down]);
-
-        buildPokeStuff(X_BOUND, Y_BOUND, map->arr);
     }
+
+    map->is_created = 1;
+    world[map_y][map_x] = *map;
 
     free(randomCells);
     free(currentCell);
     free(seeding_queue->array);
     free(seeding_queue);
-
-    world[map_y][map_x] = *map;
 
     return &world[map_y][map_x];
 }
@@ -399,8 +511,10 @@ int main(int argc, char *argv[]) {
 
     srand(time(NULL));
 
-    current_x = current_y = 200;
+    current_x = current_y = 400;
     currentMap = generateMap(X_BOUND, Y_BOUND, world, current_x, current_y);
+
+    buildPokeStuffFancy(80, 21, currentMap->arr);
 
     userInput = 'x';
 
@@ -437,7 +551,7 @@ int main(int argc, char *argv[]) {
             case 'f':
                 break;
             default:
-                printf("Bad input, commands are l, r, u, d, f, and q\n");
+                printf("Bad input, commands are n, s, e, w, f, and q\n");
                 break;
         }
     }
