@@ -262,34 +262,54 @@ void buildPokeStuff(int x, int y, terrainCell map[y][x]) {
 }
 
 void buildPokeStuffFancy(int x, int y, terrainCell map[y][x]) {
-    int rand_mart_x, rand_center_x, i, j, road_start_x, road_end_x, started, ended, road_in_column;
+    int rand_mart_x, rand_center_x, rand_mart_y, rand_center_y, i, j, road_start_x, road_end_x, road_start_y, road_end_y, started_x, ended_x, road_in_column, road_in_row, started_y, ended_y;
 
-    ended = 0;
-    started = 0;
-    road_in_column = 0;
+    ended_x = started_x = ended_y = started_y = 0;
+    road_in_column = road_in_row = 0;
 
     // Find where road pieces start and end on an x-axis
     for (i = 0; i < x; i++) {
         for (j = 0; j < y; j++) {
-            if (map[j][i].terrainPiece == '#' && started == 0) {
+            if (map[j][i].terrainPiece == '#' && started_x == 0) {
                 road_start_x = i;
-                started = 1;
+                started_x = 1;
                 road_in_column = 1;
             }
             if (map[j][i].terrainPiece == '#') {
                 road_in_column = 1;
             }
         }
-        if (ended == 0 && (started == 1 && (road_in_column == 0 || i == x - 1))) {
+        if (ended_x == 0 && (started_x == 1 && (road_in_column == 0 || i == x - 1))) {
             road_end_x = i - 1;
-            ended = 1;
+            ended_x = 1;
         }
         road_in_column = 0;
     }
 
+    for (i = 0; i < y; i++) {
+        for (j = 0; j < x; j++) {
+            if (map[i][j].terrainPiece == '#' && started_y == 0) {
+                road_start_y = i;
+                started_y = 1;
+                road_in_row = 1;
+            }
+            if (map[i][j].terrainPiece == '#') {
+                road_in_row = 1;
+            }
+        }
+        if (ended_y == 0 && (started_y == 1 && (road_in_row == 0 || i == x - 1))) {
+            road_end_y = i - 1;
+            ended_y = 1;
+        }
+        road_in_row = 0;
+    }
+    rand_mart_y = (rand() % road_end_y) + (road_start_y + 2);
+    rand_center_y = (rand() % road_end_y) + (road_start_y + 2);
+    printf("Y-COORDS\nRange start: %d\nRange end: %d\nRandom mart: %d\nRandom center: %d\n\n",road_start_y, road_end_y, rand_mart_y, rand_center_y);
+
     rand_mart_x = (rand() % road_end_x) + (road_start_x + 2);
     rand_center_x = (rand() % road_end_x) + (road_start_x + 2);
-    printf("Range start: %d\nRange end: %d\nRandom mart: %d\nRandom center: %d\n",road_start_x, road_end_x, rand_mart_x, rand_center_x);
+    printf("X-COORDS\nRange start: %d\nRange end: %d\nRandom mart: %d\nRandom center: %d\n",road_start_x, road_end_x, rand_mart_x, rand_center_x);
 
     while (rand_center_x == rand_mart_x || rand_center_x == rand_mart_x++ || rand_center_x == rand_mart_x--) {
         rand_center_x = (rand() % road_end_x) + (road_start_x + 2);
