@@ -246,6 +246,11 @@ void Dijkstra(int x, int y, terrainCell map[y][x], terrainCell start, terrainCel
 }
 
 PokeMap* generateMap(int x, int y, PokeMap (*world)[401], int map_x, int map_y) {
+    printf("%d\nx: %d\ny: %d\n", world[map_y][map_x].is_created, map_x, map_y);
+    if (world[map_y][map_x].is_created == 1) {
+        return  &world[map_y][map_x];
+    }
+
     PokeMap *map = malloc(sizeof (PokeMap));
     terrainCell (*randomCells) = malloc(sizeof (terrainCell[NUM_RAN_COORDS]));
     terrainCell (*currentCell) = malloc(sizeof (terrainCell));
@@ -381,7 +386,9 @@ PokeMap* generateMap(int x, int y, PokeMap (*world)[401], int map_x, int map_y) 
     free(seeding_queue->array);
     free(seeding_queue);
 
-    return map;
+    world[map_y][map_x] = *map;
+
+    return &world[map_y][map_x];
 }
 
 int main(int argc, char *argv[]) {
