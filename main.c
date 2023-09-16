@@ -267,7 +267,7 @@ void buildPokeStuffFancy(int x, int y, terrainCell map[y][x]) {
     ended_x = started_x = ended_y = started_y = 0;
     road_in_column = road_in_row = 0;
 
-    // Find where road pieces start and end on an x-axis
+    // Find where road pieces start and end on the x-axis
     for (i = 0; i < x; i++) {
         for (j = 0; j < y; j++) {
             if (map[j][i].terrainPiece == '#' && started_x == 0) {
@@ -286,6 +286,7 @@ void buildPokeStuffFancy(int x, int y, terrainCell map[y][x]) {
         road_in_column = 0;
     }
 
+    // Find where road pieces start and end on the y-axis
     for (i = 0; i < y; i++) {
         for (j = 0; j < x; j++) {
             if (map[i][j].terrainPiece == '#' && started_y == 0) {
@@ -303,16 +304,17 @@ void buildPokeStuffFancy(int x, int y, terrainCell map[y][x]) {
         }
         road_in_row = 0;
     }
-    rand_mart_y = (rand() % road_end_y) + (road_start_y + 2);
-    rand_center_y = (rand() % road_end_y) + (road_start_y + 2);
-    printf("Y-COORDS\nRange start: %d\nRange end: %d\nRandom mart: %d\nRandom center: %d\n\n",road_start_y, road_end_y, rand_mart_y, rand_center_y);
+    rand_mart_y = (rand() % road_end_y - 1) + (road_start_y + 2);
+    rand_center_y = (rand() % road_end_y - 1) + (road_start_y + 2);
 
-    rand_mart_x = (rand() % road_end_x) + (road_start_x + 2);
-    rand_center_x = (rand() % road_end_x) + (road_start_x + 2);
-    printf("X-COORDS\nRange start: %d\nRange end: %d\nRandom mart: %d\nRandom center: %d\n",road_start_x, road_end_x, rand_mart_x, rand_center_x);
+    rand_mart_x = (rand() % road_end_x - 1) + (road_start_x + 2);
+    rand_center_x = (rand() % road_end_x - 1) + (road_start_x + 2);
 
     while (rand_center_x == rand_mart_x || rand_center_x == rand_mart_x++ || rand_center_x == rand_mart_x--) {
-        rand_center_x = (rand() % road_end_x) + (road_start_x + 2);
+        rand_center_x = (rand() % road_end_x - 1) + (road_start_x + 2);
+    }
+    while (rand_center_y == rand_mart_y || rand_center_y == rand_mart_y++ || rand_center_y == rand_mart_y--) {
+        rand_center_y = (rand() % road_end_y - 1) + (road_start_y + 2);
     }
 }
 
