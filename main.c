@@ -17,7 +17,7 @@ typedef struct {
     int is_created;
 } PokeMap;
 
-int getNeighbors(int x, int y, terrainCell **map, terrainCell cell, terrainCell* neighbors) {
+int getNeighbors(int x, int y, terrainCell map[y][x], terrainCell cell, terrainCell* neighbors) {
     int numNeighbors;
     if (cell.x_coord == 0 && cell.y_coord == 0) {
         neighbors[0] = map[cell.y_coord][cell.x_coord + 1];
@@ -66,7 +66,7 @@ int getNeighbors(int x, int y, terrainCell **map, terrainCell cell, terrainCell*
     return numNeighbors;
 }
 
-void buildRoadsToPokeStuff(int x, int y, terrainCell **map, int pokeMX, int pokeMY, int pokeCX, int pokeCY) {
+void buildRoadsToPokeStuff(int x, int y, terrainCell map[y][x], int pokeMX, int pokeMY, int pokeCX, int pokeCY) {
     int i, j, k, numNeighbors, mart_done, center_done;
     terrainCell neighbors[4];
     mart_done = center_done = 0;
@@ -121,7 +121,7 @@ void buildRoadsToPokeStuff(int x, int y, terrainCell **map, int pokeMX, int poke
     }
 }
 
-void buildPokeStuff(int x, int y, terrainCell **map) {
+void buildPokeStuff(int x, int y, terrainCell map[y][x]) {
     int pokemart_x_coord, pokecenter_x_coord, pokemart_y_coord, pokecenter_y_coord;
     int pokemart_placed = 0;
     int pokecenter_placed = 0;
@@ -194,7 +194,7 @@ void buildPokeStuff(int x, int y, terrainCell **map) {
     buildRoadsToPokeStuff(x, y, map, pokemart_x_coord, pokemart_y_coord, pokecenter_x_coord, pokecenter_y_coord);
 }
 
-void Dijkstra(int x, int y, terrainCell **map, terrainCell start, terrainCell end) {
+void Dijkstra(int x, int y, terrainCell map[y][x], terrainCell start, terrainCell end) {
     int i, j, numNeighbors, tempDistance;
     MinHeap *heap;
     terrainCell temp;
@@ -393,27 +393,47 @@ int main(int argc, char *argv[]) {
     srand(time(NULL));
 
     current_x = current_y = 200;
+    currentMap = generateMap(X_BOUND, Y_BOUND, world, current_x, current_y);
+
     userInput = 'x';
 
-    do {
+    while (userInput != 'q') {
+        for (i = 0; i < Y_BOUND; i++) {
+            for (j = 0; j < X_BOUND; j++) {
+                printf("%c", currentMap->arr[i][j].terrainPiece);
+            }
+            printf("\n");
+        }
+        printf("You are currently at position (%d, %d). Input command:", currentMap->world_x, currentMap->world_y);
+        scanf(" %c", &userInput);
+        printf("\n");
         switch (userInput) {
             case 'l':
                 current_x--;
+                currentMap = generateMap(X_BOUND, Y_BOUND, world, current_x, current_y);
                 break;
             case 'r':
                 current_x++;
+                currentMap = generateMap(X_BOUND, Y_BOUND, world, current_x, current_y);
                 break;
             case 'u':
                 current_y--;
+                currentMap = generateMap(X_BOUND, Y_BOUND, world, current_x, current_y);
                 break;
             case 'd':
                 current_y++;
+                currentMap = generateMap(X_BOUND, Y_BOUND, world, current_x, current_y);
+                break;
+            case 'q':
+                printf("Now quitting\n");
+                break;
+            case 'f':
+                break;
+            default:
+                printf("Bad input, commands are l, r, u, d, f, and q\n");
                 break;
         }
-        currentMap = generateMap(X_BOUND, Y_BOUND, world, current_x, current_y);
-        printf("You are currently at position (%d, %d). ", currentMap->world_x, currentMap->world_y);
-        scanf("Input command: %c", &userInput);
-    } while (userInput != 'q');
+    }
 
     free(world);
     free(currentMap);
