@@ -402,12 +402,45 @@ PokeMap* generateMap(int x, int y, PokeMap (*world)[401], int map_x, int map_y) 
 
     } else if (map_x == 400 && map_y == 0) {
         // Upper right
+        rand_path_left = (rand() % 18) + 1;
+        rand_path_down = (rand() % 77) + 1;
+        map->left_exit = rand_path_left;
+        map->down_exit = rand_path_down;
+
+        map->arr[rand_path_left][0].terrainPiece = '#';
+        map->arr[rand_path_left][0].elevation = 0;
+        map->arr[Y_BOUND - 1][rand_path_down].terrainPiece = '#';
+        map->arr[Y_BOUND - 1][rand_path_down].elevation = 0;
+
+        Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[rand_path_left][0], map->arr[Y_BOUND - 1][rand_path_down]);
 
     } else if (map_x == 0 && map_y == 400) {
         // Lower left
+        rand_path_right = (rand() % 18) + 1;
+        rand_path_up = (rand() % 77) + 1;
+        map->right_exit = rand_path_right;
+        map->up_exit = rand_path_up;
+
+        map->arr[rand_path_right][X_BOUND - 1].terrainPiece = '#';
+        map->arr[rand_path_right][X_BOUND - 1].elevation = 0;
+        map->arr[0][rand_path_up].terrainPiece = '#';
+        map->arr[0][rand_path_up].elevation = 0;
+
+        Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[0][rand_path_up], map->arr[rand_path_right][X_BOUND - 1]);
 
     } else if (map_x == 0 && map_y == 0) {
         // Upper left
+        rand_path_right = (rand() % 18) + 1;
+        rand_path_down = (rand() % 77) + 1;
+        map->right_exit = rand_path_right;
+        map->down_exit = rand_path_down;
+
+        map->arr[rand_path_right][X_BOUND - 1].terrainPiece = '#';
+        map->arr[rand_path_right][X_BOUND - 1].elevation = 0;
+        map->arr[Y_BOUND - 1][rand_path_down].terrainPiece = '#';
+        map->arr[Y_BOUND - 1][rand_path_down].elevation = 0;
+
+        Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[Y_BOUND - 1][rand_path_down], map->arr[rand_path_right][X_BOUND - 1]);
 
     } else if (map_x == 400) {
 
@@ -464,7 +497,8 @@ int main(int argc, char *argv[]) {
 
     srand(time(NULL));
 
-    current_x = current_y = 200;
+    current_x = 0;
+    current_y = 0;
     currentMap = generateMap(X_BOUND, Y_BOUND, world, current_x, current_y);
 
     userInput = 'x';
