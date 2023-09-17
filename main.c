@@ -262,10 +262,14 @@ void buildPokeStuff(int x, int y, terrainCell map[y][x]) {
 }
 
 void buildPokeStuffFancy(int x, int y, terrainCell map[y][x]) {
-    int rand_mart_x, rand_center_x, rand_mart_y, rand_center_y, i, j, road_start_x, road_end_x, road_start_y, road_end_y, started_x, ended_x, road_in_column, road_in_row, started_y, ended_y;
+    int coin_flip, rand_mart_x, rand_center_x, rand_mart_y, rand_center_y, i, j, k, road_start_x, road_end_x, road_start_y, road_end_y, started_x, ended_x, road_in_column, road_in_row, started_y, ended_y;
+    int mart_placed, center_placed;
+    int *valid_mart_y_coords, *valid_center_y_coords, *valid_mart_x_coords, *valid_center_x_coords;
+    terrainCell neighbors[4];
 
-    ended_x = started_x = ended_y = started_y = 0;
+    ended_x = started_x = ended_y = started_y = mart_placed = center_placed = 0;
     road_in_column = road_in_row = 0;
+    coin_flip = rand() % 2;
 
     // Find where road pieces start and end on the x-axis
     for (i = 0; i < x; i++) {
@@ -304,17 +308,48 @@ void buildPokeStuffFancy(int x, int y, terrainCell map[y][x]) {
         }
         road_in_row = 0;
     }
-    rand_mart_y = (rand() % road_end_y - 1) + (road_start_y + 2);
-    rand_center_y = (rand() % road_end_y - 1) + (road_start_y + 2);
 
-    rand_mart_x = (rand() % road_end_x - 1) + (road_start_x + 2);
-    rand_center_x = (rand() % road_end_x - 1) + (road_start_x + 2);
-
-    while (rand_center_x == rand_mart_x || rand_center_x == rand_mart_x++ || rand_center_x == rand_mart_x--) {
+    if (coin_flip == 0) {
+        // use x axis for placement
+        rand_mart_x = (rand() % road_end_x - 1) + (road_start_x + 2);
         rand_center_x = (rand() % road_end_x - 1) + (road_start_x + 2);
-    }
-    while (rand_center_y == rand_mart_y || rand_center_y == rand_mart_y++ || rand_center_y == rand_mart_y--) {
+
+        // Prevent building overlap
+        while (rand_center_x == rand_mart_x || rand_center_x == rand_mart_x++ || rand_center_x == rand_mart_x-- || rand_center_x == rand_mart_x + 2 || rand_center_x == rand_mart_x - 2) {
+            rand_center_x = (rand() % road_end_x - 1) + (road_start_x + 2);
+        }
+
+        valid_mart_y_coords = malloc(sizeof (terrainCell) * y);
+        k = 0;
+        for (i = 0; i < y; i++) {
+            if (map[i][rand_mart_x].terrainPiece == '#') {
+                valid_mart_y_coords[k] = i;
+                k++;
+            }
+        }
+
+        valid_center_y_coords = malloc(sizeof (terrainCell) * y);
+        k = 0;
+        for (i = 0; i < y; i++) {
+            if (map[i][rand_center_x].terrainPiece == '#') {
+                valid_center_y_coords[k] = i;
+                k++;
+            }
+        }
+
+
+
+        free(valid_mart_y_coords);
+        free(valid_center_y_coords);
+    } else {
+        // use y axis for placement
+        rand_mart_y = (rand() % road_end_y - 1) + (road_start_y + 2);
         rand_center_y = (rand() % road_end_y - 1) + (road_start_y + 2);
+
+        // Prevent building overlap
+        while (rand_center_y == rand_mart_y || rand_center_y == rand_mart_y++ || rand_center_y == rand_mart_y-- || rand_center_y == rand_mart_y + 2 || rand_center_y == rand_mart_y - 2) {
+            rand_center_y = (rand() % road_end_y - 1) + (road_start_y + 2);
+        }
     }
 }
 
@@ -362,6 +397,7 @@ void Dijkstra(int x, int y, terrainCell map[y][x], terrainCell start, terrainCel
     while ((temp.x_coord != start.x_coord) || (temp.y_coord != start.y_coord)) {
         map[temp.previous_y][temp.previous_x].elevation = 0;
         map[temp.previous_y][temp.previous_x].terrainPiece = '#';
+        map[temp.previous_y][temp.previous_x].buildable = 0;
         temp = map[temp.previous_y][temp.previous_x];
     }
 
@@ -396,6 +432,7 @@ PokeMap* generateMap(int x, int y, PokeMap (*world)[401], int map_x, int map_y) 
             if (i == 0 || j == 0 || i == Y_BOUND - 1 || j == X_BOUND - 1) {
                 map->arr[i][j].terrainPiece = '%';
                 map->arr[i][j].elevation = MAX_ELEVATION;
+                map->arr[i][j].buildable = 0;
             } else {
                 for (k = 0; k < NUM_RAN_COORDS; k++) {
                     // Need to randomize terrain, there are :, ^, %, ., and ~
@@ -405,27 +442,32 @@ PokeMap* generateMap(int x, int y, PokeMap (*world)[401], int map_x, int map_y) 
                             case 0:
                                 map->arr[i][j].terrainPiece = ':';
                                 map->arr[i][j].elevation = 2;
+                                map->arr[i][j].buildable = 1;
                                 randomCells[k] = map->arr[i][j];
                                 break;
                             case 1:
                                 map->arr[i][j].terrainPiece = '^';
                                 map->arr[i][j].elevation = 3;
+                                map->arr[i][j].buildable = 1;
                                 randomCells[k] = map->arr[i][j];
                                 break;
                             case 2:
                             case 3:
                                 map->arr[i][j].terrainPiece = '.';
                                 map->arr[i][j].elevation = 1;
+                                map->arr[i][j].buildable = 1;
                                 randomCells[k] = map->arr[i][j];
                                 break;
                             case 4:
                                 map->arr[i][j].terrainPiece = '~';
                                 map->arr[i][j].elevation = 3;
+                                map->arr[i][j].buildable = 1;
                                 randomCells[k] = map->arr[i][j];
                                 break;
                             case 5:
                                 map->arr[i][j].terrainPiece = '%';
                                 map->arr[i][j].elevation = 4;
+                                map->arr[i][j].buildable = 1;
                                 randomCells[k] = map->arr[i][j];
                                 break;
                         }
@@ -447,6 +489,7 @@ PokeMap* generateMap(int x, int y, PokeMap (*world)[401], int map_x, int map_y) 
                 if (map->arr[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].terrainPiece == '_') {
                     map->arr[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].terrainPiece = currentCell->terrainPiece;
                     map->arr[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].elevation = currentCell->elevation;
+                    map->arr[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].buildable = currentCell->buildable;
                     enqueue(seeding_queue, map->arr[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)]);
                 }
             }
@@ -547,7 +590,7 @@ int main(int argc, char *argv[]) {
             }
             printf("\n");
         }
-        printf("You are currently at position (%d, %d). Input command:", currentMap->world_x, currentMap->world_y);
+        printf("You are currently at position (%d, %d). Input command:", currentMap->world_x - 200, currentMap->world_y - 200);
         scanf(" %c", &userInput);
         printf("\n");
         switch (userInput) {
