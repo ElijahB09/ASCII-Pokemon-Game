@@ -5,7 +5,7 @@
 #define QUEUE_SIZE 2048
 #define HEAP_SIZE 8192
 #define NUM_RAN_COORDS 30
-#define MAX_ELEVATION 999
+#define MAX_ELEVATION 9999
 #define INFINITY 8192
 #define X_BOUND 80
 #define Y_BOUND 21
@@ -67,7 +67,6 @@ int getNeighbors(int x, int y, terrainCell map[y][x], terrainCell cell, terrainC
 }
 
 void buildPokeStuffFancy(int x, int y, PokeMap *map) {
-
     int coin_flip, rand_mart_x, rand_center_x, rand_mart_y, rand_center_y, i, j, k, m, n, road_start_x, road_end_x, road_start_y, road_end_y, started_x, ended_x, road_in_column, road_in_row, started_y, ended_y;
     int mart_placed, center_placed, num_neighbors, size;
     int valid_mart_y_coords[y];
@@ -136,7 +135,6 @@ void buildPokeStuffFancy(int x, int y, PokeMap *map) {
             k = 0;
             while (mart_placed == 0 && k < size) {
                 num_neighbors = getNeighbors(x, y, map->arr, map->arr[valid_mart_y_coords[k]][rand_mart_x], neighbors);
-                printf("%d\n\n", num_neighbors);
                 for (i = 0; i < num_neighbors && mart_placed == 0; i++) {
                     if (map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable == 1) {
                         map->arr[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'M';
@@ -241,8 +239,7 @@ void buildPokeStuffFancy(int x, int y, PokeMap *map) {
 
             k = 0;
             while (center_placed == 0 && k < size) {
-                num_neighbors = getNeighbors(x, y, map->arr, map->arr[rand_center_y][valid_center_x_coords[k]],
-                                             neighbors);
+                num_neighbors = getNeighbors(x, y, map->arr, map->arr[rand_center_y][valid_center_x_coords[k]], neighbors);
                 for (i = 0; i < num_neighbors && center_placed == 0; i++) {
                     if (map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable == 1) {
                         map->arr[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'C';
@@ -476,12 +473,76 @@ PokeMap* generateMap(int x, int y, PokeMap *map, PokeMap (*world)[401], int map_
                 break;
             }
         }
-
     } else if (map_x == 0) {
+        rand_path_right = (rand() % 18) + 1;
+        rand_path_up = (rand() % 77) + 1;
+        rand_path_down = (rand() % 77) + 1;
+        map->right_exit = rand_path_right;
+        map->up_exit = rand_path_up;
+        map->down_exit = rand_path_down;
+
+        map->arr[rand_path_right][X_BOUND - 1].terrainPiece = '#';
+        map->arr[rand_path_right][X_BOUND - 1].elevation = 0;
+        map->arr[0][rand_path_up].terrainPiece = '#';
+        map->arr[0][rand_path_up].elevation = 0;
+        map->arr[Y_BOUND - 1][rand_path_down].terrainPiece = '#';
+        map->arr[Y_BOUND - 1][rand_path_down].elevation = 0;
+        Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[0][rand_path_up], map->arr[Y_BOUND - 1][rand_path_down]);
+
+        rand_offset = (rand() % 18) + 1;
+        for (i = 0; i < X_BOUND; i++) {
+            if (map->arr[rand_offset][i].terrainPiece == '#') {
+                Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[rand_path_right][X_BOUND - 1], map->arr[rand_offset][i]);
+                break;
+            }
+        }
 
     } else if (map_y == 400) {
+        rand_path_right = (rand() % 18) + 1;
+        rand_path_left = (rand() % 18) + 1;
+        rand_path_up = (rand() % 77) + 1;
+        map->left_exit = rand_path_left;
+        map->right_exit = rand_path_right;
+        map->up_exit = rand_path_up;
 
+        map->arr[rand_path_left][0].terrainPiece = '#';
+        map->arr[rand_path_left][0].elevation = 0;
+        map->arr[rand_path_right][X_BOUND - 1].terrainPiece = '#';
+        map->arr[rand_path_right][X_BOUND - 1].elevation = 0;
+        map->arr[0][rand_path_up].terrainPiece = '#';
+        map->arr[0][rand_path_up].elevation = 0;
+        Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[rand_path_left][0], map->arr[rand_path_right][X_BOUND - 1]);
+
+        rand_offset = (rand() % 77) + 1;
+        for (i = 0; i < Y_BOUND; i++) {
+            if (map->arr[i][rand_offset].terrainPiece == '#') {
+                Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[0][rand_path_up], map->arr[i][rand_offset]);
+                break;
+            }
+        }
     } else if (map_y == 0) {
+        rand_path_right = (rand() % 18) + 1;
+        rand_path_left = (rand() % 18) + 1;
+        rand_path_down = (rand() % 77) + 1;
+        map->left_exit = rand_path_left;
+        map->right_exit = rand_path_right;
+        map->down_exit = rand_path_down;
+
+        map->arr[rand_path_left][0].terrainPiece = '#';
+        map->arr[rand_path_left][0].elevation = 0;
+        map->arr[rand_path_right][X_BOUND - 1].terrainPiece = '#';
+        map->arr[rand_path_right][X_BOUND - 1].elevation = 0;
+        map->arr[Y_BOUND - 1][rand_path_down].terrainPiece = '#';
+        map->arr[Y_BOUND - 1][rand_path_down].elevation = 0;
+        Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[rand_path_left][0], map->arr[rand_path_right][X_BOUND - 1]);
+
+        rand_offset = (rand() % 77) + 1;
+        for (i = 0; i < Y_BOUND; i++) {
+            if (map->arr[i][rand_offset].terrainPiece == '#') {
+                Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[Y_BOUND - 1][rand_path_down], map->arr[i][rand_offset]);
+                break;
+            }
+        }
 
     } else {
         rand_path_right = (rand() % 18) + 1;
@@ -545,6 +606,7 @@ int main(int argc, char *argv[]) {
         printf("You are currently at position (%d, %d). Input command:", world[current_y][current_x].world_x - 200, world[current_y][current_x].world_y - 200);
 
         if (scanf(" %c", &userInput) == 1) {
+            printf("\n");
             switch (userInput) {
                 case 'w':
                     current_x--;
@@ -569,18 +631,20 @@ int main(int argc, char *argv[]) {
                 case 'q':
                     printf("Now quitting\n");
                     break;
+                case 'f':
+                    if (scanf("%d %d", &fly_x, &fly_y) == 2) {
+                        if ((-200 <= fly_x && fly_x < 201) && (-200 <= fly_y && fly_y < 201)) {
+                            current_x = fly_x + 200;
+                            current_y = fly_y + 200;
+                            world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x], world, current_x, current_y);
+                        } else {
+                            printf("Invalid coordinates, must be between -200 and 200 inclusive for both x and y");
+                        }
+                    }
+                    break;
                 default:
                     printf("Bad input, commands are n, s, e, w, 'f x y', and q\n");
                     break;
-            }
-            if (userInput == 'f' && scanf("%d %d", &fly_x, &fly_y) == 2) {
-                if ((-200 <= fly_x && fly_x < 201) && (-200 <= fly_y && fly_y < 201)) {
-                    current_x = fly_x + 200;
-                    current_y = fly_y + 200;
-                    world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x], world, current_x, current_y);
-                } else {
-                    printf("Invalid coordinates, must be between -200 and 200 inclusive for both x and y");
-                }
             }
         } else {
             printf("Bad input, commands are n, s, e, w, 'f x y', and q\n");
