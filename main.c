@@ -545,10 +545,26 @@ PokeMap* generateMap(int x, int y, PokeMap *map, PokeMap (*world)[401], int map_
         }
 
     } else {
-        rand_path_right = (rand() % 18) + 1;
-        rand_path_left = (rand() % 18) + 1;
-        rand_path_down = (rand() % 77) + 1;
-        rand_path_up = (rand() % 77) + 1;
+        if (world[map_y][map_x + 1].is_created) {
+            rand_path_right = world[map_y][map_x + 1].left_exit;
+        } else {
+            rand_path_right = (rand() % 18) + 1;
+        }
+        if (world[map_y][map_x - 1].is_created) {
+            rand_path_left = world[map_y][map_x - 1].right_exit;
+        } else {
+            rand_path_left = (rand() % 18) + 1;
+        }
+        if (world[map_y + 1][map_x].is_created) {
+            rand_path_down = world[map_y + 1][map_x].up_exit;
+        } else {
+            rand_path_down = (rand() % 77) + 1;
+        }
+        if (world[map_y - 1][map_x].is_created) {
+            rand_path_up = world[map_y - 1][map_x].down_exit;
+        } else {
+            rand_path_up = (rand() % 77) + 1;
+        }
 
         map->left_exit = rand_path_left;
         map->right_exit = rand_path_right;
