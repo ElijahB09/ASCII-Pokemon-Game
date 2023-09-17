@@ -1,3 +1,153 @@
+commit f9ce94d85c917a6106a3d9e551f8019fd18e3b37
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Sep 17 18:15:57 2023 -0500
+
+    Final cleanup
+
+commit cbdf94ce74fb91f0eaf0ecf11863ba69bed123a6
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Sep 17 18:11:20 2023 -0500
+
+    Update README
+
+commit 6a6c608e9c7e0c704ed8bbfaa0d1f6577643e10c
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Sep 17 17:57:40 2023 -0500
+
+    Did my best to implement the equation for increasing difficulty, got it done but its pretty brutal
+
+commit faf6c0fdd0d714afe9654790de12a1e89e5abc09
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Sep 17 17:08:40 2023 -0500
+
+    Got gates completely working and fixed a bug in my random generation for marts and centers
+
+commit 7e7e05d70bd26d03e46b0d559e06eb43912677b5
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Sep 17 16:59:56 2023 -0500
+
+    Got gates working for middle maps, should be easy and simple for edge cases since its a matter of if else
+
+commit 6415896a10988e72c277efb22a7a574492c4f7b1
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Sep 17 16:54:06 2023 -0500
+
+    All edge cases now done. moving onto gates
+
+commit d8c27dd0cafe248ca88f4b851fa6b4b322174bf4
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Sep 17 16:06:52 2023 -0500
+
+    Got the right most edge case working, finish up the others then start on gates
+
+commit 0822e6e76d73cc05445ec758ca7dff8713ca5497
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Sep 17 15:50:00 2023 -0500
+
+    Implemented fly
+
+commit 67044ae05675dbeef862917b7cbdfa0ea21f8cfe
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Sep 17 15:17:23 2023 -0500
+
+    Fixed the map moving bug
+
+commit a2eed05d22dcae509e21d80a9e61611392c32cb5
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Sep 17 14:15:56 2023 -0500
+
+    Fixed some problems with random, now to fix the map
+
+commit 25c6da406b2c8f0ce446bc25cc41a0b08721ef99
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Sep 17 01:11:09 2023 -0500
+
+    Goofy issues with the map updating correctly when directions are input
+
+commit 368c29f64c2f1e0f754f395a04448a7b708a17c0
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Sep 17 00:21:34 2023 -0500
+
+    I just dont get it, why is this seg fault popping up, it literally works everywhere but here
+
+commit 691c12f1c3d83214f21e07c8a937e4da9571e25d
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Sep 16 22:26:19 2023 -0500
+
+    This is annoying, some random bug, gotta be an infinite loop or something, rare case
+
+commit 15602b562ed3e002312066cd23732e15b2573e52
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Sep 16 22:11:28 2023 -0500
+
+    Got my new version of building marts and centers working, old are removed
+
+commit cd91f84ade5fe3c64def6ff5672f32c1e76b7eff
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Sep 16 20:58:13 2023 -0500
+
+    Refactoring placing marts and centers is going well, more stuff to do tho
+
+commit e5d7f8d4604caed6321c96a5429f1f9ae8152bb9
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Fri Sep 15 22:23:19 2023 -0500
+
+    removed some print statements
+
+commit 0fce75a3e65ec31f406707ad37bb7dd326b54aad
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Fri Sep 15 22:20:10 2023 -0500
+
+    Added logic to do the same thing as the previous commit but for the y axis
+
+commit 86a2798de3582334e5dd9953b724a3a4801b9330
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Fri Sep 15 22:12:28 2023 -0500
+
+    Built logic for keeping track of when road pieces begin and end
+
+commit 4e0dae2ac3c1e741a0d09ec4223db2d68c2d9eb7
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Fri Sep 15 20:45:26 2023 -0500
+
+    Map construction is now remembered
+
+commit 2babcb4d29e5bb0a04e64aaa78cae9f688532796
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Fri Sep 15 20:33:09 2023 -0500
+
+    Got stuff working again, main focus now is making the roads line up on parallel maps
+
+commit 9bc6e92f6277d7acf5594a4f13e687377b2f26a0
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Thu Sep 14 19:10:47 2023 -0500
+
+    I've seg faults now, rip
+
+commit 9a04a33563761b14dc75cfa94f1f6f33ac25cac9
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Thu Sep 14 17:35:26 2023 -0500
+
+    Taking care of all the malloc and free stuff before I forget
+
+commit 0ae612a75211b16022130e9baf520c0f2a3ef3cb
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Thu Sep 14 13:54:37 2023 -0500
+
+    Converted minHeap to an interface
+
+commit 8c83f203213d1edfa87bfd3d8af92c2fee0037a5
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Thu Sep 14 13:41:06 2023 -0500
+
+    Put queues into an interface to keep main clean, gonna do the same with minheap
+
+commit d1c3b544247f38945de560c0671b004937fc83c2
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Sep 10 20:36:07 2023 -0500
+
+    Putting change log on repo
+
 commit 42bb83aaed24a15bd21509ab198cc888a77de9e5
 Author: Elijah Brady <bradyeli09@gmail.com>
 Date:   Sun Sep 10 20:23:46 2023 -0500
