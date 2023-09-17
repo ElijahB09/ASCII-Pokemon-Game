@@ -310,6 +310,8 @@ void Dijkstra(int x, int y, terrainCell map[y][x], terrainCell start, terrainCel
 
 PokeMap* generateMap(int x, int y, PokeMap *map, PokeMap (*world)[401], int map_x, int map_y) {
     if (world[map_y][map_x].is_created == 1) {
+        printf("Input x: %d, input y: %d", map_x, map_y);
+        printf("World x: %d, World y: %d\n\n", world[map_y][map_x].world_x, world[map_y][map_x].world_y);
         return &world[map_y][map_x];
     }
     terrainCell (*randomCells) = malloc(sizeof (terrainCell[NUM_RAN_COORDS]));
@@ -499,7 +501,6 @@ PokeMap* generateMap(int x, int y, PokeMap *map, PokeMap (*world)[401], int map_
 
 int main(int argc, char *argv[]) {
     PokeMap (*world)[401] = malloc(sizeof (PokeMap[401][401]));
-    PokeMap *currentMap = malloc(sizeof (PokeMap));
     int current_x, current_y, i, j;
     char userInput;
 
@@ -507,36 +508,36 @@ int main(int argc, char *argv[]) {
 
     current_x = 200;
     current_y = 200;
-    currentMap = generateMap(X_BOUND, Y_BOUND, currentMap, world, current_x, current_y);
+    world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x], world, current_x, current_y);
 
     userInput = 'x';
 
     while (userInput != 'q') {
         for (i = 0; i < Y_BOUND; i++) {
             for (j = 0; j < X_BOUND; j++) {
-                printf("%c", currentMap->arr[i][j].terrainPiece);
+                printf("%c", world[current_y][current_x].arr[i][j].terrainPiece);
             }
             printf("\n");
         }
-        printf("You are currently at position (%d, %d). Input command:", currentMap->world_x - 200, currentMap->world_y - 200);
+        printf("You are currently at position (%d, %d). Input command:", world[current_y][current_x].world_x - 200, world[current_y][current_x].world_y - 200);
         scanf(" %c", &userInput);
         printf("\n");
         switch (userInput) {
             case 'w':
                 current_x--;
-                currentMap = generateMap(X_BOUND, Y_BOUND, currentMap, world, current_x, current_y);
+                world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x], world, current_x, current_y);
                 break;
             case 'e':
                 current_x++;
-                currentMap = generateMap(X_BOUND, Y_BOUND, currentMap, world, current_x, current_y);
+                world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x], world, current_x, current_y);
                 break;
             case 'n':
                 current_y--;
-                currentMap = generateMap(X_BOUND, Y_BOUND, currentMap, world, current_x, current_y);
+                world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x], world, current_x, current_y);
                 break;
             case 's':
                 current_y++;
-                currentMap = generateMap(X_BOUND, Y_BOUND, currentMap, world, current_x, current_y);
+                world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x], world, current_x, current_y);
                 break;
             case 'q':
                 printf("Now quitting\n");
@@ -544,13 +545,12 @@ int main(int argc, char *argv[]) {
             case 'f':
                 break;
             default:
-                printf("Bad input, commands are n, s, e, w, f, and q\n");
+                printf("Bad input, commands are n, s, e, w, 'f x y', and q\n");
                 break;
         }
     }
 
     free(world);
-    free(currentMap);
 
     return 0;
 }
