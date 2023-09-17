@@ -68,14 +68,30 @@ int getNeighbors(int x, int y, terrainCell map[y][x], terrainCell cell, terrainC
 
 void buildPokeStuffFancy(int x, int y, PokeMap *map) {
     int coin_flip, rand_mart_x, rand_center_x, rand_mart_y, rand_center_y, i, j, k, m, n, road_start_x, road_end_x, road_start_y, road_end_y, started_x, ended_x, road_in_column, road_in_row, started_y, ended_y;
-    int mart_placed, center_placed, num_neighbors, size;
+    int mart_placed, center_placed, num_neighbors, size, manhattan_distance;
     int valid_mart_y_coords[y];
     int valid_center_y_coords[y];
     int valid_mart_x_coords[x];
     int valid_center_x_coords[x];
+    int chance_mart, chance_center;
+    int chance_buildings;
     terrainCell neighbors[4];
 
-    ended_x = started_x = ended_y = started_y = mart_placed = center_placed = 0;
+    mart_placed = center_placed = 0;
+    if (!(map->world_x == 200 && map->world_y == 200)) {
+        manhattan_distance = abs(0 - map->world_x) + abs(0 - map->world_y);
+        chance_buildings = (((manhattan_distance * -45) / 200) + 40) / -1;
+        chance_mart = rand() % 100;
+        if (chance_mart > chance_buildings) {
+            mart_placed = 1;
+        }
+        chance_center = rand() % 100;
+        if (chance_center > chance_buildings) {
+            center_placed = 1;
+        }
+    }
+
+    ended_x = started_x = ended_y = started_y = 0;
     road_in_column = road_in_row = 0;
     coin_flip = rand() % 2;
 
