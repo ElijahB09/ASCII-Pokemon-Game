@@ -121,7 +121,7 @@ void buildPokeStuffFancy(int x, int y, PokeMap *map) {
     if (coin_flip == 0) {
         // use x axis for placement
         while (mart_placed == 0) {
-            rand_mart_x = (rand() % (((road_end_x - 4) - road_start_x) + 4)) + (road_start_x + 4);
+            rand_mart_x = rand() % (road_end_x - road_start_x + 1) + road_start_x;
 
             k = 0;
             size = 0;
@@ -162,11 +162,11 @@ void buildPokeStuffFancy(int x, int y, PokeMap *map) {
             }
         }
         while (center_placed == 0) {
-            rand_center_x = (rand() % (((road_end_x - 4) - road_start_x) + 4)) + (road_start_x + 4);
+            rand_center_x = rand() % (road_end_x - road_start_x + 1) + road_start_x;
 
             // Prevent building overlap
             while (rand_center_x == rand_mart_x || rand_center_x == rand_mart_x++ || rand_center_x == rand_mart_x-- || rand_center_x == rand_mart_x + 2 || rand_center_x == rand_mart_x - 2) {
-                rand_center_x = (rand() % (((road_end_x - 4) - road_start_x) + 4)) + (road_start_x + 4);
+                rand_center_x = rand() % (road_end_x - road_start_x + 1) + road_start_x;
             }
 
             k = 0;
@@ -195,7 +195,7 @@ void buildPokeStuffFancy(int x, int y, PokeMap *map) {
     } else {
         // use y axis for placement
         while (mart_placed == 0) {
-            rand_mart_y = (rand() % (((road_end_x - 4) - road_start_x) + 4)) + (road_start_x + 4);
+            rand_mart_y = rand() % (road_end_x - road_start_x + 1) + road_start_x;
 
             k = 0;
             size = 0;
@@ -221,12 +221,12 @@ void buildPokeStuffFancy(int x, int y, PokeMap *map) {
             }
         }
         while (center_placed == 0) {
-            rand_center_y = (rand() % (((road_end_x - 4) - road_start_x) + 4)) + (road_start_x + 4);
+            rand_center_y = rand() % (road_end_x - road_start_x + 1) + road_start_x;
 
             // Prevent building overlap
             while (rand_center_y == rand_mart_y || rand_center_y == rand_mart_y++ || rand_center_y == rand_mart_y-- ||
                    rand_center_y == rand_mart_y + 2 || rand_center_y == rand_mart_y - 2) {
-                rand_center_y = (rand() % (((road_end_x - 4) - road_start_x) + 4)) + (road_start_x + 4);
+                rand_center_y = rand() % (road_end_x - road_start_x + 1) + road_start_x;
             }
 
             k = 0;
