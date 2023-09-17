@@ -501,7 +501,7 @@ PokeMap* generateMap(int x, int y, PokeMap *map, PokeMap (*world)[401], int map_
 
 int main(int argc, char *argv[]) {
     PokeMap (*world)[401] = malloc(sizeof (PokeMap[401][401]));
-    int current_x, current_y, i, j;
+    int current_x, current_y, i, j, fly_x, fly_y;
     char userInput;
 
     srand(time(NULL));
@@ -511,6 +511,7 @@ int main(int argc, char *argv[]) {
     world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x], world, current_x, current_y);
 
     userInput = 'x';
+    fly_x = fly_y = -999;
 
     while (userInput != 'q') {
         for (i = 0; i < Y_BOUND; i++) {
@@ -520,36 +521,49 @@ int main(int argc, char *argv[]) {
             printf("\n");
         }
         printf("You are currently at position (%d, %d). Input command:", world[current_y][current_x].world_x - 200, world[current_y][current_x].world_y - 200);
-        scanf(" %c", &userInput);
-        printf("\n");
-        switch (userInput) {
-            case 'w':
-                current_x--;
-                world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x], world, current_x, current_y);
-                break;
-            case 'e':
-                current_x++;
-                world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x], world, current_x, current_y);
-                break;
-            case 'n':
-                current_y--;
-                world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x], world, current_x, current_y);
-                break;
-            case 's':
-                current_y++;
-                world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x], world, current_x, current_y);
-                break;
-            case 'q':
-                printf("Now quitting\n");
-                break;
-            case 'f':
-                break;
-            default:
-                printf("Bad input, commands are n, s, e, w, 'f x y', and q\n");
-                break;
+
+        if (scanf(" %c", &userInput) == 1) {
+            switch (userInput) {
+                case 'w':
+                    current_x--;
+                    world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x], world,
+                                                               current_x, current_y);
+                    break;
+                case 'e':
+                    current_x++;
+                    world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x], world,
+                                                               current_x, current_y);
+                    break;
+                case 'n':
+                    current_y--;
+                    world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x], world,
+                                                               current_x, current_y);
+                    break;
+                case 's':
+                    current_y++;
+                    world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x], world,
+                                                               current_x, current_y);
+                    break;
+                case 'q':
+                    printf("Now quitting\n");
+                    break;
+                default:
+                    printf("Bad input, commands are n, s, e, w, 'f x y', and q\n");
+                    break;
+            }
+            if (userInput == 'f' && scanf("%d %d", &fly_x, &fly_y) == 2) {
+                if ((-200 <= fly_x && fly_x < 201) && (-200 <= fly_y && fly_y < 201)) {
+                    current_x = fly_x + 200;
+                    current_y = fly_y + 200;
+                    world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x], world, current_x, current_y);
+                } else {
+                    printf("Invalid coordinates, must be between -200 and 200 inclusive for both x and y");
+                }
+            }
+        } else {
+            printf("Bad input, commands are n, s, e, w, 'f x y', and q\n");
         }
     }
-
     free(world);
 
     return 0;
