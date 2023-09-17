@@ -66,11 +66,22 @@ int getNeighbors(int x, int y, terrainCell map[y][x], terrainCell cell, terrainC
     return numNeighbors;
 }
 
-void buildPokeStuffFancy(int x, int y, terrainCell map[y][x]) {
+void buildPokeStuffFancy(int x, int y, PokeMap *map) {
+
     int coin_flip, rand_mart_x, rand_center_x, rand_mart_y, rand_center_y, i, j, k, m, n, road_start_x, road_end_x, road_start_y, road_end_y, started_x, ended_x, road_in_column, road_in_row, started_y, ended_y;
     int mart_placed, center_placed, num_neighbors;
-    int *valid_mart_y_coords, *valid_center_y_coords, *valid_mart_x_coords, *valid_center_x_coords;
+    int valid_mart_y_coords[y];
+    int valid_center_y_coords[y];
+    int valid_mart_x_coords[x];
+    int valid_center_x_coords[x];
     terrainCell neighbors[4];
+
+//    for (i = 0; i < 21; i++) {
+//        for (j = 0; j < 80; j++) {
+//            printf("%c", map->arr[i][j].terrainPiece);
+//        }
+//        printf("\n");
+//    }
 
     ended_x = started_x = ended_y = started_y = mart_placed = center_placed = 0;
     road_in_column = road_in_row = 0;
@@ -79,12 +90,12 @@ void buildPokeStuffFancy(int x, int y, terrainCell map[y][x]) {
     // Find where road pieces start and end on the x-axis
     for (i = 0; i < x; i++) {
         for (j = 0; j < y; j++) {
-            if (map[j][i].terrainPiece == '#' && started_x == 0) {
+            if (map->arr[j][i].terrainPiece == '#' && started_x == 0) {
                 road_start_x = i;
                 started_x = 1;
                 road_in_column = 1;
             }
-            if (map[j][i].terrainPiece == '#') {
+            if (map->arr[j][i].terrainPiece == '#') {
                 road_in_column = 1;
             }
         }
@@ -98,12 +109,12 @@ void buildPokeStuffFancy(int x, int y, terrainCell map[y][x]) {
     // Find where road pieces start and end on the y-axis
     for (i = 0; i < y; i++) {
         for (j = 0; j < x; j++) {
-            if (map[i][j].terrainPiece == '#' && started_y == 0) {
+            if (map->arr[i][j].terrainPiece == '#' && started_y == 0) {
                 road_start_y = i;
                 started_y = 1;
                 road_in_row = 1;
             }
-            if (map[i][j].terrainPiece == '#') {
+            if (map->arr[i][j].terrainPiece == '#') {
                 road_in_row = 1;
             }
         }
@@ -116,43 +127,42 @@ void buildPokeStuffFancy(int x, int y, terrainCell map[y][x]) {
 
     if (coin_flip == 0) {
         // use x axis for placement
-        rand_mart_x = (rand() % road_end_x - 1) + (road_start_x + 2);
-        rand_center_x = (rand() % road_end_x - 1) + (road_start_x + 2);
+        rand_mart_x = (rand() % (((road_end_x - 4) - road_start_x) + 4)) + (road_start_x + 4);
+        rand_center_x = (rand() % (((road_end_x - 4) - road_start_x) + 4)) + (road_start_x + 4);
 
         // Prevent building overlap
         while (rand_center_x == rand_mart_x || rand_center_x == rand_mart_x++ || rand_center_x == rand_mart_x-- || rand_center_x == rand_mart_x + 2 || rand_center_x == rand_mart_x - 2) {
-            rand_center_x = (rand() % road_end_x - 1) + (road_start_x + 2);
+            rand_center_x = (rand() % (((road_end_x - 4) - road_start_x) + 4)) + (road_start_x + 4);
         }
 
-        valid_mart_y_coords = malloc(sizeof (terrainCell) * y);
         k = 0;
         for (i = 0; i < y; i++) {
-            if (map[i][rand_mart_x].terrainPiece == '#') {
-                valid_mart_y_coords[k] = i;
+            if (map->arr[i][rand_mart_x].terrainPiece == '#') {
+                 valid_mart_y_coords[k] = i;
                 k++;
             }
         }
 
         k = 0;
         while (mart_placed == 0) {
-            num_neighbors = getNeighbors(x, y, map, map[valid_mart_y_coords[k]][rand_mart_x], neighbors);
+            num_neighbors = getNeighbors(x, y, map->arr, map->arr[valid_mart_y_coords[k]][rand_mart_x], neighbors);
             for (i = 0; i < num_neighbors && mart_placed == 0; i++) {
-                if (map[neighbors[i].y_coord][neighbors[i].x_coord].buildable == 1) {
-                    map[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'M';
-                    map[neighbors[i].y_coord][neighbors[i].x_coord].buildable = 0;
+                if (map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable == 1) {
+                    map->arr[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'M';
+                    map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable = 0;
                     mart_placed = 1;
                     // Below is some logic for later if I choose to implement it
 //                    if (neighbors[i].y_coord > valid_mart_y_coords[k]) {
-//                        map[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'M';
-//                        map[neighbors[i].y_coord][neighbors[i].x_coord].buildable = 0;
+//                        map->arr[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'M';
+//                        map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable = 0;
 //                        mart_placed = 1;
 //                    } else if (neighbors[i].y_coord < valid_mart_y_coords[k]) {
-//                        map[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'M';
-//                        map[neighbors[i].y_coord][neighbors[i].x_coord].buildable = 0;
+//                        map->arr[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'M';
+//                        map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable = 0;
 //                        mart_placed = 1;
 //                    } else {
-//                        map[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'M';
-//                        map[neighbors[i].y_coord][neighbors[i].x_coord].buildable = 0;
+//                        map->arr[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'M';
+//                        map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable = 0;
 //                        mart_placed = 1;
 //                    }
                 }
@@ -160,10 +170,9 @@ void buildPokeStuffFancy(int x, int y, terrainCell map[y][x]) {
             k++;
         }
 
-        valid_center_y_coords = malloc(sizeof (terrainCell) * y);
         k = 0;
         for (i = 0; i < y; i++) {
-            if (map[i][rand_center_x].terrainPiece == '#') {
+            if (map->arr[i][rand_center_x].terrainPiece == '#') {
                 valid_center_y_coords[k] = i;
                 k++;
             }
@@ -171,33 +180,29 @@ void buildPokeStuffFancy(int x, int y, terrainCell map[y][x]) {
 
         k = 0;
         while (center_placed == 0) {
-            num_neighbors = getNeighbors(x, y, map, map[valid_center_y_coords[k]][rand_center_x], neighbors);
+            num_neighbors = getNeighbors(x, y, map->arr, map->arr[valid_center_y_coords[k]][rand_center_x], neighbors);
             for (i = 0; i < num_neighbors && center_placed == 0; i++) {
-                if (map[neighbors[i].y_coord][neighbors[i].x_coord].buildable == 1) {
-                    map[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'C';
-                    map[neighbors[i].y_coord][neighbors[i].x_coord].buildable = 0;
+                if (map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable == 1) {
+                    map->arr[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'C';
+                    map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable = 0;
                     center_placed = 1;
                 }
             }
             k++;
         }
-
-        free(valid_mart_y_coords);
-        free(valid_center_y_coords);
     } else {
         // use y axis for placement
-        rand_mart_y = (rand() % road_end_y - 1) + (road_start_y + 2);
-        rand_center_y = (rand() % road_end_y - 1) + (road_start_y + 2);
+        rand_mart_y = (rand() % (((road_end_x - 4) - road_start_x) + 4)) + (road_start_x + 4);
+        rand_center_y = (rand() % (((road_end_x - 4) - road_start_x) + 4)) + (road_start_x + 4);
 
         // Prevent building overlap
         while (rand_center_y == rand_mart_y || rand_center_y == rand_mart_y++ || rand_center_y == rand_mart_y-- || rand_center_y == rand_mart_y + 2 || rand_center_y == rand_mart_y - 2) {
-            rand_center_y = (rand() % road_end_y - 1) + (road_start_y + 2);
+            rand_center_y = (rand() % (((road_end_x - 4) - road_start_x) + 4)) + (road_start_x + 4);
         }
 
-        valid_mart_x_coords = malloc(sizeof (terrainCell) * x);
         k = 0;
         for (i = 0; i < x; i++) {
-            if (map[rand_mart_y][i].terrainPiece == '#') {
+            if (map->arr[rand_mart_y][i].terrainPiece == '#') {
                 valid_mart_x_coords[k] = i;
                 k++;
             }
@@ -205,21 +210,20 @@ void buildPokeStuffFancy(int x, int y, terrainCell map[y][x]) {
 
         k = 0;
         while (mart_placed == 0) {
-            num_neighbors = getNeighbors(x, y, map, map[rand_mart_y][valid_mart_x_coords[k]], neighbors);
+            num_neighbors = getNeighbors(x, y, map->arr, map->arr[rand_mart_y][valid_mart_x_coords[k]], neighbors);
             for (i = 0; i < num_neighbors && mart_placed == 0; i++) {
-                if (map[neighbors[i].y_coord][neighbors[i].x_coord].buildable == 1) {
-                    map[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'M';
-                    map[neighbors[i].y_coord][neighbors[i].x_coord].buildable = 0;
+                if (map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable == 1) {
+                    map->arr[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'M';
+                    map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable = 0;
                     mart_placed = 1;
                 }
             }
             k++;
         }
 
-        valid_center_x_coords = malloc(sizeof (terrainCell) * x);
         k = 0;
         for (i = 0; i < x; i++) {
-            if (map[rand_center_y][i].terrainPiece == '#') {
+            if (map->arr[rand_center_y][i].terrainPiece == '#') {
                 valid_center_x_coords[k] = i;
                 k++;
             }
@@ -227,19 +231,16 @@ void buildPokeStuffFancy(int x, int y, terrainCell map[y][x]) {
 
         k = 0;
         while (center_placed == 0) {
-            num_neighbors = getNeighbors(x, y, map, map[rand_center_y][valid_center_x_coords[k]], neighbors);
+            num_neighbors = getNeighbors(x, y, map->arr, map->arr[rand_center_y][valid_center_x_coords[k]], neighbors);
             for (i = 0; i < num_neighbors && center_placed == 0; i++) {
-                if (map[neighbors[i].y_coord][neighbors[i].x_coord].buildable == 1) {
-                    map[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'C';
-                    map[neighbors[i].y_coord][neighbors[i].x_coord].buildable = 0;
+                if (map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable == 1) {
+                    map->arr[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'C';
+                    map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable = 0;
                     center_placed = 1;
                 }
             }
             k++;
         }
-
-        free(valid_mart_x_coords);
-        free(valid_center_x_coords);
     }
 }
 
@@ -295,12 +296,10 @@ void Dijkstra(int x, int y, terrainCell map[y][x], terrainCell start, terrainCel
     free(heap);
 }
 
-PokeMap* generateMap(int x, int y, PokeMap (*world)[401], int map_x, int map_y) {
+PokeMap* generateMap(int x, int y, PokeMap *map, PokeMap (*world)[401], int map_x, int map_y) {
     if (world[map_y][map_x].is_created == 1) {
         return  &world[map_y][map_x];
     }
-
-    PokeMap *map = malloc(sizeof (PokeMap));
     terrainCell (*randomCells) = malloc(sizeof (terrainCell[NUM_RAN_COORDS]));
     terrainCell (*currentCell) = malloc(sizeof (terrainCell));
     int currentCellXCoord, currentCellYCoord, i, j, k, rand_x_coords[NUM_RAN_COORDS], rand_y_coords[NUM_RAN_COORDS], rand_path_left, rand_path_right, rand_path_up, rand_path_down;
@@ -476,7 +475,7 @@ PokeMap* generateMap(int x, int y, PokeMap (*world)[401], int map_x, int map_y) 
         Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[rand_path_left][0], map->arr[rand_path_right][X_BOUND - 1]);
         Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[0][rand_path_up], map->arr[Y_BOUND - 1][rand_path_down]);
     }
-    buildPokeStuffFancy(X_BOUND, Y_BOUND, map->arr);
+    buildPokeStuffFancy(X_BOUND, Y_BOUND, map);
 
     map->is_created = 1;
     world[map_y][map_x] = *map;
@@ -497,9 +496,9 @@ int main(int argc, char *argv[]) {
 
     srand(time(NULL));
 
-    current_x = 0;
-    current_y = 0;
-    currentMap = generateMap(X_BOUND, Y_BOUND, world, current_x, current_y);
+    current_x = 200;
+    current_y = 200;
+    generateMap(X_BOUND, Y_BOUND, currentMap, world, current_x, current_y);
 
     userInput = 'x';
 
@@ -516,19 +515,19 @@ int main(int argc, char *argv[]) {
         switch (userInput) {
             case 'l':
                 current_x--;
-                currentMap = generateMap(X_BOUND, Y_BOUND, world, current_x, current_y);
+                generateMap(X_BOUND, Y_BOUND, currentMap, world, current_x, current_y);
                 break;
             case 'r':
                 current_x++;
-                currentMap = generateMap(X_BOUND, Y_BOUND, world, current_x, current_y);
+                generateMap(X_BOUND, Y_BOUND, currentMap, world, current_x, current_y);
                 break;
             case 'u':
                 current_y--;
-                currentMap = generateMap(X_BOUND, Y_BOUND, world, current_x, current_y);
+                generateMap(X_BOUND, Y_BOUND, currentMap, world, current_x, current_y);
                 break;
             case 'd':
                 current_y++;
-                currentMap = generateMap(X_BOUND, Y_BOUND, world, current_x, current_y);
+                generateMap(X_BOUND, Y_BOUND, currentMap, world, current_x, current_y);
                 break;
             case 'q':
                 printf("Now quitting\n");
