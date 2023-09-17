@@ -316,7 +316,7 @@ PokeMap* generateMap(int x, int y, PokeMap *map, PokeMap (*world)[401], int map_
     }
     terrainCell (*randomCells) = malloc(sizeof (terrainCell[NUM_RAN_COORDS]));
     terrainCell (*currentCell) = malloc(sizeof (terrainCell));
-    int currentCellXCoord, currentCellYCoord, i, j, k, rand_x_coords[NUM_RAN_COORDS], rand_y_coords[NUM_RAN_COORDS], rand_path_left, rand_path_right, rand_path_up, rand_path_down;
+    int currentCellXCoord, currentCellYCoord, i, j, k, rand_x_coords[NUM_RAN_COORDS], rand_y_coords[NUM_RAN_COORDS], rand_path_left, rand_path_right, rand_path_up, rand_path_down, rand_offset;
     Queue* seeding_queue = createQueue(QUEUE_SIZE);
     // Generate 30 random points on the map between 1 - 78 and 1 - 19 exclusive
     for (i = 0; i < NUM_RAN_COORDS; i++) {
@@ -454,6 +454,28 @@ PokeMap* generateMap(int x, int y, PokeMap *map, PokeMap (*world)[401], int map_
         map->arr[Y_BOUND - 1][rand_path_down].elevation = 0;
         Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[Y_BOUND - 1][rand_path_down], map->arr[rand_path_right][X_BOUND - 1]);
     } else if (map_x == 400) {
+        rand_path_left = (rand() % 18) + 1;
+        rand_path_up = (rand() % 77) + 1;
+        rand_path_down = (rand() % 77) + 1;
+        map->left_exit = rand_path_left;
+        map->up_exit = rand_path_up;
+        map->down_exit = rand_path_down;
+
+        map->arr[rand_path_left][0].terrainPiece = '#';
+        map->arr[rand_path_left][0].elevation = 0;
+        map->arr[0][rand_path_up].terrainPiece = '#';
+        map->arr[0][rand_path_up].elevation = 0;
+        map->arr[Y_BOUND - 1][rand_path_down].terrainPiece = '#';
+        map->arr[Y_BOUND - 1][rand_path_down].elevation = 0;
+        Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[0][rand_path_up], map->arr[Y_BOUND - 1][rand_path_down]);
+
+        rand_offset = (rand() % 18) + 1;
+        for (i = 0; i < X_BOUND; i++) {
+            if (map->arr[rand_offset][i].terrainPiece == '#') {
+                Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[rand_path_left][0], map->arr[rand_offset][i]);
+                break;
+            }
+        }
 
     } else if (map_x == 0) {
 
