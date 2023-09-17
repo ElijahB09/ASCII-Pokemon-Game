@@ -323,8 +323,6 @@ void Dijkstra(int x, int y, terrainCell map[y][x], terrainCell start, terrainCel
 
 PokeMap* generateMap(int x, int y, PokeMap *map, PokeMap (*world)[401], int map_x, int map_y) {
     if (world[map_y][map_x].is_created == 1) {
-        printf("Input x: %d, input y: %d", map_x, map_y);
-        printf("World x: %d, World y: %d\n\n", world[map_y][map_x].world_x, world[map_y][map_x].world_y);
         return &world[map_y][map_x];
     }
     terrainCell (*randomCells) = malloc(sizeof (terrainCell[NUM_RAN_COORDS]));
