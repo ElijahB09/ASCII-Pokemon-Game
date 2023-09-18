@@ -720,23 +720,39 @@ int main(int argc, char *argv[]) {
             switch (userInput) {
                 case 'w':
                     current_x--;
-                    world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x], world,
-                                                               current_x, current_y);
+                    if (current_x >= 0) {
+                        world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x],world,current_x, current_y);
+                    } else {
+                        current_x++;
+                        printf("Error cannot go beyond world limits\n");
+                    }
                     break;
                 case 'e':
                     current_x++;
-                    world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x], world,
-                                                               current_x, current_y);
+                    if (current_x < 401) {
+                        world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x],world,current_x, current_y);
+                    } else {
+                        current_x--;
+                        printf("Error cannot go beyond world limits\n");
+                    }
                     break;
                 case 'n':
                     current_y--;
-                    world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x], world,
-                                                               current_x, current_y);
+                    if (current_y >= 0) {
+                        world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x],world,current_x, current_y);
+                    } else {
+                        current_y++;
+                        printf("Error cannot go beyond world limits\n");
+                    }
                     break;
                 case 's':
                     current_y++;
-                    world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x], world,
-                                                               current_x, current_y);
+                    if (current_y < 401) {
+                        world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x],world,current_x, current_y);
+                    } else {
+                        current_y--;
+                        printf("Error cannot go beyond world limits\n");
+                    }
                     break;
                 case 'q':
                     printf("Now quitting\n");
