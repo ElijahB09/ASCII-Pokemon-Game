@@ -6,7 +6,6 @@
 #define HEAP_SIZE 8192
 #define NUM_RAN_COORDS 30
 #define MAX_ELEVATION 9999
-#define INFINITY 8192
 #define X_BOUND 80
 #define Y_BOUND 21
 
@@ -127,8 +126,44 @@ int getNeighbors8Directions(int x, int y, terrainCell map[y][x], terrainCell cel
         neighbors[7] = map[cell.y_coord - 1][cell.x_coord - 1];
         numNeighbors = 8;
     }
-
     return numNeighbors;
+}
+
+void DijkstraTrainers(int x, int y, terrainCell map[y][x], terrainCell start, terrainCell end) {
+    int i, j, numNeighbors, tempDistance;
+    MinHeap *heap;
+    terrainCell temp;
+    terrainCell neighbors[8];
+
+    for (i = 0; i < y; i++) {
+        for (j = 0; j < x; j++) {
+            map[i][j].distance = INT_MAX;
+            map[i][j].visited = 0;
+        }
+    }
+    map[start.y_coord][start.x_coord].distance = 0;
+
+    heap = buildMinHeap(HEAP_SIZE);
+    insert(heap, map[start.y_coord][start.x_coord]);
+    while (heap->size != 0) {
+        temp = extractMin(heap);
+        if ((temp.x_coord == end.x_coord) && (temp.y_coord == end.y_coord)) {
+            break;
+        }
+        map[temp.y_coord][temp.x_coord].visited = 1;
+        numNeighbors = getNeighbors8Directions(x, y, map, temp, neighbors);
+        for (i = 0; i < numNeighbors; i++) {
+            if (map[neighbors[i].y_coord][neighbors[i].x_coord].visited == 0) {
+                tempDistance = temp.distance + neighbors[i].elevation;
+                if (tempDistance < neighbors[i].distance) {
+                    map[neighbors[i].y_coord][neighbors[i].x_coord].distance = tempDistance;
+                    insert(heap, map[neighbors[i].y_coord][neighbors[i].x_coord]);
+                }
+            }
+        }
+    }
+    free(heap->arr);
+    free(heap);
 }
 
 void buildPokeStuffFancy(int x, int y, PokeMap *map) {
@@ -220,6 +255,7 @@ void buildPokeStuffFancy(int x, int y, PokeMap *map) {
                     if (map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable == 1) {
                         map->arr[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'M';
                         map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable = 0;
+                        map->arr[neighbors[i].y_coord][neighbors[i].x_coord].hiker_distance = map->arr[neighbors[i].y_coord][neighbors[i].x_coord].rival_distance = 50;
                         mart_placed = 1;
 //                    Below is some logic for later if I choose to implement it
 //                    if (neighbors[i].y_coord > valid_mart_y_coords[k]) {
@@ -265,6 +301,7 @@ void buildPokeStuffFancy(int x, int y, PokeMap *map) {
                     if (map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable == 1) {
                         map->arr[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'C';
                         map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable = 0;
+                        map->arr[neighbors[i].y_coord][neighbors[i].x_coord].hiker_distance = map->arr[neighbors[i].y_coord][neighbors[i].x_coord].rival_distance = 50;
                         center_placed = 1;
                     }
                 }
@@ -293,6 +330,7 @@ void buildPokeStuffFancy(int x, int y, PokeMap *map) {
                     if (map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable == 1) {
                         map->arr[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'M';
                         map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable = 0;
+                        map->arr[neighbors[i].y_coord][neighbors[i].x_coord].hiker_distance = map->arr[neighbors[i].y_coord][neighbors[i].x_coord].rival_distance = 50;
                         mart_placed = 1;
                     }
                 }
@@ -325,6 +363,7 @@ void buildPokeStuffFancy(int x, int y, PokeMap *map) {
                     if (map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable == 1) {
                         map->arr[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'C';
                         map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable = 0;
+                        map->arr[neighbors[i].y_coord][neighbors[i].x_coord].hiker_distance = map->arr[neighbors[i].y_coord][neighbors[i].x_coord].rival_distance = 50;
                         center_placed = 1;
                     }
                 }
@@ -342,7 +381,7 @@ void Dijkstra(int x, int y, terrainCell map[y][x], terrainCell start, terrainCel
 
     for (i = 0; i < y; i++) {
         for (j = 0; j < x; j++) {
-            map[i][j].distance = INFINITY;
+            map[i][j].distance = INT_MAX;
             map[i][j].visited = 0;
             map[i][j].previous_x = -1;
             map[i][j].previous_y = -1;
@@ -376,6 +415,9 @@ void Dijkstra(int x, int y, terrainCell map[y][x], terrainCell start, terrainCel
         map[temp.previous_y][temp.previous_x].elevation = 0;
         map[temp.previous_y][temp.previous_x].terrainPiece = '#';
         map[temp.previous_y][temp.previous_x].buildable = 0;
+        if (map[temp.previous_y][temp.previous_x].x_coord != start.x_coord && map[temp.previous_y][temp.previous_x].y_coord != start.y_coord) {
+            map[temp.previous_y][temp.previous_x].hiker_distance = map[temp.previous_y][temp.previous_x].rival_distance = 10;
+        }
         temp = map[temp.previous_y][temp.previous_x];
     }
 
@@ -408,6 +450,8 @@ PokeMap* generateMap(int x, int y, PokeMap *map, PokeMap (*world)[401], int map_
                 map->arr[i][j].terrainPiece = '%';
                 map->arr[i][j].elevation = MAX_ELEVATION;
                 map->arr[i][j].buildable = 0;
+                map->arr[i][j].hiker_distance = INT_MAX;
+                map->arr[i][j].rival_distance = INT_MAX;
             } else {
                 for (k = 0; k < NUM_RAN_COORDS; k++) {
                     // Need to randomize terrain, there are :, ^, %, ., and ~
@@ -418,12 +462,16 @@ PokeMap* generateMap(int x, int y, PokeMap *map, PokeMap (*world)[401], int map_
                                 map->arr[i][j].terrainPiece = ':';
                                 map->arr[i][j].elevation = 2;
                                 map->arr[i][j].buildable = 1;
+                                map->arr[i][j].hiker_distance = 15;
+                                map->arr[i][j].rival_distance = 20;
                                 randomCells[k] = map->arr[i][j];
                                 break;
                             case 1:
                                 map->arr[i][j].terrainPiece = '^';
                                 map->arr[i][j].elevation = 3;
                                 map->arr[i][j].buildable = 1;
+                                map->arr[i][j].hiker_distance = 15;
+                                map->arr[i][j].rival_distance = INT_MAX;
                                 randomCells[k] = map->arr[i][j];
                                 break;
                             case 2:
@@ -431,18 +479,23 @@ PokeMap* generateMap(int x, int y, PokeMap *map, PokeMap (*world)[401], int map_
                                 map->arr[i][j].terrainPiece = '.';
                                 map->arr[i][j].elevation = 1;
                                 map->arr[i][j].buildable = 1;
+                                map->arr[i][j].hiker_distance = map->arr[i][j].rival_distance = 10;
                                 randomCells[k] = map->arr[i][j];
                                 break;
                             case 4:
                                 map->arr[i][j].terrainPiece = '~';
                                 map->arr[i][j].elevation = 3;
                                 map->arr[i][j].buildable = 1;
+                                map->arr[i][j].hiker_distance = INT_MAX;
+                                map->arr[i][j].rival_distance = INT_MAX;
                                 randomCells[k] = map->arr[i][j];
                                 break;
                             case 5:
                                 map->arr[i][j].terrainPiece = '%';
                                 map->arr[i][j].elevation = 4;
                                 map->arr[i][j].buildable = 1;
+                                map->arr[i][j].hiker_distance = 15;
+                                map->arr[i][j].rival_distance = INT_MAX;
                                 randomCells[k] = map->arr[i][j];
                                 break;
                         }
@@ -465,6 +518,8 @@ PokeMap* generateMap(int x, int y, PokeMap *map, PokeMap (*world)[401], int map_
                     map->arr[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].terrainPiece = currentCell->terrainPiece;
                     map->arr[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].elevation = currentCell->elevation;
                     map->arr[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].buildable = currentCell->buildable;
+                    map->arr[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].hiker_distance = currentCell->hiker_distance;
+                    map->arr[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].rival_distance = currentCell->rival_distance;
                     enqueue(seeding_queue, map->arr[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)]);
                 }
             }
@@ -775,6 +830,21 @@ int main(int argc, char *argv[]) {
             }
             printf("\n");
         }
+        printf("\n");
+        for (i = 0; i < Y_BOUND; i++) {
+            for (j = 0; j < X_BOUND; j++) {
+                printf("%d ", world[current_y][current_x].arr[i][j].hiker_distance == INT_MAX ? 99 : world[current_y][current_x].arr[i][j].hiker_distance);
+            }
+            printf("\n");
+        }
+        printf("\n");
+        for (i = 0; i < Y_BOUND; i++) {
+            for (j = 0; j < X_BOUND; j++) {
+                printf("%d ", world[current_y][current_x].arr[i][j].rival_distance == INT_MAX ? 99 : world[current_y][current_x].arr[i][j].rival_distance);
+            }
+            printf("\n");
+        }
+
         printf("You are currently at position (%d, %d). Input command:", world[current_y][current_x].world_x - 200, world[current_y][current_x].world_y - 200);
 
         if (scanf(" %c", &userInput) == 1) {

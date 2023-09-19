@@ -1,7 +1,7 @@
 #ifndef QUEUE_H
 
 typedef struct {
-    int x_coord, y_coord, elevation, previous_x, previous_y, visited, buildable, distance;
+    int x_coord, y_coord, elevation, previous_x, previous_y, visited, buildable, distance, hiker_distance, rival_distance;
     char terrainPiece;
 } terrainCell;
 
