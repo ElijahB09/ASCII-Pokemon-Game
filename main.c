@@ -129,35 +129,42 @@ int getNeighbors8Directions(int x, int y, terrainCell map[y][x], terrainCell cel
     return numNeighbors;
 }
 
-void DijkstraTrainers(int x, int y, terrainCell map[y][x], terrainCell start, terrainCell end) {
-    int i, j, numNeighbors, tempDistance;
+void DijkstraTrainers(int x, int y, terrainCell map[y][x], terrainCell start) {
+    int i, j, numNeighbors, tempHikerDistance, tempRivalDistance;
     MinHeap *heap;
     terrainCell temp;
     terrainCell neighbors[8];
 
     for (i = 0; i < y; i++) {
         for (j = 0; j < x; j++) {
-            map[i][j].distance = INT_MAX;
+            map[i][j].rival_total_distance = INT_MAX;
+//            map[i][j].hiker_total_distance = INT_MAX;
             map[i][j].visited = 0;
         }
     }
-    map[start.y_coord][start.x_coord].distance = 0;
+    map[start.y_coord][start.x_coord].rival_total_distance = 0;
+//    map[start.y_coord][start.x_coord].hiker_total_distance = 0;
 
     heap = buildMinHeap(HEAP_SIZE);
     insert(heap, map[start.y_coord][start.x_coord]);
     while (heap->size != 0) {
         temp = extractMin(heap);
-        if ((temp.x_coord == end.x_coord) && (temp.y_coord == end.y_coord)) {
-            break;
-        }
         map[temp.y_coord][temp.x_coord].visited = 1;
         numNeighbors = getNeighbors8Directions(x, y, map, temp, neighbors);
         for (i = 0; i < numNeighbors; i++) {
             if (map[neighbors[i].y_coord][neighbors[i].x_coord].visited == 0) {
-                tempDistance = temp.distance + neighbors[i].elevation;
-                if (tempDistance < neighbors[i].distance) {
-                    map[neighbors[i].y_coord][neighbors[i].x_coord].distance = tempDistance;
-                    insert(heap, map[neighbors[i].y_coord][neighbors[i].x_coord]);
+                if (neighbors[i].rival_distance != INT_MAX) {
+                    tempRivalDistance = temp.rival_total_distance + temp.rival_distance;
+                    printf("Temp distance: %d\n", tempRivalDistance);
+//                tempHikerDistance = temp.hiker_total_distance + neighbors[i].hiker_distance;
+                    if (tempRivalDistance < neighbors[i].rival_total_distance) {
+                        map[neighbors[i].y_coord][neighbors[i].x_coord].rival_total_distance = tempRivalDistance;
+                        insert(heap, map[neighbors[i].y_coord][neighbors[i].x_coord]);
+                    }
+//                if (tempHikerDistance < neighbors[i].hiker_total_distance) {
+//                    map[neighbors[i].y_coord][neighbors[i].x_coord].hiker_total_distance = tempHikerDistance;
+//                    insert(heap, map[neighbors[i].y_coord][neighbors[i].x_coord]);
+//                }
                 }
             }
         }
@@ -797,6 +804,36 @@ PokeMap* generateMap(int x, int y, PokeMap *map, PokeMap (*world)[401], int map_
         Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[rand_path_left][0], map->arr[rand_path_right][X_BOUND - 1]);
         Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[0][rand_path_up], map->arr[Y_BOUND - 1][rand_path_down]);
     }
+    int tempx, tempy, found;
+    found = 0;
+    for (i = 0; i < Y_BOUND; i++) {
+        for (j = 0; j < X_BOUND; j++) {
+            if (map->arr[i][j].terrainPiece == '#' && i == 12 && found == 0) {
+                map->arr[i][j].terrainPiece = '@';
+                tempx = j;
+                tempy = i;
+                found = 1;
+            }
+        }
+    }
+
+    DijkstraTrainers(X_BOUND, Y_BOUND, map->arr, map->arr[15][50]);
+//    printf("\n");
+//    for (i = 0; i < Y_BOUND; i++) {
+//        for (j = 0; j < X_BOUND; j++) {
+//            printf("%d ", map->arr[i][j].hiker_total_distance == INT_MAX ? 99 : map->arr[i][j].hiker_total_distance);
+//        }
+//        printf("\n");
+//    }
+    printf("\n");
+    for (i = 0; i < Y_BOUND; i++) {
+        printf("Row %d start: ", i);
+        for (j = 0; j < X_BOUND; j++) {
+            printf("%d ", map->arr[i][j].rival_total_distance == INT_MAX ? 99 : map->arr[i][j].rival_total_distance);
+        }
+        printf("\n");
+    }
+
     buildPokeStuffFancy(X_BOUND, Y_BOUND, map);
     map->is_created = 1;
     world[map_y][map_x] = *map;
@@ -827,20 +864,6 @@ int main(int argc, char *argv[]) {
         for (i = 0; i < Y_BOUND; i++) {
             for (j = 0; j < X_BOUND; j++) {
                 printf("%c", world[current_y][current_x].arr[i][j].terrainPiece);
-            }
-            printf("\n");
-        }
-        printf("\n");
-        for (i = 0; i < Y_BOUND; i++) {
-            for (j = 0; j < X_BOUND; j++) {
-                printf("%d ", world[current_y][current_x].arr[i][j].hiker_distance == INT_MAX ? 99 : world[current_y][current_x].arr[i][j].hiker_distance);
-            }
-            printf("\n");
-        }
-        printf("\n");
-        for (i = 0; i < Y_BOUND; i++) {
-            for (j = 0; j < X_BOUND; j++) {
-                printf("%d ", world[current_y][current_x].arr[i][j].rival_distance == INT_MAX ? 99 : world[current_y][current_x].arr[i][j].rival_distance);
             }
             printf("\n");
         }
