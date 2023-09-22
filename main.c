@@ -155,7 +155,6 @@ void DijkstraTrainers(int x, int y, terrainCell map[y][x], terrainCell start) {
             if (map[neighbors[i].y_coord][neighbors[i].x_coord].visited == 0) {
                 if (neighbors[i].rival_distance != INT_MAX) {
                     tempRivalDistance = temp.rival_total_distance + temp.rival_distance;
-                    printf("Temp distance: %d\n", tempRivalDistance);
 //                tempHikerDistance = temp.hiker_total_distance + neighbors[i].hiker_distance;
                     if (tempRivalDistance < neighbors[i].rival_total_distance) {
                         map[neighbors[i].y_coord][neighbors[i].x_coord].rival_total_distance = tempRivalDistance;
@@ -174,7 +173,7 @@ void DijkstraTrainers(int x, int y, terrainCell map[y][x], terrainCell start) {
 }
 
 void buildPokeStuffFancy(int x, int y, PokeMap *map) {
-    int coin_flip, rand_mart_x, rand_center_x, rand_mart_y, rand_center_y, i, j, k, m, n, road_start_x, road_end_x, road_start_y, road_end_y, started_x, ended_x, road_in_column, road_in_row, started_y, ended_y;
+    int coin_flip, rand_mart_x, rand_center_x, rand_mart_y, rand_center_y, i, j, k, road_start_x, road_end_x, road_start_y, road_end_y, started_x, ended_x, road_in_column, road_in_row, started_y, ended_y;
     int mart_placed, center_placed, num_neighbors, size, manhattan_distance;
     int valid_mart_y_coords[y];
     int valid_center_y_coords[y];
@@ -432,7 +431,7 @@ void Dijkstra(int x, int y, terrainCell map[y][x], terrainCell start, terrainCel
     free(heap);
 }
 
-PokeMap* generateMap(int x, int y, PokeMap *map, PokeMap (*world)[401], int map_x, int map_y) {
+PokeMap* generateMap(PokeMap *map, PokeMap (*world)[401], int map_x, int map_y) {
     if (world[map_y][map_x].is_created == 1) {
         return &world[map_y][map_x];
     }
@@ -817,7 +816,7 @@ PokeMap* generateMap(int x, int y, PokeMap *map, PokeMap (*world)[401], int map_
         }
     }
 
-    DijkstraTrainers(X_BOUND, Y_BOUND, map->arr, map->arr[15][50]);
+    DijkstraTrainers(X_BOUND, Y_BOUND, map->arr, map->arr[tempy][tempx]);
 //    printf("\n");
 //    for (i = 0; i < Y_BOUND; i++) {
 //        for (j = 0; j < X_BOUND; j++) {
@@ -827,9 +826,13 @@ PokeMap* generateMap(int x, int y, PokeMap *map, PokeMap (*world)[401], int map_
 //    }
     printf("\n");
     for (i = 0; i < Y_BOUND; i++) {
-        printf("Row %d start: ", i);
         for (j = 0; j < X_BOUND; j++) {
-            printf("%d ", map->arr[i][j].rival_total_distance == INT_MAX ? 99 : map->arr[i][j].rival_total_distance);
+//            printf("%d ", map->arr[i][j].rival_total_distance);
+            if (map->arr[i][j].rival_total_distance == INT_MAX) {
+                printf("   ");
+            } else {
+                printf("%02d ", map->arr[i][j].rival_total_distance % 100);
+            }
         }
         printf("\n");
     }
@@ -855,7 +858,7 @@ int main(int argc, char *argv[]) {
 
     current_x = 200;
     current_y = 200;
-    world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x], world, current_x, current_y);
+    world[current_y][current_x] = *generateMap(&world[current_y][current_x], world, current_x, current_y);
 
     userInput = 'x';
     fly_x = fly_y = -999;
@@ -876,7 +879,7 @@ int main(int argc, char *argv[]) {
                 case 'w':
                     current_x--;
                     if (current_x >= 0) {
-                        world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x],world,current_x, current_y);
+                        world[current_y][current_x] = *generateMap(&world[current_y][current_x],world,current_x, current_y);
                     } else {
                         current_x++;
                         printf("Error cannot go beyond world limits\n");
@@ -885,7 +888,7 @@ int main(int argc, char *argv[]) {
                 case 'e':
                     current_x++;
                     if (current_x < 401) {
-                        world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x],world,current_x, current_y);
+                        world[current_y][current_x] = *generateMap(&world[current_y][current_x],world,current_x, current_y);
                     } else {
                         current_x--;
                         printf("Error cannot go beyond world limits\n");
@@ -894,7 +897,7 @@ int main(int argc, char *argv[]) {
                 case 'n':
                     current_y--;
                     if (current_y >= 0) {
-                        world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x],world,current_x, current_y);
+                        world[current_y][current_x] = *generateMap(&world[current_y][current_x],world,current_x, current_y);
                     } else {
                         current_y++;
                         printf("Error cannot go beyond world limits\n");
@@ -903,7 +906,7 @@ int main(int argc, char *argv[]) {
                 case 's':
                     current_y++;
                     if (current_y < 401) {
-                        world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x],world,current_x, current_y);
+                        world[current_y][current_x] = *generateMap(&world[current_y][current_x],world,current_x, current_y);
                     } else {
                         current_y--;
                         printf("Error cannot go beyond world limits\n");
@@ -917,7 +920,7 @@ int main(int argc, char *argv[]) {
                         if ((-200 <= fly_x && fly_x < 201) && (-200 <= fly_y && fly_y < 201)) {
                             current_x = fly_x + 200;
                             current_y = fly_y + 200;
-                            world[current_y][current_x] = *generateMap(X_BOUND, Y_BOUND, &world[current_y][current_x], world, current_x, current_y);
+                            world[current_y][current_x] = *generateMap(&world[current_y][current_x], world, current_x, current_y);
                         } else {
                             printf("Invalid coordinates, must be between -200 and 200 inclusive for both x and y");
                         }

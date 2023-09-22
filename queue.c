@@ -45,17 +45,3 @@ terrainCell dequeue(Queue* queue)
     queue->size = queue->size - 1;
     return item;
 }
-
-terrainCell front(Queue* queue)
-{
-    if (isEmpty(queue))
-        printf("Queue is empty");
-    return queue->array[queue->front];
-}
-
-terrainCell rear(Queue* queue)
-{
-    if (isEmpty(queue))
-        printf("Queue is empty");
-    return queue->array[queue->rear];
-}

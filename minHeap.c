@@ -70,6 +70,8 @@ void minHeapify(MinHeap * heap, int index)
 terrainCell extractMin(MinHeap* heap)
 {
     terrainCell deleteItem;
+    //Adding a default value here to help get rid of warnings
+    deleteItem.x_coord = deleteItem.y_coord = -1;
 
     if (heap->size == 0) {
         printf("\nHeap id empty.");
