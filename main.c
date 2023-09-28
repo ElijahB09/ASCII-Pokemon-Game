@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <limits.h>
 #include "minHeap.h"
 #define QUEUE_SIZE 2048
 #define HEAP_SIZE 8192
