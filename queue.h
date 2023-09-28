@@ -16,7 +16,5 @@ int isFull(Queue* queue);
 int isEmpty(Queue* queue);
 void enqueue(Queue* queue, terrainCell item);
 terrainCell dequeue(Queue* queue);
-terrainCell front(Queue* queue);
-terrainCell rear(Queue* queue);
 
 #endif

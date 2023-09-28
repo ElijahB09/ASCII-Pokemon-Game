@@ -364,8 +364,7 @@ void buildPokeStuffFancy(int x, int y, PokeMap *map) {
             rand_center_y = rand() % (road_end_y - road_start_y + 1) + road_start_y;
 
             // Prevent building overlap
-            while (rand_center_y == rand_mart_y || rand_center_y == rand_mart_y++ || rand_center_y == rand_mart_y-- ||
-                   rand_center_y == rand_mart_y + 2 || rand_center_y == rand_mart_y - 2) {
+            while (rand_center_y == rand_mart_y || rand_center_y == rand_mart_y++ || rand_center_y == rand_mart_y-- || rand_center_y == rand_mart_y + 2 || rand_center_y == rand_mart_y - 2) {
                 rand_center_y = rand() % (road_end_y - road_start_y + 1) + road_start_y;
             }
 
@@ -555,12 +554,12 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
     map->world_y = map_y;
     if (map_x == 400 && map_y == 400) {
         // lower right
-        if (world[map_y][map_x - 1]->is_created) {
+        if (world[map_y][map_x - 1]) {
             rand_path_left = world[map_y][map_x - 1]->right_exit;
         } else {
             rand_path_left = (rand() % 18) + 1;
         }
-        if (world[map_y - 1][map_x]->is_created) {
+        if (world[map_y - 1][map_x]) {
             rand_path_up = world[map_y - 1][map_x]->down_exit;
         } else {
             rand_path_up = (rand() % 77) + 1;
@@ -577,12 +576,12 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
 
     } else if (map_x == 400 && map_y == 0) {
         // Upper right
-        if (world[map_y][map_x - 1]->is_created) {
+        if (world[map_y][map_x - 1]) {
             rand_path_left = world[map_y][map_x - 1]->right_exit;
         } else {
             rand_path_left = (rand() % 18) + 1;
         }
-        if (world[map_y + 1][map_x]->is_created) {
+        if (world[map_y + 1][map_x]) {
             rand_path_down = world[map_y + 1][map_x]->up_exit;
         } else {
             rand_path_down = (rand() % 77) + 1;
@@ -599,12 +598,12 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
 
     } else if (map_x == 0 && map_y == 400) {
         // Lower left
-        if (world[map_y][map_x + 1]->is_created) {
+        if (world[map_y][map_x + 1]) {
             rand_path_right = world[map_y][map_x + 1]->left_exit;
         } else {
             rand_path_right = (rand() % 18) + 1;
         }
-        if (world[map_y - 1][map_x]->is_created) {
+        if (world[map_y - 1][map_x]) {
             rand_path_up = world[map_y - 1][map_x]->down_exit;
         } else {
             rand_path_up = (rand() % 77) + 1;
@@ -621,12 +620,12 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
 
     } else if (map_x == 0 && map_y == 0) {
         // Upper left
-        if (world[map_y][map_x + 1]->is_created) {
+        if (world[map_y][map_x + 1]) {
             rand_path_right = world[map_y][map_x + 1]->left_exit;
         } else {
             rand_path_right = (rand() % 18) + 1;
         }
-        if (world[map_y + 1][map_x]->is_created) {
+        if (world[map_y + 1][map_x]) {
             rand_path_down = world[map_y + 1][map_x]->up_exit;
         } else {
             rand_path_down = (rand() % 77) + 1;
@@ -640,17 +639,17 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
         map->arr[Y_BOUND - 1][rand_path_down].elevation = 0;
         Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[Y_BOUND - 1][rand_path_down], map->arr[rand_path_right][X_BOUND - 1]);
     } else if (map_x == 400) {
-        if (world[map_y][map_x - 1]->is_created) {
+        if (world[map_y][map_x - 1]) {
             rand_path_left = world[map_y][map_x - 1]->right_exit;
         } else {
             rand_path_left = (rand() % 18) + 1;
         }
-        if (world[map_y - 1][map_x]->is_created) {
+        if (world[map_y - 1][map_x]) {
             rand_path_up = world[map_y - 1][map_x]->down_exit;
         } else {
             rand_path_up = (rand() % 77) + 1;
         }
-        if (world[map_y + 1][map_x]->is_created) {
+        if (world[map_y + 1][map_x]) {
             rand_path_down = world[map_y + 1][map_x]->up_exit;
         } else {
             rand_path_down = (rand() % 77) + 1;
@@ -675,17 +674,17 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
             }
         }
     } else if (map_x == 0) {
-        if (world[map_y][map_x + 1]->is_created) {
+        if (world[map_y][map_x + 1]) {
             rand_path_right = world[map_y][map_x + 1]->left_exit;
         } else {
             rand_path_right = (rand() % 18) + 1;
         }
-        if (world[map_y - 1][map_x]->is_created) {
+        if (world[map_y - 1][map_x]) {
             rand_path_up = world[map_y - 1][map_x]->down_exit;
         } else {
             rand_path_up = (rand() % 77) + 1;
         }
-        if (world[map_y + 1][map_x]->is_created) {
+        if (world[map_y + 1][map_x]) {
             rand_path_down = world[map_y + 1][map_x]->up_exit;
         } else {
             rand_path_down = (rand() % 77) + 1;
@@ -711,17 +710,17 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
         }
 
     } else if (map_y == 400) {
-        if (world[map_y][map_x + 1]->is_created) {
+        if (world[map_y][map_x + 1]) {
             rand_path_right = world[map_y][map_x + 1]->left_exit;
         } else {
             rand_path_right = (rand() % 18) + 1;
         }
-        if (world[map_y][map_x - 1]->is_created) {
+        if (world[map_y][map_x - 1]) {
             rand_path_left = world[map_y][map_x - 1]->right_exit;
         } else {
             rand_path_left = (rand() % 18) + 1;
         }
-        if (world[map_y - 1][map_x]->is_created) {
+        if (world[map_y - 1][map_x]) {
             rand_path_up = world[map_y - 1][map_x]->down_exit;
         } else {
             rand_path_up = (rand() % 77) + 1;
@@ -746,17 +745,17 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
             }
         }
     } else if (map_y == 0) {
-        if (world[map_y][map_x + 1]->is_created) {
+        if (world[map_y][map_x + 1]) {
             rand_path_right = world[map_y][map_x + 1]->left_exit;
         } else {
             rand_path_right = (rand() % 18) + 1;
         }
-        if (world[map_y][map_x - 1]->is_created) {
+        if (world[map_y][map_x - 1]) {
             rand_path_left = world[map_y][map_x - 1]->right_exit;
         } else {
             rand_path_left = (rand() % 18) + 1;
         }
-        if (world[map_y + 1][map_x]->is_created) {
+        if (world[map_y + 1][map_x]) {
             rand_path_down = world[map_y + 1][map_x]->up_exit;
         } else {
             rand_path_down = (rand() % 77) + 1;
@@ -780,24 +779,23 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
                 break;
             }
         }
-
     } else {
-        if (world[map_y][map_x + 1]->is_created) {
+        if (world[map_y][map_x + 1]) {
             rand_path_right = world[map_y][map_x + 1]->left_exit;
         } else {
             rand_path_right = (rand() % 18) + 1;
         }
-        if (world[map_y][map_x - 1]->is_created) {
+        if (world[map_y][map_x - 1]) {
             rand_path_left = world[map_y][map_x - 1]->right_exit;
         } else {
             rand_path_left = (rand() % 18) + 1;
         }
-        if (world[map_y + 1][map_x]->is_created) {
+        if (world[map_y + 1][map_x]) {
             rand_path_down = world[map_y + 1][map_x]->up_exit;
         } else {
             rand_path_down = (rand() % 77) + 1;
         }
-        if (world[map_y - 1][map_x]->is_created) {
+        if (world[map_y - 1][map_x]) {
             rand_path_up = world[map_y - 1][map_x]->down_exit;
         } else {
             rand_path_up = (rand() % 77) + 1;
@@ -838,7 +836,6 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
 
     DijkstraTrainers(X_BOUND, Y_BOUND, map->arr, map->arr[tempy][tempx]);
 
-
     printf("Hiker map\n");
     for (i = 0; i < Y_BOUND; i++) {
         for (j = 0; j < X_BOUND; j++) {
@@ -862,7 +859,6 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
         }
         printf("\n");
     }
-
     buildPokeStuffFancy(X_BOUND, Y_BOUND, map);
     map->is_created = 1;
     world[map_y][map_x] = map;
@@ -891,7 +887,6 @@ int main(int argc, char *argv[]) {
     current_x = 200;
     current_y = 200;
     *world[current_y][current_x] = *generateMap(world[current_y][current_x], world, current_x, current_y);
-
     userInput = 'x';
     fly_x = fly_y = -999;
 
