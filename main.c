@@ -201,7 +201,8 @@ void buildPokeStuffFancy(int x, int y, PokeMap *map) {
     int chance_buildings;
     terrainCell neighbors[4];
 
-    mart_placed = center_placed = 0;
+    road_in_column = road_in_row = ended_x = started_x = ended_y = started_y = road_start_x = road_end_x = road_start_y = road_end_y = i = j = k = rand_center_x = rand_center_y = rand_mart_x = rand_mart_y = mart_placed = center_placed = 0;
+
     if (!(map->world_x == 200 && map->world_y == 200)) {
         manhattan_distance = abs(0 - map->world_x) + abs(0 - map->world_y);
         chance_buildings = (((manhattan_distance * -45) / 200) + 40) / -1;
@@ -215,8 +216,6 @@ void buildPokeStuffFancy(int x, int y, PokeMap *map) {
         }
     }
 
-    ended_x = started_x = ended_y = started_y = 0;
-    road_in_column = road_in_row = 0;
     coin_flip = rand() % 2;
 
     // Find where road pieces start and end on the x-axis
@@ -250,7 +249,7 @@ void buildPokeStuffFancy(int x, int y, PokeMap *map) {
                 road_in_row = 1;
             }
         }
-        if (ended_y == 0 && (started_y == 1 && (road_in_row == 0 || i == x - 1))) {
+        if (ended_y == 0 && (started_y == 1 && (road_in_row == 0 || i == y - 1))) {
             road_end_y = i - 1;
             ended_y = 1;
         }
@@ -449,10 +448,13 @@ void Dijkstra(int x, int y, terrainCell map[y][x], terrainCell start, terrainCel
     free(heap);
 }
 
-PokeMap* generateMap(PokeMap *map, PokeMap (*world)[401], int map_x, int map_y) {
-    if (world[map_y][map_x].is_created == 1) {
-        return &world[map_y][map_x];
+PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_y) {
+    if (world[map_y][map_x]) {
+        return world[map_y][map_x];
     }
+
+    map = (PokeMap *) malloc(sizeof (PokeMap));
+
     terrainCell (*randomCells) = malloc(sizeof (terrainCell[NUM_RAN_COORDS]));
     terrainCell (*currentCell) = malloc(sizeof (terrainCell));
     int currentCellXCoord, currentCellYCoord, i, j, k, rand_x_coords[NUM_RAN_COORDS], rand_y_coords[NUM_RAN_COORDS], rand_path_left, rand_path_right, rand_path_up, rand_path_down, rand_offset;
@@ -553,13 +555,13 @@ PokeMap* generateMap(PokeMap *map, PokeMap (*world)[401], int map_x, int map_y) 
     map->world_y = map_y;
     if (map_x == 400 && map_y == 400) {
         // lower right
-        if (world[map_y][map_x - 1].is_created) {
-            rand_path_left = world[map_y][map_x - 1].right_exit;
+        if (world[map_y][map_x - 1]->is_created) {
+            rand_path_left = world[map_y][map_x - 1]->right_exit;
         } else {
             rand_path_left = (rand() % 18) + 1;
         }
-        if (world[map_y - 1][map_x].is_created) {
-            rand_path_up = world[map_y - 1][map_x].down_exit;
+        if (world[map_y - 1][map_x]->is_created) {
+            rand_path_up = world[map_y - 1][map_x]->down_exit;
         } else {
             rand_path_up = (rand() % 77) + 1;
         }
@@ -575,13 +577,13 @@ PokeMap* generateMap(PokeMap *map, PokeMap (*world)[401], int map_x, int map_y) 
 
     } else if (map_x == 400 && map_y == 0) {
         // Upper right
-        if (world[map_y][map_x - 1].is_created) {
-            rand_path_left = world[map_y][map_x - 1].right_exit;
+        if (world[map_y][map_x - 1]->is_created) {
+            rand_path_left = world[map_y][map_x - 1]->right_exit;
         } else {
             rand_path_left = (rand() % 18) + 1;
         }
-        if (world[map_y + 1][map_x].is_created) {
-            rand_path_down = world[map_y + 1][map_x].up_exit;
+        if (world[map_y + 1][map_x]->is_created) {
+            rand_path_down = world[map_y + 1][map_x]->up_exit;
         } else {
             rand_path_down = (rand() % 77) + 1;
         }
@@ -597,13 +599,13 @@ PokeMap* generateMap(PokeMap *map, PokeMap (*world)[401], int map_x, int map_y) 
 
     } else if (map_x == 0 && map_y == 400) {
         // Lower left
-        if (world[map_y][map_x + 1].is_created) {
-            rand_path_right = world[map_y][map_x + 1].left_exit;
+        if (world[map_y][map_x + 1]->is_created) {
+            rand_path_right = world[map_y][map_x + 1]->left_exit;
         } else {
             rand_path_right = (rand() % 18) + 1;
         }
-        if (world[map_y - 1][map_x].is_created) {
-            rand_path_up = world[map_y - 1][map_x].down_exit;
+        if (world[map_y - 1][map_x]->is_created) {
+            rand_path_up = world[map_y - 1][map_x]->down_exit;
         } else {
             rand_path_up = (rand() % 77) + 1;
         }
@@ -619,13 +621,13 @@ PokeMap* generateMap(PokeMap *map, PokeMap (*world)[401], int map_x, int map_y) 
 
     } else if (map_x == 0 && map_y == 0) {
         // Upper left
-        if (world[map_y][map_x + 1].is_created) {
-            rand_path_right = world[map_y][map_x + 1].left_exit;
+        if (world[map_y][map_x + 1]->is_created) {
+            rand_path_right = world[map_y][map_x + 1]->left_exit;
         } else {
             rand_path_right = (rand() % 18) + 1;
         }
-        if (world[map_y + 1][map_x].is_created) {
-            rand_path_down = world[map_y + 1][map_x].up_exit;
+        if (world[map_y + 1][map_x]->is_created) {
+            rand_path_down = world[map_y + 1][map_x]->up_exit;
         } else {
             rand_path_down = (rand() % 77) + 1;
         }
@@ -638,18 +640,18 @@ PokeMap* generateMap(PokeMap *map, PokeMap (*world)[401], int map_x, int map_y) 
         map->arr[Y_BOUND - 1][rand_path_down].elevation = 0;
         Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[Y_BOUND - 1][rand_path_down], map->arr[rand_path_right][X_BOUND - 1]);
     } else if (map_x == 400) {
-        if (world[map_y][map_x - 1].is_created) {
-            rand_path_left = world[map_y][map_x - 1].right_exit;
+        if (world[map_y][map_x - 1]->is_created) {
+            rand_path_left = world[map_y][map_x - 1]->right_exit;
         } else {
             rand_path_left = (rand() % 18) + 1;
         }
-        if (world[map_y - 1][map_x].is_created) {
-            rand_path_up = world[map_y - 1][map_x].down_exit;
+        if (world[map_y - 1][map_x]->is_created) {
+            rand_path_up = world[map_y - 1][map_x]->down_exit;
         } else {
             rand_path_up = (rand() % 77) + 1;
         }
-        if (world[map_y + 1][map_x].is_created) {
-            rand_path_down = world[map_y + 1][map_x].up_exit;
+        if (world[map_y + 1][map_x]->is_created) {
+            rand_path_down = world[map_y + 1][map_x]->up_exit;
         } else {
             rand_path_down = (rand() % 77) + 1;
         }
@@ -673,18 +675,18 @@ PokeMap* generateMap(PokeMap *map, PokeMap (*world)[401], int map_x, int map_y) 
             }
         }
     } else if (map_x == 0) {
-        if (world[map_y][map_x + 1].is_created) {
-            rand_path_right = world[map_y][map_x + 1].left_exit;
+        if (world[map_y][map_x + 1]->is_created) {
+            rand_path_right = world[map_y][map_x + 1]->left_exit;
         } else {
             rand_path_right = (rand() % 18) + 1;
         }
-        if (world[map_y - 1][map_x].is_created) {
-            rand_path_up = world[map_y - 1][map_x].down_exit;
+        if (world[map_y - 1][map_x]->is_created) {
+            rand_path_up = world[map_y - 1][map_x]->down_exit;
         } else {
             rand_path_up = (rand() % 77) + 1;
         }
-        if (world[map_y + 1][map_x].is_created) {
-            rand_path_down = world[map_y + 1][map_x].up_exit;
+        if (world[map_y + 1][map_x]->is_created) {
+            rand_path_down = world[map_y + 1][map_x]->up_exit;
         } else {
             rand_path_down = (rand() % 77) + 1;
         }
@@ -709,18 +711,18 @@ PokeMap* generateMap(PokeMap *map, PokeMap (*world)[401], int map_x, int map_y) 
         }
 
     } else if (map_y == 400) {
-        if (world[map_y][map_x + 1].is_created) {
-            rand_path_right = world[map_y][map_x + 1].left_exit;
+        if (world[map_y][map_x + 1]->is_created) {
+            rand_path_right = world[map_y][map_x + 1]->left_exit;
         } else {
             rand_path_right = (rand() % 18) + 1;
         }
-        if (world[map_y][map_x - 1].is_created) {
-            rand_path_left = world[map_y][map_x - 1].right_exit;
+        if (world[map_y][map_x - 1]->is_created) {
+            rand_path_left = world[map_y][map_x - 1]->right_exit;
         } else {
             rand_path_left = (rand() % 18) + 1;
         }
-        if (world[map_y - 1][map_x].is_created) {
-            rand_path_up = world[map_y - 1][map_x].down_exit;
+        if (world[map_y - 1][map_x]->is_created) {
+            rand_path_up = world[map_y - 1][map_x]->down_exit;
         } else {
             rand_path_up = (rand() % 77) + 1;
         }
@@ -744,18 +746,18 @@ PokeMap* generateMap(PokeMap *map, PokeMap (*world)[401], int map_x, int map_y) 
             }
         }
     } else if (map_y == 0) {
-        if (world[map_y][map_x + 1].is_created) {
-            rand_path_right = world[map_y][map_x + 1].left_exit;
+        if (world[map_y][map_x + 1]->is_created) {
+            rand_path_right = world[map_y][map_x + 1]->left_exit;
         } else {
             rand_path_right = (rand() % 18) + 1;
         }
-        if (world[map_y][map_x - 1].is_created) {
-            rand_path_left = world[map_y][map_x - 1].right_exit;
+        if (world[map_y][map_x - 1]->is_created) {
+            rand_path_left = world[map_y][map_x - 1]->right_exit;
         } else {
             rand_path_left = (rand() % 18) + 1;
         }
-        if (world[map_y + 1][map_x].is_created) {
-            rand_path_down = world[map_y + 1][map_x].up_exit;
+        if (world[map_y + 1][map_x]->is_created) {
+            rand_path_down = world[map_y + 1][map_x]->up_exit;
         } else {
             rand_path_down = (rand() % 77) + 1;
         }
@@ -780,23 +782,23 @@ PokeMap* generateMap(PokeMap *map, PokeMap (*world)[401], int map_x, int map_y) 
         }
 
     } else {
-        if (world[map_y][map_x + 1].is_created) {
-            rand_path_right = world[map_y][map_x + 1].left_exit;
+        if (world[map_y][map_x + 1]->is_created) {
+            rand_path_right = world[map_y][map_x + 1]->left_exit;
         } else {
             rand_path_right = (rand() % 18) + 1;
         }
-        if (world[map_y][map_x - 1].is_created) {
-            rand_path_left = world[map_y][map_x - 1].right_exit;
+        if (world[map_y][map_x - 1]->is_created) {
+            rand_path_left = world[map_y][map_x - 1]->right_exit;
         } else {
             rand_path_left = (rand() % 18) + 1;
         }
-        if (world[map_y + 1][map_x].is_created) {
-            rand_path_down = world[map_y + 1][map_x].up_exit;
+        if (world[map_y + 1][map_x]->is_created) {
+            rand_path_down = world[map_y + 1][map_x]->up_exit;
         } else {
             rand_path_down = (rand() % 77) + 1;
         }
-        if (world[map_y - 1][map_x].is_created) {
-            rand_path_up = world[map_y - 1][map_x].down_exit;
+        if (world[map_y - 1][map_x]->is_created) {
+            rand_path_up = world[map_y - 1][map_x]->down_exit;
         } else {
             rand_path_up = (rand() % 77) + 1;
         }
@@ -863,26 +865,32 @@ PokeMap* generateMap(PokeMap *map, PokeMap (*world)[401], int map_x, int map_y) 
 
     buildPokeStuffFancy(X_BOUND, Y_BOUND, map);
     map->is_created = 1;
-    world[map_y][map_x] = *map;
+    world[map_y][map_x] = map;
 
     free(randomCells);
     free(currentCell);
     free(seeding_queue->array);
     free(seeding_queue);
 
-    return &world[map_y][map_x];
+    return world[map_y][map_x];
 }
 
 int main(int argc, char *argv[]) {
-    PokeMap (*world)[401] = malloc(sizeof (PokeMap[401][401]));
+    PokeMap* world[401][401];
     int current_x, current_y, i, j, fly_x, fly_y;
     char userInput;
+
+    for (i = 0; i < 401; i++) {
+        for (j = 0; j < 401; j++) {
+            world[i][j] = NULL;
+        }
+    }
 
     srand(time(NULL));
 
     current_x = 200;
     current_y = 200;
-    world[current_y][current_x] = *generateMap(&world[current_y][current_x], world, current_x, current_y);
+    *world[current_y][current_x] = *generateMap(world[current_y][current_x], world, current_x, current_y);
 
     userInput = 'x';
     fly_x = fly_y = -999;
@@ -890,12 +898,12 @@ int main(int argc, char *argv[]) {
     while (userInput != 'q') {
         for (i = 0; i < Y_BOUND; i++) {
             for (j = 0; j < X_BOUND; j++) {
-                printf("%c", world[current_y][current_x].arr[i][j].terrainPiece);
+                printf("%c", world[current_y][current_x]->arr[i][j].terrainPiece);
             }
             printf("\n");
         }
 
-        printf("You are currently at position (%d, %d). Input command:", world[current_y][current_x].world_x - 200, world[current_y][current_x].world_y - 200);
+        printf("You are currently at position (%d, %d). Input command:", world[current_y][current_x]->world_x - 200, world[current_y][current_x]->world_y - 200);
 
         if (scanf(" %c", &userInput) == 1) {
             printf("\n");
@@ -903,7 +911,7 @@ int main(int argc, char *argv[]) {
                 case 'w':
                     current_x--;
                     if (current_x >= 0) {
-                        world[current_y][current_x] = *generateMap(&world[current_y][current_x],world,current_x, current_y);
+                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y);
                     } else {
                         current_x++;
                         printf("Error cannot go beyond world limits\n");
@@ -912,7 +920,7 @@ int main(int argc, char *argv[]) {
                 case 'e':
                     current_x++;
                     if (current_x < 401) {
-                        world[current_y][current_x] = *generateMap(&world[current_y][current_x],world,current_x, current_y);
+                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y);
                     } else {
                         current_x--;
                         printf("Error cannot go beyond world limits\n");
@@ -921,7 +929,7 @@ int main(int argc, char *argv[]) {
                 case 'n':
                     current_y--;
                     if (current_y >= 0) {
-                        world[current_y][current_x] = *generateMap(&world[current_y][current_x],world,current_x, current_y);
+                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y);
                     } else {
                         current_y++;
                         printf("Error cannot go beyond world limits\n");
@@ -930,7 +938,7 @@ int main(int argc, char *argv[]) {
                 case 's':
                     current_y++;
                     if (current_y < 401) {
-                        world[current_y][current_x] = *generateMap(&world[current_y][current_x],world,current_x, current_y);
+                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y);
                     } else {
                         current_y--;
                         printf("Error cannot go beyond world limits\n");
@@ -944,7 +952,7 @@ int main(int argc, char *argv[]) {
                         if ((-200 <= fly_x && fly_x < 201) && (-200 <= fly_y && fly_y < 201)) {
                             current_x = fly_x + 200;
                             current_y = fly_y + 200;
-                            world[current_y][current_x] = *generateMap(&world[current_y][current_x], world, current_x, current_y);
+                            *world[current_y][current_x] = *generateMap(world[current_y][current_x], world, current_x, current_y);
                         } else {
                             printf("Invalid coordinates, must be between -200 and 200 inclusive for both x and y");
                         }
@@ -958,7 +966,14 @@ int main(int argc, char *argv[]) {
             printf("Bad input, commands are n, s, e, w, 'f x y', and q\n");
         }
     }
-    free(world);
+    for(i =0; i < 401; i++) {
+        for(j =0; j < 401; j++) {
+            if(world[i][j]){
+                free(world[i][j]);
+                world[i][j] = NULL;
+            }
+        }
+    }
 
     return 0;
 }
