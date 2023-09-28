@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -g
+CFLAGS = -Wall -Werror -g
 
 # List of source files
 SOURCES = main.c minHeap.c queue.c
@@ -11,7 +11,7 @@ HEADERS = minHeap.h queue.h
 OBJECTS = $(SOURCES:.c=.o)
 
 # Output executable name
-EXECUTABLE = assignment1.02
+EXECUTABLE = assignment1.03
 
 # Default target (the first target in the Makefile)
 all: $(EXECUTABLE)
