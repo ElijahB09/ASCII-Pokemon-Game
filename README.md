@@ -39,3 +39,21 @@ came in handy for the edge cases as I could just tell it to go from cell x to ce
 stay lined up because the struct I created to represent a single map also stores that map's
 gates. So lining gates up is a matter of being careful with the edge cases and just checking
 if the map next to it has been created and then assigning gates properly.
+
+## Assignment 1.03
+
+For assignment 1.03 I was able to modify my Dijkstra's algorithm for path gen to function for
+the cost maps. This process actually went way smoother than anticipated with only a few hiccups.
+As I mentioned earlier, the way I accomplish cost maps is through the use of Dijkstra's algorithm,
+which I had previously defined. I made a new Dijkstra's method to specifically build the cost maps
+for the hiker and rival npcs. This new Dijkstra's algorithm needed a different neighbor function
+as it must consider eight neighbors as opposed to four neighbors. I constructed a new function to find
+eight neighbors, its very simple, just the four neighbor function expanded to consider corners. In
+the previous assignment I had an issue with my program crashing, I have since discovered and fixed
+the error, which was a small case of accessing a value which was not set yet. Going back to the cost
+maps, I did include the borders on the maps so the printed maps should all be surrounded by a layer of
+empty spaces. In addition, if the player character appears in any of the gates the player character is
+considered unreachable and the cost map will have a 00 for the player and everything else will be empty
+spaces. This is intentional by design as an npc should not be able to step onto a gate, but it does look
+as if the program has a bug in it. Although I don't think this should happen because I have since
+restricted the ability for this to happen, regardless, I feel as though it was deserving of a comment.

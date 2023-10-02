@@ -1,3 +1,69 @@
+commit 98418468ae95361543d8a8002fa6706e36182600
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Thu Sep 28 17:31:59 2023 -0500
+
+    I think I actually did it, I think it works now
+
+commit 405a8f284b3d6c9246ef7ff13ea4a6abd999e42b
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Thu Sep 28 14:36:33 2023 -0500
+
+    Made some progress, error has moved
+
+commit 671b14f5bf27d631ae11fd42f88ad9f4fd2a68fc
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Thu Sep 28 13:17:36 2023 -0500
+
+    Add limit.h lib
+
+commit ca14119996cb08e74ed15a0768feb5a53739568b
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Thu Sep 28 13:15:32 2023 -0500
+
+    make file updates
+
+commit 5bc3c01e9b99fdce761ed1d7c486201c3de22774
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Thu Sep 28 11:14:41 2023 -0500
+
+    Add make file to source control
+
+commit 6251bc3994aafdbe0566b2ab5172f76f39a39cf5
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Fri Sep 22 13:32:43 2023 -0500
+
+    Successfully getting both maps to print out, they could use some more formatting
+
+commit 7be3be4a6840d9d49282463a54d7d7758d517a49
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Fri Sep 22 10:54:31 2023 -0500
+
+    Fixed the weird error I was getting, can print out rival values, moving onto hiker values now
+
+commit f933d59e07fbade9c08a0652469d9f208f8ec2cf
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Thu Sep 21 09:36:19 2023 -0500
+
+    I think I got Dijkstra's for rival trainers working
+
+commit 8f6e189bc28de7335f80fa4ee33d918de15d99fb
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Tue Sep 19 13:16:17 2023 -0500
+
+    Adding in rival and hiker distance variables and values
+
+commit 608b978d76cd53e2aada09960f7d80ac8e676bcb
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Tue Sep 19 12:47:10 2023 -0500
+
+    Added a method to get the neighbors of a cell for all possible eight directions, three if corner, five if edge
+
+commit 931f312936c4f54e6ebf75aa028273c3608e9dd6
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Tue Sep 19 12:32:19 2023 -0500
+
+    Update CHANGELOG
+
 commit cf2bd8e4c36af69534fc255a63a0290b7d0d5815
 Author: Elijah Brady <bradyeli09@gmail.com>
 Date:   Sun Sep 17 19:33:20 2023 -0500
