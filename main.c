@@ -155,7 +155,6 @@ void DijkstraTrainers(int x, int y, terrainCell map[y][x], terrainCell start) {
         temp = extractMin(heapRival);
         map[temp.y_coord][temp.x_coord].rival_visited = 1;
         numNeighbors = getNeighbors8Directions(x, y, map, temp, neighbors);
-        printf("Hiker neighbor size: %d\n", numNeighbors);
         for (i = 0; i < numNeighbors; i++) {
             if (map[neighbors[i].y_coord][neighbors[i].x_coord].rival_visited == 0) {
                 if (neighbors[i].rival_distance != INT_MAX) {

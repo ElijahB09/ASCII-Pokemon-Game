@@ -1,3 +1,9 @@
+commit 348461ea6c865e5629c237d0ef0033a512eb95f3
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Oct 1 21:48:20 2023 -0500
+
+    Running into some weird problems with the set values for distances, they are off for some reason
+
 commit 98418468ae95361543d8a8002fa6706e36182600
 Author: Elijah Brady <bradyeli09@gmail.com>
 Date:   Thu Sep 28 17:31:59 2023 -0500
