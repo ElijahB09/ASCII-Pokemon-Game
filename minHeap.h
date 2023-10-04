@@ -1,4 +1,5 @@
 #ifndef MINHEAP_H
+#define MINHEAP_H
 #include "queue.h"
 
 typedef struct {

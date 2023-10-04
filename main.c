@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <limits.h>
+#include "queue.h"
 #include "minHeap.h"
 #define QUEUE_SIZE 2048
 #define HEAP_SIZE 8192
@@ -9,6 +10,41 @@
 #define MAX_ELEVATION 9999
 #define X_BOUND 80
 #define Y_BOUND 21
+
+typedef struct {
+    int x_coord, y_coord;
+    char symbol;
+} PlayerCharacter;
+
+typedef struct {
+    int x_coord, y_coord;
+    char symbol;
+} Hiker;
+
+typedef struct {
+    int x_coord, y_coord;
+    char symbol;
+} Rival;
+
+typedef struct {
+    int x_coord, y_coord;
+    char symbol;
+} Wanderer;
+
+typedef struct {
+    int x_coord, y_coord;
+    char symbol;
+} Pacer;
+
+typedef struct {
+    int x_coord, y_coord;
+    char symbol;
+} Sentry;
+
+typedef struct {
+    int x_coord, y_coord;
+    char symbol;
+} Explorers;
 
 typedef struct {
     terrainCell arr[Y_BOUND][X_BOUND];
@@ -305,7 +341,7 @@ void buildPokeStuffFancy(int x, int y, PokeMap *map) {
             rand_center_x = rand() % (road_end_x - road_start_x + 1) + road_start_x;
 
             // Prevent building overlap
-            while (rand_center_x == rand_mart_x || rand_center_x == rand_mart_x++ || rand_center_x == rand_mart_x-- || rand_center_x == rand_mart_x + 2 || rand_center_x == rand_mart_x - 2) {
+            while (rand_center_x == rand_mart_x || rand_center_x == rand_mart_x + 1 || rand_center_x == rand_mart_x - 1 || rand_center_x == rand_mart_x + 2 || rand_center_x == rand_mart_x - 2) {
                 rand_center_x = rand() % (road_end_x - road_start_x + 1) + road_start_x;
             }
 
@@ -366,7 +402,7 @@ void buildPokeStuffFancy(int x, int y, PokeMap *map) {
             rand_center_y = rand() % (road_end_y - road_start_y + 1) + road_start_y;
 
             // Prevent building overlap
-            while (rand_center_y == rand_mart_y || rand_center_y == rand_mart_y++ || rand_center_y == rand_mart_y-- || rand_center_y == rand_mart_y + 2 || rand_center_y == rand_mart_y - 2) {
+            while (rand_center_y == rand_mart_y || rand_center_y == rand_mart_y + 1 || rand_center_y == rand_mart_y - 1 || rand_center_y == rand_mart_y + 2 || rand_center_y == rand_mart_y - 2) {
                 rand_center_y = rand() % (road_end_y - road_start_y + 1) + road_start_y;
             }
 
@@ -823,6 +859,8 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
         Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[rand_path_left][0], map->arr[rand_path_right][X_BOUND - 1]);
         Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[0][rand_path_up], map->arr[Y_BOUND - 1][rand_path_down]);
     }
+    buildPokeStuffFancy(X_BOUND, Y_BOUND, map);
+
     int tempx, tempy, found;
     found = 0;
     for (i = 0; i < Y_BOUND; i++) {
@@ -837,7 +875,6 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
     }
 
     DijkstraTrainers(X_BOUND, Y_BOUND, map->arr, map->arr[tempy][tempx]);
-    buildPokeStuffFancy(X_BOUND, Y_BOUND, map);
     map->is_created = 1;
     world[map_y][map_x] = map;
 
@@ -872,29 +909,6 @@ int main(int argc, char *argv[]) {
         for (i = 0; i < Y_BOUND; i++) {
             for (j = 0; j < X_BOUND; j++) {
                 printf("%c", world[current_y][current_x]->arr[i][j].terrainPiece);
-            }
-            printf("\n");
-        }
-        printf("Hiker map\n");
-        for (i = 0; i < Y_BOUND; i++) {
-            for (j = 0; j < X_BOUND; j++) {
-                if (world[current_y][current_x]->arr[i][j].hiker_total_distance == INT_MAX) {
-                    printf("   ");
-                } else {
-                    printf("%02d ", world[current_y][current_x]->arr[i][j].hiker_total_distance % 100);
-                }
-            }
-            printf("\n");
-        }
-
-        printf("Rival map\n");
-        for (i = 0; i < Y_BOUND; i++) {
-            for (j = 0; j < X_BOUND; j++) {
-                if (world[current_y][current_x]->arr[i][j].rival_total_distance == INT_MAX) {
-                    printf("   ");
-                } else {
-                    printf("%02d ", world[current_y][current_x]->arr[i][j].rival_total_distance % 100);
-                }
             }
             printf("\n");
         }
