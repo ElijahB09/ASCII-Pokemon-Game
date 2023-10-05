@@ -4,7 +4,7 @@
 typedef struct {
     int x_coord, y_coord, elevation, previous_x, previous_y, visited, buildable, distance, hiker_distance, rival_distance, hiker_total_distance, rival_total_distance, rival_visited, hiker_visited;
     char terrainPiece;
-    void *present_character;
+    char *present_character;
 } terrainCell;
 
 typedef struct {

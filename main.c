@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <limits.h>
+#include <string.h>
 #include "queue.h"
 #include "minHeap.h"
 #define QUEUE_SIZE 2048
@@ -485,7 +486,7 @@ void Dijkstra(int x, int y, terrainCell map[y][x], terrainCell start, terrainCel
     free(heap);
 }
 
-PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_y) {
+PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_y, PlayerCharacter *player) {
     if (world[map_y][map_x]) {
         return world[map_y][map_x];
     }
@@ -866,7 +867,8 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
     for (i = 0; i < Y_BOUND; i++) {
         for (j = 0; j < X_BOUND; j++) {
             if (map->arr[i][j].terrainPiece == '#' && i > 0 && j > 0 && found == 0) {
-                map->arr[i][j].terrainPiece = '@';
+                player->x_coord = j; player->y_coord = i;
+                map->arr[i][j].present_character = &player->symbol;
                 tempx = j;
                 tempy = i;
                 found = 1;
@@ -888,8 +890,26 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
 
 int main(int argc, char *argv[]) {
     PokeMap* world[401][401];
-    int current_x, current_y, i, j, fly_x, fly_y;
+    int current_x, current_y, i, j, fly_x, fly_y, num_npcs;
     char userInput;
+    num_npcs = 10;
+
+    if (argc == 2) {
+        if (strncmp(argv[1], "--numtrainers", 13) == 0) {
+            char *num_npcs_str = argv[1] + 14;
+            char *endptr;
+            num_npcs = (int)strtol(num_npcs_str, &endptr, 10);
+
+            if (*endptr != '\0' || num_npcs <= 0) {
+                printf("ERROR: use --numtrainers=x where x >= 0, instead passed: %s\n", num_npcs_str);
+                return 1;
+            }
+        }
+    } else if (argc > 2) {
+        printf("ERROR: usage ./<assignment_name> --numtrainers=x where x >= 0");
+    }
+    PlayerCharacter *player = malloc(sizeof (PlayerCharacter));
+    player->symbol = '@';
 
     for (i = 0; i < 401; i++) {
         for (j = 0; j < 401; j++) {
@@ -901,14 +921,18 @@ int main(int argc, char *argv[]) {
 
     current_x = 200;
     current_y = 200;
-    *world[current_y][current_x] = *generateMap(world[current_y][current_x], world, current_x, current_y);
+    *world[current_y][current_x] = *generateMap(world[current_y][current_x], world, current_x, current_y, player);
     userInput = 'x';
     fly_x = fly_y = -999;
 
     while (userInput != 'q') {
         for (i = 0; i < Y_BOUND; i++) {
             for (j = 0; j < X_BOUND; j++) {
-                printf("%c", world[current_y][current_x]->arr[i][j].terrainPiece);
+                if (world[current_y][current_x]->arr[i][j].present_character) {
+                    printf("%c", *world[current_y][current_x]->arr[i][j].present_character);
+                } else {
+                    printf("%c", world[current_y][current_x]->arr[i][j].terrainPiece);
+                }
             }
             printf("\n");
         }
@@ -921,7 +945,7 @@ int main(int argc, char *argv[]) {
                 case 'w':
                     current_x--;
                     if (current_x >= 0) {
-                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y);
+                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y, player);
                     } else {
                         current_x++;
                         printf("Error cannot go beyond world limits\n");
@@ -930,7 +954,7 @@ int main(int argc, char *argv[]) {
                 case 'e':
                     current_x++;
                     if (current_x < 401) {
-                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y);
+                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y, player);
                     } else {
                         current_x--;
                         printf("Error cannot go beyond world limits\n");
@@ -939,7 +963,7 @@ int main(int argc, char *argv[]) {
                 case 'n':
                     current_y--;
                     if (current_y >= 0) {
-                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y);
+                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y, player);
                     } else {
                         current_y++;
                         printf("Error cannot go beyond world limits\n");
@@ -948,7 +972,7 @@ int main(int argc, char *argv[]) {
                 case 's':
                     current_y++;
                     if (current_y < 401) {
-                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y);
+                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y, player);
                     } else {
                         current_y--;
                         printf("Error cannot go beyond world limits\n");
@@ -962,7 +986,7 @@ int main(int argc, char *argv[]) {
                         if ((-200 <= fly_x && fly_x < 201) && (-200 <= fly_y && fly_y < 201)) {
                             current_x = fly_x + 200;
                             current_y = fly_y + 200;
-                            *world[current_y][current_x] = *generateMap(world[current_y][current_x], world, current_x, current_y);
+                            *world[current_y][current_x] = *generateMap(world[current_y][current_x], world, current_x, current_y, player);
                         } else {
                             printf("Invalid coordinates, must be between -200 and 200 inclusive for both x and y");
                         }
@@ -984,6 +1008,7 @@ int main(int argc, char *argv[]) {
             }
         }
     }
+    free(player);
 
     return 0;
 }

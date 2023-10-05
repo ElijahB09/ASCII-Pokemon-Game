@@ -11,7 +11,7 @@ HEADERS = minHeap.h queue.h
 OBJECTS = $(SOURCES:.c=.o)
 
 # Output executable name
-EXECUTABLE = assignment1.03
+EXECUTABLE = assignment1.04
 
 # Default target (the first target in the Makefile)
 all: $(EXECUTABLE)
