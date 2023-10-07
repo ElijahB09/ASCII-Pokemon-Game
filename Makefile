@@ -2,10 +2,10 @@ CC = gcc
 CFLAGS = -Wall -Werror -g
 
 # List of source files
-SOURCES = main.c minHeap.c queue.c neighbors.c
+SOURCES = main.c minHeap.c queue.c neighbors.c buildings.c
 
 # List of header files
-HEADERS = minHeap.h queue.h neigbors.h
+HEADERS = minHeap.h queue.h neigbors.h buildings.h
 
 # Generate object file names from source files
 OBJECTS = $(SOURCES:.c=.o)
