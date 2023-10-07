@@ -7,16 +7,10 @@
 #define X_BOUND 80
 #define Y_BOUND 21
 
-typedef struct {
-    int x_coord, y_coord;
-    char symbol;
-} NPC;
-
 int main(int argc, char *argv[]) {
     PokeMap* world[401][401];
     int current_x, current_y, i, j, fly_x, fly_y, num_npcs;
     char userInput;
-    NPC *npcs;
     num_npcs = 10;
 
     if (argc == 2) {
@@ -33,12 +27,6 @@ int main(int argc, char *argv[]) {
     } else if (argc > 2) {
         printf("ERROR: usage ./<assignment_name> --numtrainers=x where x >= 0");
     }
-    PlayerCharacter *player = malloc(sizeof (PlayerCharacter));
-    player->symbol = '@';
-
-    // Generate npcs
-    npcs = malloc(sizeof (NPC) * num_npcs);
-
 
     for (i = 0; i < 401; i++) {
         for (j = 0; j < 401; j++) {
@@ -50,9 +38,11 @@ int main(int argc, char *argv[]) {
 
     current_x = 200;
     current_y = 200;
-    *world[current_y][current_x] = *generateMap(world[current_y][current_x], world, current_x, current_y, player);
+    *world[current_y][current_x] = *generateMap(world[current_y][current_x], world, current_x, current_y);
     userInput = 'x';
     fly_x = fly_y = -999;
+
+    placeCharacters(world[current_y][current_x], num_npcs);
 
     while (userInput != 'q') {
         for (i = 0; i < Y_BOUND; i++) {
@@ -74,7 +64,7 @@ int main(int argc, char *argv[]) {
                 case 'w':
                     current_x--;
                     if (current_x >= 0) {
-                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y, player);
+                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y);
                     } else {
                         current_x++;
                         printf("Error cannot go beyond world limits\n");
@@ -83,7 +73,7 @@ int main(int argc, char *argv[]) {
                 case 'e':
                     current_x++;
                     if (current_x < 401) {
-                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y, player);
+                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y);
                     } else {
                         current_x--;
                         printf("Error cannot go beyond world limits\n");
@@ -92,7 +82,7 @@ int main(int argc, char *argv[]) {
                 case 'n':
                     current_y--;
                     if (current_y >= 0) {
-                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y, player);
+                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y);
                     } else {
                         current_y++;
                         printf("Error cannot go beyond world limits\n");
@@ -101,7 +91,7 @@ int main(int argc, char *argv[]) {
                 case 's':
                     current_y++;
                     if (current_y < 401) {
-                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y, player);
+                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y);
                     } else {
                         current_y--;
                         printf("Error cannot go beyond world limits\n");
@@ -115,7 +105,7 @@ int main(int argc, char *argv[]) {
                         if ((-200 <= fly_x && fly_x < 201) && (-200 <= fly_y && fly_y < 201)) {
                             current_x = fly_x + 200;
                             current_y = fly_y + 200;
-                            *world[current_y][current_x] = *generateMap(world[current_y][current_x], world, current_x, current_y, player);
+                            *world[current_y][current_x] = *generateMap(world[current_y][current_x], world, current_x, current_y);
                         } else {
                             printf("Invalid coordinates, must be between -200 and 200 inclusive for both x and y");
                         }
@@ -129,6 +119,7 @@ int main(int argc, char *argv[]) {
             printf("Bad input, commands are n, s, e, w, 'f x y', and q\n");
         }
     }
+
     for(i =0; i < 401; i++) {
         for(j =0; j < 401; j++) {
             if(world[i][j]){

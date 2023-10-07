@@ -1,3 +1,45 @@
+commit a93a1196d8a1d33501f628fad222bd697f293724
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Oct 7 17:53:28 2023 -0500
+
+    Fully cleaned out main.c, world generation now happens in worldgen.c
+
+commit 0d3aa2838a42e75aecbfaa9858a904e706f479c9
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Oct 7 17:42:10 2023 -0500
+
+    Moved dijkstra methods out of main.c
+
+commit 78e19b6eba0ce1566d2ec6b8adf6fb3e5626afc4
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Oct 7 17:34:25 2023 -0500
+
+    Moved building generation code over into buildings.c
+
+commit 7e2bed8d5691d8ce6206717bebafcaf608739e90
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Oct 7 17:25:02 2023 -0500
+
+    Big changes happening, splitting main.c into other files for better readability
+
+commit 940bddf0ef7bc807338c9d61de5c3de6a1431ff8
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Thu Oct 5 13:59:15 2023 -0500
+
+    Built the switch in and initialized the player character, work still needs to be done on how I want to handle npcs
+
+commit 390361c2cc104c08cd2b5971ccab5007c0fda2c5
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Tue Oct 3 21:03:38 2023 -0500
+
+    Ignored some stuff
+
+commit 8134316a6a0f224d2f0bcadd545b4a8be403afc0
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Tue Oct 3 21:02:04 2023 -0500
+
+    Begin init for 1.04
+
 commit a2f87200d1917744c399a8b66f122aad3c4e682d
 Author: Elijah Brady <bradyeli09@gmail.com>
 Date:   Sun Oct 1 22:07:12 2023 -0500

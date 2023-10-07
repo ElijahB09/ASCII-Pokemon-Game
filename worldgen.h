@@ -13,6 +13,12 @@ typedef struct {
     char symbol;
 } PlayerCharacter;
 
-PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_y, PlayerCharacter *player);
+typedef struct {
+    int x_coord, y_coord;
+    char symbol;
+} NPC;
+
+PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_y);
+void placeCharacters(PokeMap *map, int num_npcs);
 
 #endif
