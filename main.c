@@ -5,6 +5,7 @@
 #include <string.h>
 #include "queue.h"
 #include "minHeap.h"
+#include "neighbors.h"
 #define QUEUE_SIZE 2048
 #define HEAP_SIZE 8192
 #define NUM_RAN_COORDS 30
@@ -20,32 +21,7 @@ typedef struct {
 typedef struct {
     int x_coord, y_coord;
     char symbol;
-} Hiker;
-
-typedef struct {
-    int x_coord, y_coord;
-    char symbol;
-} Rival;
-
-typedef struct {
-    int x_coord, y_coord;
-    char symbol;
-} Wanderer;
-
-typedef struct {
-    int x_coord, y_coord;
-    char symbol;
-} Pacer;
-
-typedef struct {
-    int x_coord, y_coord;
-    char symbol;
-} Sentry;
-
-typedef struct {
-    int x_coord, y_coord;
-    char symbol;
-} Explorers;
+} NPC;
 
 typedef struct {
     terrainCell arr[Y_BOUND][X_BOUND];
@@ -53,119 +29,6 @@ typedef struct {
     int world_x, world_y;
     int is_created;
 } PokeMap;
-
-int getNeighbors(int x, int y, terrainCell map[y][x], terrainCell cell, terrainCell* neighbors) {
-    int numNeighbors;
-    if (cell.x_coord == 0 && cell.y_coord == 0) {
-        neighbors[0] = map[cell.y_coord][cell.x_coord + 1];
-        neighbors[1] = map[cell.y_coord + 1][cell.x_coord];
-        numNeighbors = 2;
-    } else if (cell.x_coord == X_BOUND - 1 && cell.y_coord == 0) {
-        neighbors[0] = map[cell.y_coord][cell.x_coord - 1];
-        neighbors[1] = map[cell.y_coord + 1][cell.x_coord];
-        numNeighbors = 2;
-    } else if (cell.x_coord == 0 && cell.y_coord == Y_BOUND - 1) {
-        neighbors[0] = map[cell.y_coord][cell.x_coord + 1];
-        neighbors[1] = map[cell.y_coord - 1][cell.x_coord];
-        numNeighbors = 2;
-    } else if (cell.x_coord == X_BOUND - 1 && cell.y_coord == Y_BOUND - 1) {
-        neighbors[0] = map[cell.y_coord][cell.x_coord - 1];
-        neighbors[1] = map[cell.y_coord - 1][cell.x_coord];
-        numNeighbors = 2;
-    } else if (cell.x_coord == 0) {
-        neighbors[0] = map[cell.y_coord][cell.x_coord + 1];
-        neighbors[1] = map[cell.y_coord - 1][cell.x_coord];
-        neighbors[2] = map[cell.y_coord + 1][cell.x_coord];
-        numNeighbors = 3;
-    } else if (cell.y_coord == 0) {
-        neighbors[0] = map[cell.y_coord + 1][cell.x_coord];
-        neighbors[1] = map[cell.y_coord][cell.x_coord + 1];
-        neighbors[2] = map[cell.y_coord][cell.x_coord - 1];
-        numNeighbors = 3;
-    } else if (cell.x_coord == X_BOUND - 1) {
-        neighbors[0] = map[cell.y_coord][cell.x_coord - 1];
-        neighbors[1] = map[cell.y_coord - 1][cell.x_coord];
-        neighbors[2] = map[cell.y_coord + 1][cell.x_coord];
-        numNeighbors = 3;
-    } else if (cell.y_coord == Y_BOUND - 1) {
-        neighbors[0] = map[cell.y_coord - 1][cell.x_coord];
-        neighbors[1] = map[cell.y_coord][cell.x_coord + 1];
-        neighbors[2] = map[cell.y_coord][cell.x_coord - 1];
-        numNeighbors = 3;
-    } else {
-        neighbors[0] = map[cell.y_coord][cell.x_coord + 1];
-        neighbors[1] = map[cell.y_coord][cell.x_coord - 1];
-        neighbors[2] = map[cell.y_coord + 1][cell.x_coord];
-        neighbors[3] = map[cell.y_coord - 1][cell.x_coord];
-        numNeighbors = 4;
-    }
-
-    return numNeighbors;
-}
-
-int getNeighbors8Directions(int x, int y, terrainCell map[y][x], terrainCell cell, terrainCell* neighbors) {
-    int numNeighbors;
-    if (cell.x_coord == 0 && cell.y_coord == 0) {
-        neighbors[0] = map[cell.y_coord][cell.x_coord + 1];
-        neighbors[1] = map[cell.y_coord + 1][cell.x_coord];
-        neighbors[2] = map[cell.y_coord + 1][cell.x_coord + 1];
-        numNeighbors = 3;
-    } else if (cell.x_coord == X_BOUND - 1 && cell.y_coord == 0) {
-        neighbors[0] = map[cell.y_coord][cell.x_coord - 1];
-        neighbors[1] = map[cell.y_coord + 1][cell.x_coord];
-        neighbors[2] = map[cell.y_coord + 1][cell.x_coord - 1];
-        numNeighbors = 3;
-    } else if (cell.x_coord == 0 && cell.y_coord == Y_BOUND - 1) {
-        neighbors[0] = map[cell.y_coord][cell.x_coord + 1];
-        neighbors[1] = map[cell.y_coord - 1][cell.x_coord];
-        neighbors[2] = map[cell.y_coord - 1][cell.x_coord + 1];
-        numNeighbors = 3;
-    } else if (cell.x_coord == X_BOUND - 1 && cell.y_coord == Y_BOUND - 1) {
-        neighbors[0] = map[cell.y_coord][cell.x_coord - 1];
-        neighbors[1] = map[cell.y_coord - 1][cell.x_coord];
-        neighbors[2] = map[cell.y_coord - 1][cell.x_coord - 1];
-        numNeighbors = 3;
-    } else if (cell.x_coord == 0) {
-        neighbors[0] = map[cell.y_coord][cell.x_coord + 1];
-        neighbors[1] = map[cell.y_coord - 1][cell.x_coord];
-        neighbors[2] = map[cell.y_coord + 1][cell.x_coord];
-        neighbors[3] = map[cell.y_coord - 1][cell.x_coord + 1];
-        neighbors[4] = map[cell.y_coord + 1][cell.x_coord + 1];
-        numNeighbors = 5;
-    } else if (cell.y_coord == 0) {
-        neighbors[0] = map[cell.y_coord + 1][cell.x_coord];
-        neighbors[1] = map[cell.y_coord][cell.x_coord + 1];
-        neighbors[2] = map[cell.y_coord][cell.x_coord - 1];
-        neighbors[3] = map[cell.y_coord + 1][cell.x_coord + 1];
-        neighbors[4] = map[cell.y_coord + 1][cell.x_coord - 1];
-        numNeighbors = 5;
-    } else if (cell.x_coord == X_BOUND - 1) {
-        neighbors[0] = map[cell.y_coord][cell.x_coord - 1];
-        neighbors[1] = map[cell.y_coord - 1][cell.x_coord];
-        neighbors[2] = map[cell.y_coord + 1][cell.x_coord];
-        neighbors[3] = map[cell.y_coord - 1][cell.x_coord - 1];
-        neighbors[4] = map[cell.y_coord + 1][cell.x_coord - 1];
-        numNeighbors = 5;
-    } else if (cell.y_coord == Y_BOUND - 1) {
-        neighbors[0] = map[cell.y_coord - 1][cell.x_coord];
-        neighbors[1] = map[cell.y_coord][cell.x_coord + 1];
-        neighbors[2] = map[cell.y_coord][cell.x_coord - 1];
-        neighbors[3] = map[cell.y_coord - 1][cell.x_coord + 1];
-        neighbors[4] = map[cell.y_coord - 1][cell.x_coord - 1];
-        numNeighbors = 5;
-    } else {
-        neighbors[0] = map[cell.y_coord][cell.x_coord + 1];
-        neighbors[1] = map[cell.y_coord][cell.x_coord - 1];
-        neighbors[2] = map[cell.y_coord + 1][cell.x_coord];
-        neighbors[3] = map[cell.y_coord - 1][cell.x_coord];
-        neighbors[4] = map[cell.y_coord + 1][cell.x_coord + 1];
-        neighbors[5] = map[cell.y_coord + 1][cell.x_coord - 1];
-        neighbors[6] = map[cell.y_coord - 1][cell.x_coord + 1];
-        neighbors[7] = map[cell.y_coord - 1][cell.x_coord - 1];
-        numNeighbors = 8;
-    }
-    return numNeighbors;
-}
 
 void DijkstraTrainers(int x, int y, terrainCell map[y][x], terrainCell start) {
     int i, j, numNeighbors, tempHikerDistance, tempRivalDistance;
@@ -319,20 +182,6 @@ void buildPokeStuffFancy(int x, int y, PokeMap *map) {
                         map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable = 0;
                         map->arr[neighbors[i].y_coord][neighbors[i].x_coord].hiker_distance = map->arr[neighbors[i].y_coord][neighbors[i].x_coord].rival_distance = 50;
                         mart_placed = 1;
-//                    Below is some logic for later if I choose to implement it
-//                    if (neighbors[i].y_coord > valid_mart_y_coords[k]) {
-//                        map->arr[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'M';
-//                        map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable = 0;
-//                        mart_placed = 1;
-//                    } else if (neighbors[i].y_coord < valid_mart_y_coords[k]) {
-//                        map->arr[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'M';
-//                        map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable = 0;
-//                        mart_placed = 1;
-//                    } else {
-//                        map->arr[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'M';
-//                        map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable = 0;
-//                        mart_placed = 1;
-//                    }
                     }
                 }
                 k++;
@@ -892,6 +741,7 @@ int main(int argc, char *argv[]) {
     PokeMap* world[401][401];
     int current_x, current_y, i, j, fly_x, fly_y, num_npcs;
     char userInput;
+    NPC *npcs;
     num_npcs = 10;
 
     if (argc == 2) {
@@ -910,6 +760,10 @@ int main(int argc, char *argv[]) {
     }
     PlayerCharacter *player = malloc(sizeof (PlayerCharacter));
     player->symbol = '@';
+
+    // Generate npcs
+    npcs = malloc(sizeof (NPC) * num_npcs);
+
 
     for (i = 0; i < 401; i++) {
         for (j = 0; j < 401; j++) {
@@ -1009,6 +863,7 @@ int main(int argc, char *argv[]) {
         }
     }
     free(player);
+    free(npcs);
 
     return 0;
 }
