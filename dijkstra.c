@@ -1,5 +1,6 @@
 #include <limits.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "dijkstra.h"
 #include "neighbors.h"
 #define HEAP_SIZE 8192
@@ -9,8 +10,6 @@ void DijkstraTrainers(int x, int y, terrainCell map[y][x], terrainCell start) {
     MinHeap *heapHiker, *heapRival;
     terrainCell temp;
     terrainCell neighbors[8];
-
-    i = j = numNeighbors = tempHikerDistance = tempRivalDistance = 0;
 
     for (i = 0; i < y; i++) {
         for (j = 0; j < x; j++) {
@@ -22,6 +21,9 @@ void DijkstraTrainers(int x, int y, terrainCell map[y][x], terrainCell start) {
     }
     map[start.y_coord][start.x_coord].rival_total_distance = 0;
     map[start.y_coord][start.x_coord].hiker_total_distance = 0;
+    printf("Start Rival Cost: %d", map[start.y_coord][start.x_coord].rival_distance);
+    printf("Start Hiker Cost: %d", map[start.y_coord][start.x_coord].hiker_distance);
+
 
     heapRival = buildMinHeap(HEAP_SIZE);
     insert(heapRival, map[start.y_coord][start.x_coord]);
@@ -108,11 +110,12 @@ void Dijkstra(int x, int y, terrainCell map[y][x], terrainCell start, terrainCel
         map[temp.previous_y][temp.previous_x].elevation = 0;
         map[temp.previous_y][temp.previous_x].terrainPiece = '#';
         map[temp.previous_y][temp.previous_x].buildable = 0;
-        if (map[temp.previous_y][temp.previous_x].x_coord != start.x_coord && map[temp.previous_y][temp.previous_x].y_coord != start.y_coord) {
-            map[temp.previous_y][temp.previous_x].hiker_distance = map[temp.previous_y][temp.previous_x].rival_distance = 10;
-        }
+        map[temp.previous_y][temp.previous_x].hiker_distance = 10;
+        map[temp.previous_y][temp.previous_x].rival_distance = 10;
         temp = map[temp.previous_y][temp.previous_x];
     }
+    map[start.y_coord][start.x_coord].hiker_distance = INT_MAX;
+    map[start.y_coord][start.x_coord].rival_distance = INT_MAX;
 
     free(heap->arr);
     free(heap);

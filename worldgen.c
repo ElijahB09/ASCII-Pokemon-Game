@@ -32,6 +32,30 @@ void initNPCS(PokeMap *map, int num_npcs, PlayerCharacter *player, NPC *npcs[num
     // Get cost maps
     DijkstraTrainers(X_BOUND, Y_BOUND, map->arr, map->arr[tempy][tempx]);
 
+    printf("Hiker map\n");
+    for (i = 0; i < Y_BOUND; i++) {
+        for (j = 0; j < X_BOUND; j++) {
+            if (map->arr[i][j].hiker_total_distance == INT_MAX) {
+                printf("   ");
+            } else {
+                printf("%02d ", map->arr[i][j].hiker_total_distance % 100);
+            }
+        }
+        printf("\n");
+    }
+
+    printf("Rival map\n");
+    for (i = 0; i < Y_BOUND; i++) {
+        for (j = 0; j < X_BOUND; j++) {
+            if (map->arr[i][j].rival_total_distance == INT_MAX) {
+                printf("   ");
+            } else {
+                printf("%02d ", map->arr[i][j].rival_total_distance % 100);
+            }
+        }
+        printf("\n");
+    }
+
     // Generate npcs
     if (num_npcs == 1) {
         npcs[0] = malloc(sizeof (NPC));
@@ -85,7 +109,6 @@ void initNPCS(PokeMap *map, int num_npcs, PlayerCharacter *player, NPC *npcs[num
         npcs[i]->x_coord = test_x; npcs[i]->y_coord = test_y;
         map->arr[test_y][test_x].character_present = 1;
         map->arr[test_y][test_x].present_character = &npcs[i]->symbol;
-        //printf("NPC SYMBOL: %c\n\n", *map->arr[test_y][test_x].present_character);
     }
 }
 
