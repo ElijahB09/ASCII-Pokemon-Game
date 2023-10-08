@@ -9,6 +9,7 @@
 
 int main(int argc, char *argv[]) {
     PokeMap* world[401][401];
+    PlayerCharacter *player;
     int current_x, current_y, i, j, fly_x, fly_y, num_npcs;
     char userInput;
     num_npcs = 10;
@@ -28,6 +29,13 @@ int main(int argc, char *argv[]) {
         printf("ERROR: usage ./<assignment_name> --numtrainers=x where x >= 0");
     }
 
+    // Init characters
+    NPC *npcs[num_npcs];
+    player = NULL;
+    for (i = 0; i < num_npcs; i++) {
+        npcs[i] = NULL;
+    }
+
     for (i = 0; i < 401; i++) {
         for (j = 0; j < 401; j++) {
             world[i][j] = NULL;
@@ -38,11 +46,9 @@ int main(int argc, char *argv[]) {
 
     current_x = 200;
     current_y = 200;
-    *world[current_y][current_x] = *generateMap(world[current_y][current_x], world, current_x, current_y);
+    *world[current_y][current_x] = *generateMap(world[current_y][current_x], world, current_x, current_y, num_npcs, player, npcs);
     userInput = 'x';
     fly_x = fly_y = -999;
-
-    placeCharacters(world[current_y][current_x], num_npcs);
 
     while (userInput != 'q') {
         for (i = 0; i < Y_BOUND; i++) {
@@ -64,7 +70,7 @@ int main(int argc, char *argv[]) {
                 case 'w':
                     current_x--;
                     if (current_x >= 0) {
-                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y);
+                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y, num_npcs, player, npcs);
                     } else {
                         current_x++;
                         printf("Error cannot go beyond world limits\n");
@@ -73,7 +79,7 @@ int main(int argc, char *argv[]) {
                 case 'e':
                     current_x++;
                     if (current_x < 401) {
-                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y);
+                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y, num_npcs, player, npcs);
                     } else {
                         current_x--;
                         printf("Error cannot go beyond world limits\n");
@@ -82,7 +88,7 @@ int main(int argc, char *argv[]) {
                 case 'n':
                     current_y--;
                     if (current_y >= 0) {
-                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y);
+                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y, num_npcs, player, npcs);
                     } else {
                         current_y++;
                         printf("Error cannot go beyond world limits\n");
@@ -91,7 +97,7 @@ int main(int argc, char *argv[]) {
                 case 's':
                     current_y++;
                     if (current_y < 401) {
-                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y);
+                        *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y, num_npcs, player, npcs);
                     } else {
                         current_y--;
                         printf("Error cannot go beyond world limits\n");
@@ -105,7 +111,7 @@ int main(int argc, char *argv[]) {
                         if ((-200 <= fly_x && fly_x < 201) && (-200 <= fly_y && fly_y < 201)) {
                             current_x = fly_x + 200;
                             current_y = fly_y + 200;
-                            *world[current_y][current_x] = *generateMap(world[current_y][current_x], world, current_x, current_y);
+                            *world[current_y][current_x] = *generateMap(world[current_y][current_x], world, current_x, current_y, num_npcs, player, npcs);
                         } else {
                             printf("Invalid coordinates, must be between -200 and 200 inclusive for both x and y");
                         }
@@ -120,8 +126,8 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    for(i =0; i < 401; i++) {
-        for(j =0; j < 401; j++) {
+    for(i = 0; i < 401; i++) {
+        for(j = 0; j < 401; j++) {
             if(world[i][j]){
                 free(world[i][j]);
                 world[i][j] = NULL;
@@ -129,7 +135,9 @@ int main(int argc, char *argv[]) {
         }
     }
     free(player);
-    free(npcs);
+    for (i = 0; i < num_npcs; i++) {
+        free(npcs[i]);
+    }
 
     return 0;
 }

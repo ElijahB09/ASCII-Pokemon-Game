@@ -1,8 +1,95 @@
 #include <stdlib.h>
 #include "worldgen.h"
 #include <limits.h>
+#include <stdio.h>
 
-PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_y) {
+void initNPCS(PokeMap *map, int num_npcs, PlayerCharacter *player, NPC *npcs[num_npcs]) {
+    int tempx, tempy, found, i, j, rand_trainer, test_x, test_y;
+
+    // No characters are on the map
+    for (i = 0; i < Y_BOUND; i++) {
+        for (j = 0; j < X_BOUND; j++) {
+            map->arr[i][j].character_present = 0;
+        }
+    }
+
+    // place player, take this out later for controlling player movement
+    player = malloc(sizeof (PlayerCharacter));
+    player->symbol = '@';
+    found = 0;
+    for (i = 0; i < Y_BOUND; i++) {
+        for (j = 0; j < X_BOUND; j++) {
+            if (map->arr[i][j].terrainPiece == '#' && i > 0 && j > 0 && found == 0 && map->arr[i][j].character_present == 0) {
+                player->x_coord = j; player->y_coord = i;
+                map->arr[i][j].present_character = &player->symbol;
+                map->arr[i][j].character_present = 1;
+                tempx = j;
+                tempy = i;
+                found = 1;
+            }
+        }
+    }
+    // Get cost maps
+    DijkstraTrainers(X_BOUND, Y_BOUND, map->arr, map->arr[tempy][tempx]);
+
+    // Generate npcs
+    if (num_npcs == 1) {
+        npcs[0] = malloc(sizeof (NPC));
+        npcs[0]->symbol = 'r';
+    } else if (num_npcs >= 2) {
+        npcs[0] = malloc(sizeof (NPC));
+        npcs[0]->symbol = 'r';
+
+        npcs[1] = malloc(sizeof (NPC));
+        npcs[1]->symbol = 'h';
+
+        for (i = 2; i < num_npcs; i++) {
+            rand_trainer = (rand() % 6);
+            switch (rand_trainer) {
+                case 0:
+                    npcs[i] = malloc(sizeof (NPC));
+                    npcs[i]->symbol = 'r';
+                    break;
+                case 1:
+                    npcs[i] = malloc(sizeof (NPC));
+                    npcs[i]->symbol = 'h';
+                    break;
+                case 2:
+                    npcs[i] = malloc(sizeof (NPC));
+                    npcs[i]->symbol = 'p';
+                    break;
+                case 3:
+                    npcs[i] = malloc(sizeof (NPC));
+                    npcs[i]->symbol = 'w';
+                    break;
+                case 4:
+                    npcs[i] = malloc(sizeof (NPC));
+                    npcs[i]->symbol = 's';
+                    break;
+                case 5:
+                    npcs[i] = malloc(sizeof (NPC));
+                    npcs[i]->symbol = 'e';
+                    break;
+            }
+        }
+    }
+
+    for (i = 0; i < num_npcs; i++) {
+        test_x = (rand() % 77) + 1;
+        test_y = (rand() % 18) + 1;
+
+        while (map->arr[test_y][test_x].character_present == 1) {
+            test_x = (rand() % 77) + 1;
+            test_y = (rand() % 18) + 1;
+        }
+        npcs[i]->x_coord = test_x; npcs[i]->y_coord = test_y;
+        map->arr[test_y][test_x].character_present = 1;
+        map->arr[test_y][test_x].present_character = &npcs[i]->symbol;
+        //printf("NPC SYMBOL: %c\n\n", *map->arr[test_y][test_x].present_character);
+    }
+}
+
+PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_y, int num_npcs, PlayerCharacter *player, NPC *npcs[num_npcs]) {
     if (world[map_y][map_x]) {
         return world[map_y][map_x];
     }
@@ -377,6 +464,8 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
         Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[0][rand_path_up], map->arr[Y_BOUND - 1][rand_path_down]);
     }
     buildPokeStuffFancy(X_BOUND, Y_BOUND, map);
+    initNPCS(map, num_npcs, player, npcs);
+
     map->is_created = 1;
     world[map_y][map_x] = map;
 
@@ -386,93 +475,4 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
     free(seeding_queue);
 
     return world[map_y][map_x];
-}
-
-void placeCharacters(PokeMap *map, int num_npcs) {
-    int tempx, tempy, found, i, j, rand_trainer, test_x, test_y;
-    NPC* npcs[num_npcs];
-
-    for (i = 0; i < Y_BOUND; i++) {
-        for (j = 0; j < X_BOUND; j++) {
-
-        }
-    }
-
-    // place player
-    PlayerCharacter *player = malloc(sizeof (PlayerCharacter));
-    player->symbol = '@';
-    found = 0;
-    for (i = 0; i < Y_BOUND; i++) {
-        for (j = 0; j < X_BOUND; j++) {
-            if (map->arr[i][j].terrainPiece == '#' && i > 0 && j > 0 && found == 0) {
-                player->x_coord = j; player->y_coord = i;
-                map->arr[i][j].present_character = &player->symbol;
-                map->arr[i][j].character_present = 1;
-                tempx = j;
-                tempy = i;
-                found = 1;
-            }
-        }
-    }
-    // Get cost maps
-    DijkstraTrainers(X_BOUND, Y_BOUND, map->arr, map->arr[tempy][tempx]);
-
-    // Generate npcs
-    if (num_npcs == 1) {
-        npcs[0] = malloc(sizeof (NPC));
-        npcs[0]->symbol = 'r';
-    } else if (num_npcs >= 2) {
-        npcs[0] = malloc(sizeof (NPC));
-        npcs[0]->symbol = 'r';
-
-        npcs[1] = malloc(sizeof (NPC));
-        npcs[1]->symbol = 'h';
-
-        for (i = 2; i < num_npcs; i++) {
-            rand_trainer = (rand() % 6);
-            switch (rand_trainer) {
-                case 0:
-                    npcs[i] = malloc(sizeof (NPC));
-                    npcs[i]->symbol = 'r';
-                    break;
-                case 1:
-                    npcs[i] = malloc(sizeof (NPC));
-                    npcs[i]->symbol = 'h';
-                    break;
-                case 2:
-                    npcs[i] = malloc(sizeof (NPC));
-                    npcs[i]->symbol = 'p';
-                    break;
-                case 3:
-                    npcs[i] = malloc(sizeof (NPC));
-                    npcs[i]->symbol = 'w';
-                    break;
-                case 4:
-                    npcs[i] = malloc(sizeof (NPC));
-                    npcs[i]->symbol = 's';
-                    break;
-                case 5:
-                    npcs[i] = malloc(sizeof (NPC));
-                    npcs[i]->symbol = 'e';
-                    break;
-            }
-        }
-    }
-
-    for (i = 0; i < num_npcs; i++) {
-        test_x = (rand() % 77) + 1;
-        test_y = (rand() % 18) + 1;
-
-        while (map->arr[test_y][test_x].character_present == 1) {
-            test_x = (rand() % 77) + 1;
-            test_y = (rand() % 18) + 1;
-            if (map->arr[test_y][test_x].character_present == 0) {
-
-            }
-
-        }
-
-        npcs[i]->x_coord = test_x;
-        npcs[i]->y_coord = test_y;
-    }
 }
