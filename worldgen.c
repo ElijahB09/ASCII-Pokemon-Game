@@ -13,7 +13,8 @@ void initNPCS(PokeMap *map, int num_npcs, PlayerCharacter *player, NPC *npcs[num
         }
     }
 
-    // place player, take this out later for controlling player movement
+    // place player, this may have to move later due to the nature of the player moving between maps
+    // For now its okay
     player = malloc(sizeof (PlayerCharacter));
     player->symbol = '@';
     found = 0;
@@ -31,6 +32,8 @@ void initNPCS(PokeMap *map, int num_npcs, PlayerCharacter *player, NPC *npcs[num
     }
     // Get cost maps
     DijkstraTrainers(X_BOUND, Y_BOUND, map->arr, map->arr[tempy][tempx]);
+
+    // Bottom of what may have to move
 
     printf("Hiker map\n");
     for (i = 0; i < Y_BOUND; i++) {

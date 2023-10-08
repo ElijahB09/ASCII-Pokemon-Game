@@ -21,9 +21,6 @@ void DijkstraTrainers(int x, int y, terrainCell map[y][x], terrainCell start) {
     }
     map[start.y_coord][start.x_coord].rival_total_distance = 0;
     map[start.y_coord][start.x_coord].hiker_total_distance = 0;
-    printf("Start Rival Cost: %d", map[start.y_coord][start.x_coord].rival_distance);
-    printf("Start Hiker Cost: %d", map[start.y_coord][start.x_coord].hiker_distance);
-
 
     heapRival = buildMinHeap(HEAP_SIZE);
     insert(heapRival, map[start.y_coord][start.x_coord]);
