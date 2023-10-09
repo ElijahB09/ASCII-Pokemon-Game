@@ -124,7 +124,6 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
 
     t = extractMinTurn(heap);
 
-    printf("Character Moving: %c\n\n", t.characterSymbol);
     if (t.characterSymbol == 'r' || t.characterSymbol == 'h') {
         numNeighbors = getNeighbors8Directions(X_BOUND, Y_BOUND, map->arr, map->arr[t.y_coord][t.x_coord], neighbors);
         minDistance = minX = minY = INT_MAX;
@@ -421,6 +420,757 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                     }
                     break;
             }
+        }
+        else if (t.characterSymbol == 'w') {
+            t.spawnedInTerrain = map->arr[t.y_coord][t.x_coord].terrainPiece;
+            if (t.direction != 'l' && t.direction != 'u' && t.direction != 'w' && t.direction != 'z' && t.direction != 'r' && t.direction != 'd' && t.direction != 'x' && t.direction != 'e') {
+                int coinflip = rand() % 8;
+                switch (coinflip) {
+                    case 0:
+                        t.direction = 'l';
+                        break;
+                    case 1:
+                        t.direction = 'u';
+                        break;
+                    case 2:
+                        t.direction = 'w';
+                        break;
+                    case 3:
+                        t.direction = 'z';
+                        break;
+                    case 4:
+                        t.direction = 'r';
+                        break;
+                    case 5:
+                        t.direction = 'd';
+                        break;
+                    case 6:
+                        t.direction = 'x';
+                        break;
+                    case 7:
+                        t.direction = 'e';
+                        break;
+                }
+            }
+            switch (t.direction) {
+                case 'l':
+                    if (map->arr[t.y_coord][t.x_coord - 1].character_present == 0 &&
+                        map->arr[t.y_coord][t.x_coord - 1].rival_distance != INT_MAX &&
+                        map->arr[t.y_coord][t.x_coord - 1].terrainPiece == t.spawnedInTerrain) {
+                        // Move character off of current cell
+                        map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                        // Move character to new cell
+                        map->arr[t.y_coord][t.x_coord - 1].npc = map->arr[t.y_coord][t.x_coord].npc;
+                        map->arr[t.y_coord][t.x_coord].npc = NULL;
+                        map->arr[t.y_coord][t.x_coord - 1].character_present = 1;
+                        t.x_coord = t.x_coord - 1;
+                        t.y_coord = t.y_coord;
+                        t.priority += map->arr[t.y_coord][t.x_coord - 1].rival_distance;
+                        insertTurns(heap, &t);
+                    } else {
+                        int coinflip = rand() % 7;
+                        switch (coinflip) {
+                            case 0:
+                                t.direction = 'u';
+                                break;
+                            case 1:
+                                t.direction = 'w';
+                                break;
+                            case 2:
+                                t.direction = 'z';
+                                break;
+                            case 3:
+                                t.direction = 'r';
+                                break;
+                            case 4:
+                                t.direction = 'd';
+                                break;
+                            case 5:
+                                t.direction = 'x';
+                                break;
+                            case 6:
+                                t.direction = 'e';
+                                break;
+                        }
+                        insertTurns(heap, &t);
+                    }
+                    break;
+                case 'r':
+                    if (map->arr[t.y_coord][t.x_coord + 1].character_present == 0 &&
+                        map->arr[t.y_coord][t.x_coord + 1].rival_distance != INT_MAX &&
+                        map->arr[t.y_coord][t.x_coord + 1].terrainPiece == t.spawnedInTerrain) {
+                        // Move character off of current cell
+                        map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                        // Move character to new cell
+                        map->arr[t.y_coord][t.x_coord + 1].npc = map->arr[t.y_coord][t.x_coord].npc;
+                        map->arr[t.y_coord][t.x_coord].npc = NULL;
+                        map->arr[t.y_coord][t.x_coord + 1].character_present = 1;
+                        t.x_coord = t.x_coord + 1;
+                        t.y_coord = t.y_coord;
+                        t.priority += map->arr[t.y_coord][t.x_coord + 1].rival_distance;
+                        insertTurns(heap, &t);
+                    } else {
+                        int coinflip = rand() % 7;
+                        switch (coinflip) {
+                            case 0:
+                                t.direction = 'l';
+                                break;
+                            case 1:
+                                t.direction = 'u';
+                                break;
+                            case 2:
+                                t.direction = 'w';
+                                break;
+                            case 3:
+                                t.direction = 'z';
+                                break;
+                            case 4:
+                                t.direction = 'd';
+                                break;
+                            case 5:
+                                t.direction = 'x';
+                                break;
+                            case 6:
+                                t.direction = 'e';
+                                break;
+                        }
+                        insertTurns(heap, &t);
+                    }
+                    break;
+                case 'u':
+                    if (map->arr[t.y_coord - 1][t.x_coord].character_present == 0 &&
+                        map->arr[t.y_coord - 1][t.x_coord].rival_distance != INT_MAX &&
+                        map->arr[t.y_coord - 1][t.x_coord].terrainPiece == t.spawnedInTerrain) {
+                        // Move character off of current cell
+                        map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                        // Move character to new cell
+                        map->arr[t.y_coord - 1][t.x_coord].npc = map->arr[t.y_coord][t.x_coord].npc;
+                        map->arr[t.y_coord][t.x_coord].npc = NULL;
+                        map->arr[t.y_coord - 1][t.x_coord].character_present = 1;
+                        t.x_coord = t.x_coord;
+                        t.y_coord = t.y_coord - 1;
+                        t.priority += map->arr[t.y_coord - 1][t.x_coord].rival_distance;
+                        insertTurns(heap, &t);
+                    } else {
+                        int coinflip = rand() % 7;
+                        switch (coinflip) {
+                            case 0:
+                                t.direction = 'l';
+                                break;
+                            case 1:
+                                t.direction = 'w';
+                                break;
+                            case 2:
+                                t.direction = 'z';
+                                break;
+                            case 3:
+                                t.direction = 'r';
+                                break;
+                            case 4:
+                                t.direction = 'd';
+                                break;
+                            case 5:
+                                t.direction = 'x';
+                                break;
+                            case 6:
+                                t.direction = 'e';
+                                break;
+                        }
+                        insertTurns(heap, &t);
+                    }
+                    break;
+                case 'd':
+                    if (map->arr[t.y_coord + 1][t.x_coord].character_present == 0 &&
+                        map->arr[t.y_coord + 1][t.x_coord].rival_distance != INT_MAX &&
+                        map->arr[t.y_coord + 1][t.x_coord].terrainPiece == t.spawnedInTerrain) {
+                        // Move character off of current cell
+                        map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                        // Move character to new cell
+                        map->arr[t.y_coord + 1][t.x_coord].npc = map->arr[t.y_coord][t.x_coord].npc;
+                        map->arr[t.y_coord][t.x_coord].npc = NULL;
+                        map->arr[t.y_coord + 1][t.x_coord].character_present = 1;
+                        t.x_coord = t.x_coord;
+                        t.y_coord = t.y_coord + 1;
+                        t.priority += map->arr[t.y_coord + 1][t.x_coord].rival_distance;
+                        insertTurns(heap, &t);
+                    } else {
+                        int coinflip = rand() % 7;
+                        switch (coinflip) {
+                            case 0:
+                                t.direction = 'l';
+                                break;
+                            case 1:
+                                t.direction = 'u';
+                                break;
+                            case 2:
+                                t.direction = 'w';
+                                break;
+                            case 3:
+                                t.direction = 'z';
+                                break;
+                            case 4:
+                                t.direction = 'r';
+                                break;
+                            case 5:
+                                t.direction = 'x';
+                                break;
+                            case 6:
+                                t.direction = 'e';
+                                break;
+                        }
+                        insertTurns(heap, &t);
+                    }
+                    break;
+                case 'w':
+                    if (map->arr[t.y_coord - 1][t.x_coord - 1].character_present == 0 &&
+                        map->arr[t.y_coord - 1][t.x_coord - 1].rival_distance != INT_MAX &&
+                        map->arr[t.y_coord - 1][t.x_coord - 1].terrainPiece == t.spawnedInTerrain) {
+                        // Move character off of current cell
+                        map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                        // Move character to new cell
+                        map->arr[t.y_coord - 1][t.x_coord - 1].npc = map->arr[t.y_coord][t.x_coord].npc;
+                        map->arr[t.y_coord][t.x_coord].npc = NULL;
+                        map->arr[t.y_coord - 1][t.x_coord - 1].character_present = 1;
+                        t.x_coord = t.x_coord - 1;
+                        t.y_coord = t.y_coord - 1;
+                        t.priority += map->arr[t.y_coord - 1][t.x_coord - 1].rival_distance;
+                        insertTurns(heap, &t);
+                    } else {
+                        int coinflip = rand() % 7;
+                        switch (coinflip) {
+                            case 0:
+                                t.direction = 'l';
+                                break;
+                            case 1:
+                                t.direction = 'u';
+                                break;
+                            case 2:
+                                t.direction = 'z';
+                                break;
+                            case 3:
+                                t.direction = 'r';
+                                break;
+                            case 4:
+                                t.direction = 'd';
+                                break;
+                            case 5:
+                                t.direction = 'x';
+                                break;
+                            case 6:
+                                t.direction = 'e';
+                                break;
+                        }
+                        insertTurns(heap, &t);
+                    }
+                    break;
+                case 'x':
+                    if (map->arr[t.y_coord + 1][t.x_coord + 1].character_present == 0 &&
+                        map->arr[t.y_coord + 1][t.x_coord + 1].rival_distance != INT_MAX &&
+                        map->arr[t.y_coord + 1][t.x_coord + 1].terrainPiece == t.spawnedInTerrain) {
+                        // Move character off of current cell
+                        map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                        // Move character to new cell
+                        map->arr[t.y_coord + 1][t.x_coord + 1].npc = map->arr[t.y_coord][t.x_coord].npc;
+                        map->arr[t.y_coord][t.x_coord].npc = NULL;
+                        map->arr[t.y_coord + 1][t.x_coord + 1].character_present = 1;
+                        t.x_coord = t.x_coord + 1;
+                        t.y_coord = t.y_coord + 1;
+                        t.priority += map->arr[t.y_coord + 1][t.x_coord + 1].rival_distance;
+                        insertTurns(heap, &t);
+                    } else {
+                        int coinflip = rand() % 7;
+                        switch (coinflip) {
+                            case 0:
+                                t.direction = 'l';
+                                break;
+                            case 1:
+                                t.direction = 'u';
+                                break;
+                            case 2:
+                                t.direction = 'w';
+                                break;
+                            case 3:
+                                t.direction = 'z';
+                                break;
+                            case 4:
+                                t.direction = 'r';
+                                break;
+                            case 5:
+                                t.direction = 'd';
+                                break;
+                            case 6:
+                                t.direction = 'e';
+                                break;
+                        }
+                        insertTurns(heap, &t);
+                    }
+                    break;
+                case 'z':
+                    if (map->arr[t.y_coord + 1][t.x_coord - 1].character_present == 0 &&
+                        map->arr[t.y_coord + 1][t.x_coord - 1].rival_distance != INT_MAX &&
+                        map->arr[t.y_coord + 1][t.x_coord - 1].terrainPiece == t.spawnedInTerrain) {
+                        // Move character off of current cell
+                        map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                        // Move character to new cell
+                        map->arr[t.y_coord + 1][t.x_coord - 1].npc = map->arr[t.y_coord][t.x_coord].npc;
+                        map->arr[t.y_coord][t.x_coord].npc = NULL;
+                        map->arr[t.y_coord + 1][t.x_coord - 1].character_present = 1;
+                        t.x_coord = t.x_coord - 1;
+                        t.y_coord = t.y_coord + 1;
+                        t.priority += map->arr[t.y_coord + 1][t.x_coord - 1].rival_distance;
+                        insertTurns(heap, &t);
+                    } else {
+                        int coinflip = rand() % 7;
+                        switch (coinflip) {
+                            case 0:
+                                t.direction = 'l';
+                                break;
+                            case 1:
+                                t.direction = 'u';
+                                break;
+                            case 2:
+                                t.direction = 'w';
+                                break;
+                            case 3:
+                                t.direction = 'r';
+                                break;
+                            case 4:
+                                t.direction = 'd';
+                                break;
+                            case 5:
+                                t.direction = 'x';
+                                break;
+                            case 6:
+                                t.direction = 'e';
+                                break;
+                        }
+                        insertTurns(heap, &t);
+                    }
+                    break;
+                case 'e':
+                    if (map->arr[t.y_coord - 1][t.x_coord + 1].character_present == 0 &&
+                        map->arr[t.y_coord - 1][t.x_coord + 1].rival_distance != INT_MAX &&
+                        map->arr[t.y_coord - 1][t.x_coord + 1].terrainPiece == t.spawnedInTerrain) {
+                        // Move character off of current cell
+                        map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                        // Move character to new cell
+                        map->arr[t.y_coord - 1][t.x_coord + 1].npc = map->arr[t.y_coord][t.x_coord].npc;
+                        map->arr[t.y_coord][t.x_coord].npc = NULL;
+                        map->arr[t.y_coord - 1][t.x_coord + 1].character_present = 1;
+                        t.x_coord = t.x_coord + 1;
+                        t.y_coord = t.y_coord - 1;
+                        t.priority += map->arr[t.y_coord - 1][t.x_coord + 1].rival_distance;
+                        insertTurns(heap, &t);
+                    } else {
+                        int coinflip = rand() % 7;
+                        switch (coinflip) {
+                            case 0:
+                                t.direction = 'l';
+                                break;
+                            case 1:
+                                t.direction = 'u';
+                                break;
+                            case 2:
+                                t.direction = 'w';
+                                break;
+                            case 3:
+                                t.direction = 'z';
+                                break;
+                            case 4:
+                                t.direction = 'r';
+                                break;
+                            case 5:
+                                t.direction = 'd';
+                                break;
+                            case 6:
+                                t.direction = 'x';
+                                break;
+                        }
+                        insertTurns(heap, &t);
+                    }
+                    break;
+            }
+        }
+        else if (t.characterSymbol == 'e') {
+            if (t.direction != 'l' && t.direction != 'u' && t.direction != 'w' && t.direction != 'z' && t.direction != 'r' && t.direction != 'd' && t.direction != 'x' && t.direction != 'e') {
+                int coinflip = rand() % 8;
+                switch (coinflip) {
+                    case 0:
+                        t.direction = 'l';
+                        break;
+                    case 1:
+                        t.direction = 'u';
+                        break;
+                    case 2:
+                        t.direction = 'w';
+                        break;
+                    case 3:
+                        t.direction = 'z';
+                        break;
+                    case 4:
+                        t.direction = 'r';
+                        break;
+                    case 5:
+                        t.direction = 'd';
+                        break;
+                    case 6:
+                        t.direction = 'x';
+                        break;
+                    case 7:
+                        t.direction = 'e';
+                        break;
+                }
+            }
+            switch (t.direction) {
+                case 'l':
+                    if (map->arr[t.y_coord][t.x_coord - 1].character_present == 0 &&
+                        map->arr[t.y_coord][t.x_coord - 1].rival_distance != INT_MAX) {
+                        // Move character off of current cell
+                        map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                        // Move character to new cell
+                        map->arr[t.y_coord][t.x_coord - 1].npc = map->arr[t.y_coord][t.x_coord].npc;
+                        map->arr[t.y_coord][t.x_coord].npc = NULL;
+                        map->arr[t.y_coord][t.x_coord - 1].character_present = 1;
+                        t.x_coord = t.x_coord - 1;
+                        t.y_coord = t.y_coord;
+                        t.priority += map->arr[t.y_coord][t.x_coord - 1].rival_distance;
+                        insertTurns(heap, &t);
+                    } else {
+                        int coinflip = rand() % 7;
+                        switch (coinflip) {
+                            case 0:
+                                t.direction = 'u';
+                                break;
+                            case 1:
+                                t.direction = 'w';
+                                break;
+                            case 2:
+                                t.direction = 'z';
+                                break;
+                            case 3:
+                                t.direction = 'r';
+                                break;
+                            case 4:
+                                t.direction = 'd';
+                                break;
+                            case 5:
+                                t.direction = 'x';
+                                break;
+                            case 6:
+                                t.direction = 'e';
+                                break;
+                        }
+                        insertTurns(heap, &t);
+                    }
+                    break;
+                case 'r':
+                    if (map->arr[t.y_coord][t.x_coord + 1].character_present == 0 &&
+                        map->arr[t.y_coord][t.x_coord + 1].rival_distance != INT_MAX) {
+                        // Move character off of current cell
+                        map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                        // Move character to new cell
+                        map->arr[t.y_coord][t.x_coord + 1].npc = map->arr[t.y_coord][t.x_coord].npc;
+                        map->arr[t.y_coord][t.x_coord].npc = NULL;
+                        map->arr[t.y_coord][t.x_coord + 1].character_present = 1;
+                        t.x_coord = t.x_coord + 1;
+                        t.y_coord = t.y_coord;
+                        t.priority += map->arr[t.y_coord][t.x_coord + 1].rival_distance;
+                        insertTurns(heap, &t);
+                    } else {
+                        int coinflip = rand() % 7;
+                        switch (coinflip) {
+                            case 0:
+                                t.direction = 'l';
+                                break;
+                            case 1:
+                                t.direction = 'u';
+                                break;
+                            case 2:
+                                t.direction = 'w';
+                                break;
+                            case 3:
+                                t.direction = 'z';
+                                break;
+                            case 4:
+                                t.direction = 'd';
+                                break;
+                            case 5:
+                                t.direction = 'x';
+                                break;
+                            case 6:
+                                t.direction = 'e';
+                                break;
+                        }
+                        insertTurns(heap, &t);
+                    }
+                    break;
+                case 'u':
+                    if (map->arr[t.y_coord - 1][t.x_coord].character_present == 0 &&
+                        map->arr[t.y_coord - 1][t.x_coord].rival_distance != INT_MAX) {
+                        // Move character off of current cell
+                        map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                        // Move character to new cell
+                        map->arr[t.y_coord - 1][t.x_coord].npc = map->arr[t.y_coord][t.x_coord].npc;
+                        map->arr[t.y_coord][t.x_coord].npc = NULL;
+                        map->arr[t.y_coord - 1][t.x_coord].character_present = 1;
+                        t.x_coord = t.x_coord;
+                        t.y_coord = t.y_coord - 1;
+                        t.priority += map->arr[t.y_coord - 1][t.x_coord].rival_distance;
+                        insertTurns(heap, &t);
+                    } else {
+                        int coinflip = rand() % 7;
+                        switch (coinflip) {
+                            case 0:
+                                t.direction = 'l';
+                                break;
+                            case 1:
+                                t.direction = 'w';
+                                break;
+                            case 2:
+                                t.direction = 'z';
+                                break;
+                            case 3:
+                                t.direction = 'r';
+                                break;
+                            case 4:
+                                t.direction = 'd';
+                                break;
+                            case 5:
+                                t.direction = 'x';
+                                break;
+                            case 6:
+                                t.direction = 'e';
+                                break;
+                        }
+                        insertTurns(heap, &t);
+                    }
+                    break;
+                case 'd':
+                    if (map->arr[t.y_coord + 1][t.x_coord].character_present == 0 &&
+                        map->arr[t.y_coord + 1][t.x_coord].rival_distance != INT_MAX) {
+                        // Move character off of current cell
+                        map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                        // Move character to new cell
+                        map->arr[t.y_coord + 1][t.x_coord].npc = map->arr[t.y_coord][t.x_coord].npc;
+                        map->arr[t.y_coord][t.x_coord].npc = NULL;
+                        map->arr[t.y_coord + 1][t.x_coord].character_present = 1;
+                        t.x_coord = t.x_coord;
+                        t.y_coord = t.y_coord + 1;
+                        t.priority += map->arr[t.y_coord + 1][t.x_coord].rival_distance;
+                        insertTurns(heap, &t);
+                    } else {
+                        int coinflip = rand() % 7;
+                        switch (coinflip) {
+                            case 0:
+                                t.direction = 'l';
+                                break;
+                            case 1:
+                                t.direction = 'u';
+                                break;
+                            case 2:
+                                t.direction = 'w';
+                                break;
+                            case 3:
+                                t.direction = 'z';
+                                break;
+                            case 4:
+                                t.direction = 'r';
+                                break;
+                            case 5:
+                                t.direction = 'x';
+                                break;
+                            case 6:
+                                t.direction = 'e';
+                                break;
+                        }
+                        insertTurns(heap, &t);
+                    }
+                    break;
+                case 'w':
+                    if (map->arr[t.y_coord - 1][t.x_coord - 1].character_present == 0 &&
+                        map->arr[t.y_coord - 1][t.x_coord - 1].rival_distance != INT_MAX) {
+                        // Move character off of current cell
+                        map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                        // Move character to new cell
+                        map->arr[t.y_coord - 1][t.x_coord - 1].npc = map->arr[t.y_coord][t.x_coord].npc;
+                        map->arr[t.y_coord][t.x_coord].npc = NULL;
+                        map->arr[t.y_coord - 1][t.x_coord - 1].character_present = 1;
+                        t.x_coord = t.x_coord - 1;
+                        t.y_coord = t.y_coord - 1;
+                        t.priority += map->arr[t.y_coord - 1][t.x_coord - 1].rival_distance;
+                        insertTurns(heap, &t);
+                    } else {
+                        int coinflip = rand() % 7;
+                        switch (coinflip) {
+                            case 0:
+                                t.direction = 'l';
+                                break;
+                            case 1:
+                                t.direction = 'u';
+                                break;
+                            case 2:
+                                t.direction = 'z';
+                                break;
+                            case 3:
+                                t.direction = 'r';
+                                break;
+                            case 4:
+                                t.direction = 'd';
+                                break;
+                            case 5:
+                                t.direction = 'x';
+                                break;
+                            case 6:
+                                t.direction = 'e';
+                                break;
+                        }
+                        insertTurns(heap, &t);
+                    }
+                    break;
+                case 'x':
+                    if (map->arr[t.y_coord + 1][t.x_coord + 1].character_present == 0 &&
+                        map->arr[t.y_coord + 1][t.x_coord + 1].rival_distance != INT_MAX) {
+                        // Move character off of current cell
+                        map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                        // Move character to new cell
+                        map->arr[t.y_coord + 1][t.x_coord + 1].npc = map->arr[t.y_coord][t.x_coord].npc;
+                        map->arr[t.y_coord][t.x_coord].npc = NULL;
+                        map->arr[t.y_coord + 1][t.x_coord + 1].character_present = 1;
+                        t.x_coord = t.x_coord + 1;
+                        t.y_coord = t.y_coord + 1;
+                        t.priority += map->arr[t.y_coord + 1][t.x_coord + 1].rival_distance;
+                        insertTurns(heap, &t);
+                    } else {
+                        int coinflip = rand() % 7;
+                        switch (coinflip) {
+                            case 0:
+                                t.direction = 'l';
+                                break;
+                            case 1:
+                                t.direction = 'u';
+                                break;
+                            case 2:
+                                t.direction = 'w';
+                                break;
+                            case 3:
+                                t.direction = 'z';
+                                break;
+                            case 4:
+                                t.direction = 'r';
+                                break;
+                            case 5:
+                                t.direction = 'd';
+                                break;
+                            case 6:
+                                t.direction = 'e';
+                                break;
+                        }
+                        insertTurns(heap, &t);
+                    }
+                    break;
+                case 'z':
+                    if (map->arr[t.y_coord + 1][t.x_coord - 1].character_present == 0 &&
+                        map->arr[t.y_coord + 1][t.x_coord - 1].rival_distance != INT_MAX) {
+                        // Move character off of current cell
+                        map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                        // Move character to new cell
+                        map->arr[t.y_coord + 1][t.x_coord - 1].npc = map->arr[t.y_coord][t.x_coord].npc;
+                        map->arr[t.y_coord][t.x_coord].npc = NULL;
+                        map->arr[t.y_coord + 1][t.x_coord - 1].character_present = 1;
+                        t.x_coord = t.x_coord - 1;
+                        t.y_coord = t.y_coord + 1;
+                        t.priority += map->arr[t.y_coord + 1][t.x_coord - 1].rival_distance;
+                        insertTurns(heap, &t);
+                    } else {
+                        int coinflip = rand() % 7;
+                        switch (coinflip) {
+                            case 0:
+                                t.direction = 'l';
+                                break;
+                            case 1:
+                                t.direction = 'u';
+                                break;
+                            case 2:
+                                t.direction = 'w';
+                                break;
+                            case 3:
+                                t.direction = 'r';
+                                break;
+                            case 4:
+                                t.direction = 'd';
+                                break;
+                            case 5:
+                                t.direction = 'x';
+                                break;
+                            case 6:
+                                t.direction = 'e';
+                                break;
+                        }
+                        insertTurns(heap, &t);
+                    }
+                    break;
+                case 'e':
+                    if (map->arr[t.y_coord - 1][t.x_coord + 1].character_present == 0 &&
+                        map->arr[t.y_coord - 1][t.x_coord + 1].rival_distance != INT_MAX) {
+                        // Move character off of current cell
+                        map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                        // Move character to new cell
+                        map->arr[t.y_coord - 1][t.x_coord + 1].npc = map->arr[t.y_coord][t.x_coord].npc;
+                        map->arr[t.y_coord][t.x_coord].npc = NULL;
+                        map->arr[t.y_coord - 1][t.x_coord + 1].character_present = 1;
+                        t.x_coord = t.x_coord + 1;
+                        t.y_coord = t.y_coord - 1;
+                        t.priority += map->arr[t.y_coord - 1][t.x_coord + 1].rival_distance;
+                        insertTurns(heap, &t);
+                    } else {
+                        int coinflip = rand() % 7;
+                        switch (coinflip) {
+                            case 0:
+                                t.direction = 'l';
+                                break;
+                            case 1:
+                                t.direction = 'u';
+                                break;
+                            case 2:
+                                t.direction = 'w';
+                                break;
+                            case 3:
+                                t.direction = 'z';
+                                break;
+                            case 4:
+                                t.direction = 'r';
+                                break;
+                            case 5:
+                                t.direction = 'd';
+                                break;
+                            case 6:
+                                t.direction = 'x';
+                                break;
+                        }
+                        insertTurns(heap, &t);
+                    }
+                    break;
+            }
+        }
+        else if (t.characterSymbol == 's') {
+            t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
+            insertTurns(heap, &t);
         }
     }
 }

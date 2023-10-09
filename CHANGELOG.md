@@ -1,3 +1,145 @@
+commit 73439b816255f5c90ea8945a92c539aca802ef70
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Mon Oct 9 05:18:35 2023 -0500
+
+    Finishing touches for pacers and README
+
+commit 08ef96a0c7213e42ff93a88810bd1a6d41305dab
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Mon Oct 9 05:06:38 2023 -0500
+
+    Pacer is up and functioning, woohoo, small changes may need to be made for the insert
+
+commit 5d58fd951fecd69aae0cc26a67f6e263871a6d5b
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Mon Oct 9 04:20:52 2023 -0500
+
+    Huge rework of project structure and I got hiker and rival to work, I'm so happy
+
+commit b66c821371506bb31d99426b7462d16a35f4d470
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Mon Oct 9 02:43:17 2023 -0500
+
+    Revert "Committing to figuring out this solution path"
+    
+    This reverts commit c58988c79f5e5af5e7d71995be9971758213e75d.
+
+commit c58988c79f5e5af5e7d71995be9971758213e75d
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Mon Oct 9 02:24:09 2023 -0500
+
+    Committing to figuring out this solution path
+
+commit e47447cc08c9ccd914041e274361f2bc394ff7fb
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Mon Oct 9 02:21:59 2023 -0500
+
+    Rid of useless pointer
+
+commit 453fe003b3c7d88959cb184b85c1d6f49bbdd5e5
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Mon Oct 9 02:08:32 2023 -0500
+
+    Revert "Revert "Priority works, however characters now print as the first digit of their addresses""
+    
+    This reverts commit 44bfdb7c7632347289038bc6e33571c694313aa9.
+
+commit 44bfdb7c7632347289038bc6e33571c694313aa9
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Mon Oct 9 02:06:28 2023 -0500
+
+    Revert "Priority works, however characters now print as the first digit of their addresses"
+    
+    This reverts commit cb012d4a76bad4b4e59591b47aa24ea2e135e00f.
+
+commit cb012d4a76bad4b4e59591b47aa24ea2e135e00f
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Mon Oct 9 01:49:29 2023 -0500
+
+    Priority works, however characters now print as the first digit of their addresses
+
+commit 288af1eb2d07eee78eb8d0722e56a71b18995c34
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Mon Oct 9 01:05:25 2023 -0500
+
+    Hiker spawning conditions are now good
+
+commit 70906f9142cc0dd41cb1e273cfef6e44d97178dc
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Mon Oct 9 01:01:32 2023 -0500
+
+    Rival pathfinding now done, moving onto rival spawning conditions
+
+commit 3afa9c73500d34c51255b36ab42a841579aae51a
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Mon Oct 9 00:26:36 2023 -0500
+
+    Revert "Set up for looping"
+    
+    This reverts commit da041286c1c2a984bdf76ec2b5a5d6c1a4af1cfd.
+
+commit 62a59e39251a094cb1a21877b034ecece4e81651
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Mon Oct 9 00:26:04 2023 -0500
+
+    Revert "Add re-insert for rival and hiker"
+    
+    This reverts commit d6fd25502539543eac3590675192117cc31c9f63.
+
+commit d6fd25502539543eac3590675192117cc31c9f63
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Mon Oct 9 00:03:31 2023 -0500
+
+    Add re-insert for rival and hiker
+
+commit da041286c1c2a984bdf76ec2b5a5d6c1a4af1cfd
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Oct 8 23:55:16 2023 -0500
+
+    Set up for looping
+
+commit 15fe46969ef8d76c51806f3d08d2ac032ef3d3cf
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Oct 8 22:40:59 2023 -0500
+
+    Hikers and rivals should work now, need to add logic so that they dont jump onto a cell that already has a character on it
+
+commit 981ab8a567372fbc4a5465abd553b3cf00164294
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Oct 8 22:22:05 2023 -0500
+
+    I've got h and r moving, but problematically its printing the address instead of the character
+
+commit a0fd139684cd6a60f95c683626b509b5d832735a
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Oct 8 21:27:34 2023 -0500
+
+    Constructed a turn priority, needs implementation
+
+commit 9c366836f66d2b5505d639edda5083d89f13074b
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Oct 7 22:55:45 2023 -0500
+
+    Final cleanup, leaving cost map printing in for emergency debugging if it happens
+
+commit 7cef00db8fa2a2f1024ec24a6f92379c7c6b80c8
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Oct 7 22:49:35 2023 -0500
+
+    I think I fixed my Dijkstra bug, I'm not completely sure
+
+commit 6aeb00b6b0b43b44880e111e9f8f9d6c43f89a9a
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Oct 7 19:51:53 2023 -0500
+
+    Got characters spawning, next up is logic to have them spawn in logically correct places
+
+commit 344e9a1b0fa23d16b91dcf340256e749c17f9cc6
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Oct 7 18:34:59 2023 -0500
+
+    Just realized a possible issue with my thought process, takin a break
+
 commit a93a1196d8a1d33501f628fad222bd697f293724
 Author: Elijah Brady <bradyeli09@gmail.com>
 Date:   Sat Oct 7 17:53:28 2023 -0500
