@@ -20,7 +20,7 @@ void initNPCS(PokeMap *map, int num_npcs, PlayerCharacter *player, NPC *npcs[num
         for (j = 0; j < X_BOUND; j++) {
             if (map->arr[i][j].terrainPiece == '#' && i > 0 && j > 0 && found == 0 && map->arr[i][j].character_present == 0) {
                 player->x_coord = j; player->y_coord = i;
-                map->arr[i][j].present_character = player->symbol;
+                map->arr[i][j].present_character = &player->symbol;
                 map->arr[i][j].character_present = 1;
                 tempx = j;
                 tempy = i;
@@ -118,7 +118,7 @@ void initNPCS(PokeMap *map, int num_npcs, PlayerCharacter *player, NPC *npcs[num
 
         npcs[i]->x_coord = test_x; npcs[i]->y_coord = test_y;
         map->arr[test_y][test_x].character_present = 1;
-        map->arr[test_y][test_x].present_character = npcs[i]->symbol;
+        map->arr[test_y][test_x].present_character = &npcs[i]->symbol;
     }
 }
 
