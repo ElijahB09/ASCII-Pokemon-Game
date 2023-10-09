@@ -143,11 +143,11 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
             }
         }
         // Move character off of current cell
-        map->arr[t.y_coord][t.x_coord].present_character = NULL;
         map->arr[t.y_coord][t.x_coord].character_present = 0;
 
         // Move character to new cell
-        map->arr[minY][minX].present_character = &t.characterSymbol;
+        map->arr[minY][minX].npc = map->arr[t.y_coord][t.x_coord].npc;
+        map->arr[t.y_coord][t.x_coord].npc = NULL;
         map->arr[minY][minX].character_present = 1;
 
         if (t.characterSymbol == 'r') {

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "dijkstra.h"
-#include "neighbors.h"
+
 #define HEAP_SIZE 8192
 
 void DijkstraTrainers(int x, int y, terrainCell map[y][x], terrainCell start) {

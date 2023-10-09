@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include "buildings.h"
-#include "neighbors.h"
 
 void buildPokeStuffFancy(int x, int y, PokeMap *map) {
     int coin_flip, rand_mart_x, rand_center_x, rand_mart_y, rand_center_y, i, j, k, road_start_x, road_end_x, road_start_y, road_end_y, started_x, ended_x, road_in_column, road_in_row, started_y, ended_y;

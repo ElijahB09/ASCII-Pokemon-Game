@@ -5,7 +5,7 @@ CFLAGS = -Wall -Werror -g
 SOURCES = main.c minHeap.c queue.c neighbors.c buildings.c dijkstra.c worldgen.c handleTurns.c
 
 # List of header files
-HEADERS = minHeap.h queue.h neigbors.h buildings.h dijkstra.h worldgen.h handleTurns.h
+HEADERS = minHeap.h queue.h neigbors.h buildings.h dijkstra.h worldgen.h handleTurns.h structs.h
 
 # Generate object file names from source files
 OBJECTS = $(SOURCES:.c=.o)
