@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <limits.h>
 
 #define X_BOUND 80
 #define Y_BOUND 21
@@ -123,7 +124,7 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
 
     t = extractMinTurn(heap);
 
-    printf("Character Symbol: %c\n\n", t.characterSymbol);
+    printf("Character Moving: %c\n\n", t.characterSymbol);
     if (t.characterSymbol == 'r' || t.characterSymbol == 'h') {
         numNeighbors = getNeighbors8Directions(X_BOUND, Y_BOUND, map->arr, map->arr[t.y_coord][t.x_coord], neighbors);
         minDistance = minX = minY = INT_MAX;
@@ -159,7 +160,251 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
         t.y_coord = minY;
 
         insertTurns(heap, &t);
-    } else {
-        printf("Not Hiker or Rival\n\n");
+    } else if (t.characterSymbol == 'p' || t.characterSymbol == 'w' || t.characterSymbol == 's' || t.characterSymbol == 'e') {
+        if (t.characterSymbol == 'p') {
+            if (t.direction != 'l' && t.direction != 'u' && t.direction != 'w' && t.direction != 'z' && t.direction != 'r' && t.direction != 'd' && t.direction != 'x' && t.direction != 'e') {
+                int coinflip = rand() % 4;
+                switch (coinflip) {
+                    case 0:
+                        t.direction = 'l';
+                        break;
+                    case 1:
+                        t.direction = 'u';
+                        break;
+                    case 2:
+                        t.direction = 'w';
+                        break;
+                    case 3:
+                        t.direction = 'z';
+                        break;
+                }
+            }
+            switch (t.direction) {
+                case 'l':
+                    if (map->arr[t.y_coord][t.x_coord - 1].character_present == 0 && map->arr[t.y_coord][t.x_coord - 1].rival_distance != INT_MAX) {
+                        // Move character off of current cell
+                        map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                        // Move character to new cell
+                        map->arr[t.y_coord][t.x_coord - 1].npc = map->arr[t.y_coord][t.x_coord].npc;
+                        map->arr[t.y_coord][t.x_coord].npc = NULL;
+                        map->arr[t.y_coord][t.x_coord - 1].character_present = 1;
+                        t.x_coord = t.x_coord - 1;
+                        t.y_coord = t.y_coord;
+                        insertTurns(heap, &t);
+                    } else {
+                        t.direction = 'r';
+                        if (map->arr[t.y_coord][t.x_coord + 1].character_present == 0 && map->arr[t.y_coord][t.x_coord + 1].rival_distance != INT_MAX) {
+                            // Move character off of current cell
+                            map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                            // Move character to new cell
+                            map->arr[t.y_coord][t.x_coord + 1].npc = map->arr[t.y_coord][t.x_coord].npc;
+                            map->arr[t.y_coord][t.x_coord].npc = NULL;
+                            map->arr[t.y_coord][t.x_coord + 1].character_present = 1;
+                            t.x_coord = t.x_coord + 1;
+                            t.y_coord = t.y_coord;
+                            insertTurns(heap, &t);
+                        }
+                    }
+                    break;
+                case 'r':
+                    if (map->arr[t.y_coord][t.x_coord + 1].character_present == 0 && map->arr[t.y_coord][t.x_coord + 1].rival_distance != INT_MAX) {
+                        // Move character off of current cell
+                        map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                        // Move character to new cell
+                        map->arr[t.y_coord][t.x_coord + 1].npc = map->arr[t.y_coord][t.x_coord].npc;
+                        map->arr[t.y_coord][t.x_coord].npc = NULL;
+                        map->arr[t.y_coord][t.x_coord + 1].character_present = 1;
+                        t.x_coord = t.x_coord + 1;
+                        t.y_coord = t.y_coord;
+                        insertTurns(heap, &t);
+                    } else {
+                        t.direction = 'l';
+                        if (map->arr[t.y_coord][t.x_coord - 1].character_present == 0 && map->arr[t.y_coord][t.x_coord - 1].rival_distance != INT_MAX) {
+                            // Move character off of current cell
+                            map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                            // Move character to new cell
+                            map->arr[t.y_coord][t.x_coord - 1].npc = map->arr[t.y_coord][t.x_coord].npc;
+                            map->arr[t.y_coord][t.x_coord].npc = NULL;
+                            map->arr[t.y_coord][t.x_coord - 1].character_present = 1;
+                            t.x_coord = t.x_coord - 1;
+                            t.y_coord = t.y_coord;
+                            insertTurns(heap, &t);
+                        }
+                    }
+                    break;
+                case 'u':
+                    if (map->arr[t.y_coord - 1][t.x_coord].character_present == 0 && map->arr[t.y_coord - 1][t.x_coord].rival_distance != INT_MAX) {
+                        // Move character off of current cell
+                        map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                        // Move character to new cell
+                        map->arr[t.y_coord - 1][t.x_coord].npc = map->arr[t.y_coord][t.x_coord].npc;
+                        map->arr[t.y_coord][t.x_coord].npc = NULL;
+                        map->arr[t.y_coord - 1][t.x_coord].character_present = 1;
+                        t.x_coord = t.x_coord;
+                        t.y_coord = t.y_coord - 1;
+                        insertTurns(heap, &t);
+                    } else {
+                        t.direction = 'd';
+                        if (map->arr[t.y_coord + 1][t.x_coord].character_present == 0 && map->arr[t.y_coord + 1][t.x_coord].rival_distance != INT_MAX) {
+                            // Move character off of current cell
+                            map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                            // Move character to new cell
+                            map->arr[t.y_coord + 1][t.x_coord].npc = map->arr[t.y_coord][t.x_coord].npc;
+                            map->arr[t.y_coord][t.x_coord].npc = NULL;
+                            map->arr[t.y_coord + 1][t.x_coord].character_present = 1;
+                            t.x_coord = t.x_coord;
+                            t.y_coord = t.y_coord + 1;
+                            insertTurns(heap, &t);
+                        }
+                    }
+                    break;
+                case 'd':
+                    if (map->arr[t.y_coord + 1][t.x_coord].character_present == 0 && map->arr[t.y_coord + 1][t.x_coord].rival_distance != INT_MAX) {
+                        // Move character off of current cell
+                        map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                        // Move character to new cell
+                        map->arr[t.y_coord + 1][t.x_coord].npc = map->arr[t.y_coord][t.x_coord].npc;
+                        map->arr[t.y_coord][t.x_coord].npc = NULL;
+                        map->arr[t.y_coord + 1][t.x_coord].character_present = 1;
+                        t.x_coord = t.x_coord;
+                        t.y_coord = t.y_coord + 1;
+                        insertTurns(heap, &t);
+                    } else {
+                        t.direction = 'u';
+                        if (map->arr[t.y_coord - 1][t.x_coord].character_present == 0 && map->arr[t.y_coord - 1][t.x_coord].rival_distance != INT_MAX) {
+                            // Move character off of current cell
+                            map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                            // Move character to new cell
+                            map->arr[t.y_coord - 1][t.x_coord].npc = map->arr[t.y_coord][t.x_coord].npc;
+                            map->arr[t.y_coord][t.x_coord].npc = NULL;
+                            map->arr[t.y_coord - 1][t.x_coord].character_present = 1;
+                            t.x_coord = t.x_coord;
+                            t.y_coord = t.y_coord - 1;
+                            insertTurns(heap, &t);
+                        }
+                    }
+                    break;
+                case 'w':
+                    if (map->arr[t.y_coord - 1][t.x_coord - 1].character_present == 0 && map->arr[t.y_coord - 1][t.x_coord - 1].rival_distance != INT_MAX) {
+                        // Move character off of current cell
+                        map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                        // Move character to new cell
+                        map->arr[t.y_coord - 1][t.x_coord - 1].npc = map->arr[t.y_coord][t.x_coord].npc;
+                        map->arr[t.y_coord][t.x_coord].npc = NULL;
+                        map->arr[t.y_coord - 1][t.x_coord - 1].character_present = 1;
+                        t.x_coord = t.x_coord - 1;
+                        t.y_coord = t.y_coord - 1;
+                        insertTurns(heap, &t);
+                    } else {
+                        t.direction = 'x';
+                        if (map->arr[t.y_coord + 1][t.x_coord + 1].character_present == 0 && map->arr[t.y_coord + 1][t.x_coord].rival_distance != INT_MAX) {
+                            // Move character off of current cell
+                            map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                            // Move character to new cell
+                            map->arr[t.y_coord + 1][t.x_coord + 1].npc = map->arr[t.y_coord][t.x_coord].npc;
+                            map->arr[t.y_coord][t.x_coord].npc = NULL;
+                            map->arr[t.y_coord + 1][t.x_coord + 1].character_present = 1;
+                            t.x_coord = t.x_coord + 1;
+                            t.y_coord = t.y_coord + 1;
+                            insertTurns(heap, &t);
+                        }
+                    }
+                    break;
+                case 'x':
+                    if (map->arr[t.y_coord + 1][t.x_coord + 1].character_present == 0 && map->arr[t.y_coord + 1][t.x_coord + 1].rival_distance != INT_MAX) {
+                        // Move character off of current cell
+                        map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                        // Move character to new cell
+                        map->arr[t.y_coord + 1][t.x_coord + 1].npc = map->arr[t.y_coord][t.x_coord].npc;
+                        map->arr[t.y_coord][t.x_coord].npc = NULL;
+                        map->arr[t.y_coord + 1][t.x_coord + 1].character_present = 1;
+                        t.x_coord = t.x_coord + 1;
+                        t.y_coord = t.y_coord + 1;
+                        insertTurns(heap, &t);
+                    } else {
+                        t.direction = 'w';
+                        if (map->arr[t.y_coord - 1][t.x_coord - 1].character_present == 0 && map->arr[t.y_coord - 1][t.x_coord - 1].rival_distance != INT_MAX) {
+                            // Move character off of current cell
+                            map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                            // Move character to new cell
+                            map->arr[t.y_coord - 1][t.x_coord - 1].npc = map->arr[t.y_coord][t.x_coord].npc;
+                            map->arr[t.y_coord][t.x_coord].npc = NULL;
+                            map->arr[t.y_coord - 1][t.x_coord - 1].character_present = 1;
+                            t.x_coord = t.x_coord - 1;
+                            t.y_coord = t.y_coord - 1;
+                            insertTurns(heap, &t);
+                        }
+                    }
+                    break;
+                case 'z':
+                    if (map->arr[t.y_coord + 1][t.x_coord - 1].character_present == 0 && map->arr[t.y_coord + 1][t.x_coord - 1].rival_distance != INT_MAX) {
+                        // Move character off of current cell
+                        map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                        // Move character to new cell
+                        map->arr[t.y_coord + 1][t.x_coord - 1].npc = map->arr[t.y_coord][t.x_coord].npc;
+                        map->arr[t.y_coord][t.x_coord].npc = NULL;
+                        map->arr[t.y_coord + 1][t.x_coord - 1].character_present = 1;
+                        t.x_coord = t.x_coord - 1;
+                        t.y_coord = t.y_coord + 1;
+                        insertTurns(heap, &t);
+                    } else {
+                        t.direction = 'e';
+                        if (map->arr[t.y_coord - 1][t.x_coord + 1].character_present == 0 && map->arr[t.y_coord - 1][t.x_coord + 1].rival_distance != INT_MAX) {
+                            // Move character off of current cell
+                            map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                            // Move character to new cell
+                            map->arr[t.y_coord - 1][t.x_coord + 1].npc = map->arr[t.y_coord][t.x_coord].npc;
+                            map->arr[t.y_coord][t.x_coord].npc = NULL;
+                            map->arr[t.y_coord - 1][t.x_coord + 1].character_present = 1;
+                            t.x_coord = t.x_coord + 1;
+                            t.y_coord = t.y_coord - 1;
+                            insertTurns(heap, &t);
+                        }
+                    }
+                    break;
+                case 'e':
+                    if (map->arr[t.y_coord - 1][t.x_coord + 1].character_present == 0 && map->arr[t.y_coord - 1][t.x_coord + 1].rival_distance != INT_MAX) {
+                        // Move character off of current cell
+                        map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                        // Move character to new cell
+                        map->arr[t.y_coord - 1][t.x_coord + 1].npc = map->arr[t.y_coord][t.x_coord].npc;
+                        map->arr[t.y_coord][t.x_coord].npc = NULL;
+                        map->arr[t.y_coord - 1][t.x_coord + 1].character_present = 1;
+                        t.x_coord = t.x_coord + 1;
+                        t.y_coord = t.y_coord - 1;
+                        insertTurns(heap, &t);
+                    } else {
+                        t.direction = 'z';
+                        if (map->arr[t.y_coord + 1][t.x_coord - 1].character_present == 0 && map->arr[t.y_coord + 1][t.x_coord - 1].rival_distance != INT_MAX) {
+                            // Move character off of current cell
+                            map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+                            // Move character to new cell
+                            map->arr[t.y_coord + 1][t.x_coord - 1].npc = map->arr[t.y_coord][t.x_coord].npc;
+                            map->arr[t.y_coord][t.x_coord].npc = NULL;
+                            map->arr[t.y_coord + 1][t.x_coord - 1].character_present = 1;
+                            t.x_coord = t.x_coord - 1;
+                            t.y_coord = t.y_coord + 1;
+                            insertTurns(heap, &t);
+                        }
+                    }
+                    break;
+            }
+        }
     }
 }

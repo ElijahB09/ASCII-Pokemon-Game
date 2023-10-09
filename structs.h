@@ -37,6 +37,7 @@ typedef struct {
 typedef struct {
     char characterSymbol;
     char spawnedInTerrain;
+    char direction;
     int priority, x_coord, y_coord;
     PokeMap *currentMap;
 } Turn;
