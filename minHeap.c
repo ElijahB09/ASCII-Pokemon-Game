@@ -13,7 +13,7 @@ MinHeap* buildMinHeap(unsigned capacity) {
     heap->size = 0;
     heap->capacity = capacity;
 
-    heap->arr = (terrainCell *)malloc(capacity * sizeof(terrainCell));
+    heap->arr = (terrainCell*) malloc(capacity * sizeof(terrainCell));
     if (heap->arr == NULL) {
         printf("Uh oh, computer broke");
         return NULL;
@@ -42,7 +42,7 @@ void insert(MinHeap* heap, terrainCell element) {
     }
 }
 
-void minHeapify(MinHeap * heap, int index)
+void minHeapify(MinHeap* heap, int index)
 {
     int left = index * 2 + 1;
     int right = index * 2 + 2;

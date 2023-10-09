@@ -15,8 +15,6 @@ void initNPCS(PokeMap *map, int num_npcs, PlayerCharacter *player, NPC *npcs[num
 
     // place player, this may have to move later due to the nature of the player moving between maps
     // For now its okay
-    player = malloc(sizeof (PlayerCharacter));
-    player->symbol = '@';
     found = 0;
     for (i = 0; i < Y_BOUND; i++) {
         for (j = 0; j < X_BOUND; j++) {

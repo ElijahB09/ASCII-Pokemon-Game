@@ -9,7 +9,6 @@ typedef struct {
 } MinHeap;
 
 MinHeap* buildMinHeap(unsigned capacity);
-void insertHelper(MinHeap* heap, int index);
 void insert(MinHeap* heap, terrainCell element);
 void minHeapify(MinHeap * heap, int index);
 terrainCell extractMin(MinHeap* heap);
