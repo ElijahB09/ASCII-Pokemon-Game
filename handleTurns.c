@@ -94,9 +94,9 @@ TurnOrder* createTurnPriority(int num_npcs, NPC *npcs[num_npcs], PlayerCharacter
     TurnOrder *turnOrder;
 
     // +1 for the player
-    turnOrder = buildPriority(num_npcs + 1);
+    turnOrder = buildPriority(num_npcs);
     for (i = 0; i < num_npcs; i++) {
-        t.priority = 10;
+        t.priority = 0;
         t.characterSymbol = npcs[i]->symbol;
         t.currentMap = map;
         t.x_coord = npcs[i]->x_coord;
@@ -104,13 +104,13 @@ TurnOrder* createTurnPriority(int num_npcs, NPC *npcs[num_npcs], PlayerCharacter
         t.spawnedInTerrain = map->arr[t.y_coord][t.x_coord].terrainPiece;
         insertTurns(turnOrder, t);
     }
-    t.priority = 10;
-    t.y_coord = player->y_coord;
-    t.x_coord = player->x_coord;
-    t.currentMap = map;
-    t.characterSymbol = player->symbol;
-    t.spawnedInTerrain = map->arr[t.y_coord][t.x_coord].terrainPiece;
-    insertTurns(turnOrder, t);
+//    t.priority = 0;
+//    t.y_coord = player->y_coord;
+//    t.x_coord = player->x_coord;
+//    t.currentMap = map;
+//    t.characterSymbol = player->symbol;
+//    t.spawnedInTerrain = map->arr[t.y_coord][t.x_coord].terrainPiece;
+//    insertTurns(turnOrder, t);
 
     return turnOrder;
 }
@@ -127,14 +127,14 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
         minDistance = minX = minY = INT_MAX;
         for (i = 0; i < numNeighbors; i++) {
             if (t->characterSymbol == 'r') {
-                if (minDistance > neighbors[i].rival_distance) {
-                    minDistance = neighbors[i].rival_distance;
+                if (minDistance > neighbors[i].rival_total_distance && map->arr[neighbors[i].y_coord][neighbors[i].x_coord].character_present == 0) {
+                    minDistance = neighbors[i].rival_total_distance;
                     minY = neighbors[i].y_coord;
                     minX = neighbors[i].x_coord;
                 }
             } else {
-                if (minDistance > neighbors[i].hiker_distance) {
-                    minDistance = neighbors[i].hiker_distance;
+                if (minDistance > neighbors[i].hiker_total_distance) {
+                    minDistance = neighbors[i].hiker_total_distance;
                     minY = neighbors[i].y_coord;
                     minX = neighbors[i].x_coord;
                 }
@@ -147,6 +147,16 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
         // Move character to new cell
         map->arr[minY][minX].present_character = &t->characterSymbol;
         map->arr[minY][minX].character_present = 1;
+
+        if (t->characterSymbol == 'r') {
+            t->priority += map->arr[minY][minX].rival_distance;
+        }
+        if (t->characterSymbol == 'h') {
+            t->priority += map->arr[minY][minX].hiker_distance;
+        }
+        t->x_coord = minX;
+        t->y_coord = minY;
+        insertTurns(heap, *t);
     } else {
         printf("Not Hiker or Rival\n\n");
     }
