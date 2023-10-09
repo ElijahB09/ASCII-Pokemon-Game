@@ -55,8 +55,20 @@ int main(int argc, char *argv[]) {
     //userInput = 'x';
     //fly_x = fly_y = -999;
     turnOrder = createTurnPriority(num_npcs, npcs, player, world[current_y][current_x]);
-
     printf("%d\n\n", turnOrder->size);
+
+    for (i = 0; i < Y_BOUND; i++) {
+        for (j = 0; j < X_BOUND; j++) {
+            if (world[current_y][current_x]->arr[i][j].character_present) {
+                printf("%c", *world[current_y][current_x]->arr[i][j].present_character);
+            } else {
+                printf("%c", world[current_y][current_x]->arr[i][j].terrainPiece);
+            }
+        }
+        printf("\n");
+    }
+
+    takeTurn(turnOrder, world[current_y][current_x]);
 
     for (i = 0; i < Y_BOUND; i++) {
         for (j = 0; j < X_BOUND; j++) {
@@ -158,6 +170,8 @@ int main(int argc, char *argv[]) {
     for (i = 0; i < num_npcs; i++) {
         free(npcs[i]);
     }
+    free(turnOrder->arr);
+    free(turnOrder);
 
     return 0;
 }

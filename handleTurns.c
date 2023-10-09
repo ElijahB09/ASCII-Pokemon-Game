@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define X_BOUND 80
+#define Y_BOUND 21
+
 TurnOrder* buildPriority(unsigned capacity) {
     TurnOrder* heap = (TurnOrder *)malloc(sizeof(TurnOrder));
 
@@ -68,7 +71,7 @@ void minHeapifyTurns(TurnOrder * heap, int index)
     }
 }
 
-Turn extractMinTurns(TurnOrder * heap)
+Turn extractMinTurn(TurnOrder * heap)
 {
     Turn deleteItem;
     //Adding a default value here to help get rid of warnings
@@ -89,27 +92,64 @@ Turn extractMinTurns(TurnOrder * heap)
 
 TurnOrder* createTurnPriority(int num_npcs, NPC *npcs[num_npcs], PlayerCharacter *player, PokeMap *map) {
     int i;
-    Turn *t;
+    Turn t;
     TurnOrder *turnOrder;
 
     // +1 for the player
     turnOrder = buildPriority(num_npcs + 1);
     for (i = 0; i < num_npcs; i++) {
-        t = malloc(sizeof (Turn));
-        t->priority = 10;
-        t->characterSymbol = npcs[i]->symbol;
-        t->currentMap = map;
-        t->x_coord = npcs[i]->x_coord;
-        t->y_coord = npcs[i]->y_coord;
-        insertTurns(turnOrder, *t);
+        t.priority = 10;
+        t.characterSymbol = npcs[i]->symbol;
+        t.currentMap = map;
+        t.x_coord = npcs[i]->x_coord;
+        t.y_coord = npcs[i]->y_coord;
+        t.spawnedInTerrain = map->arr[t.y_coord][t.x_coord].terrainPiece;
+        insertTurns(turnOrder, t);
     }
-    t = malloc(sizeof (Turn));
-    t->priority = 10;
-    t->y_coord = player->y_coord;
-    t->x_coord = player->x_coord;
-    t->currentMap = map;
-    t->characterSymbol = player->symbol;
-    insertTurns(turnOrder, *t);
+    t.priority = 10;
+    t.y_coord = player->y_coord;
+    t.x_coord = player->x_coord;
+    t.currentMap = map;
+    t.characterSymbol = player->symbol;
+    t.spawnedInTerrain = map->arr[t.y_coord][t.x_coord].terrainPiece;
+    insertTurns(turnOrder, t);
 
     return turnOrder;
+}
+
+void takeTurn(TurnOrder *heap, PokeMap *map) {
+    Turn t;
+    int numNeighbors, i, minDistance, minX, minY;
+    terrainCell neighbors[8];
+
+    t = extractMinTurn(heap);
+    printf("Character Symbol: %p\n\n", &t.characterSymbol);
+    if (t.characterSymbol == 'r' || t.characterSymbol == 'h') {
+        numNeighbors = getNeighbors8Directions(X_BOUND, Y_BOUND, map->arr, map->arr[t.y_coord][t.x_coord], neighbors);
+        minDistance = minX = minY = INT_MAX;
+        for (i = 0; i < numNeighbors; i++) {
+            if (t.characterSymbol == 'r') {
+                if (minDistance > neighbors[i].rival_distance) {
+                    minDistance = neighbors[i].rival_distance;
+                    minY = neighbors[i].y_coord;
+                    minX = neighbors[i].x_coord;
+                }
+            } else {
+                if (minDistance > neighbors[i].hiker_distance) {
+                    minDistance = neighbors[i].hiker_distance;
+                    minY = neighbors[i].y_coord;
+                    minX = neighbors[i].x_coord;
+                }
+            }
+        }
+        // Move character off of current cell
+        map->arr[t.y_coord][t.x_coord].present_character = '\0';
+        map->arr[t.y_coord][t.x_coord].character_present = 0;
+
+        // Move character to new cell
+        map->arr[minY][minX].present_character = &t.characterSymbol;
+        map->arr[minY][minX].character_present = 1;
+    } else {
+        printf("Not Hiker or Rival");
+    }
 }
