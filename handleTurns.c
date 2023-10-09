@@ -17,7 +17,7 @@ TurnOrder* buildPriority(unsigned capacity) {
     heap->size = 0;
     heap->capacity = capacity;
 
-    heap->arr = (Turn*) malloc(capacity * sizeof(Turn));
+    heap->arr = (Turn*) malloc(capacity * sizeof(Turn*));
     if (heap->arr == NULL) {
         printf("Uh oh, computer broke");
         return NULL;
@@ -38,15 +38,15 @@ void insertHelperTurns(TurnOrder * heap, int index) {
     }
 }
 
-void insertTurns(TurnOrder * heap, Turn element) {
+void insertTurns(TurnOrder * heap, Turn *element) {
     if (heap->size < heap->capacity) {
-        heap->arr[heap->size] = element;
+        heap->arr[heap->size] = *element;
         insertHelperTurns(heap, heap->size);
         heap->size++;
     }
 }
 
-void minHeapifyTurns(TurnOrder * heap, int index)
+void minHeapifyTurns(TurnOrder *heap, int index)
 {
     int left = index * 2 + 1;
     int right = index * 2 + 2;
@@ -71,16 +71,17 @@ void minHeapifyTurns(TurnOrder * heap, int index)
     }
 }
 
-Turn* extractMinTurn(TurnOrder * heap)
+Turn extractMinTurn(TurnOrder * heap)
 {
-    Turn *deleteItem = NULL;
+    Turn deleteItem;
+    deleteItem.priority = -1;
 
     if (heap->size == 0) {
         printf("\nHeap id empty.");
         return deleteItem;
     }
 
-    deleteItem = &heap->arr[0];
+    deleteItem = heap->arr[0];
     heap->arr[0] = heap->arr[heap->size - 1];
     heap->size--;
 
@@ -102,7 +103,7 @@ TurnOrder* createTurnPriority(int num_npcs, NPC *npcs[num_npcs], PlayerCharacter
         t.x_coord = npcs[i]->x_coord;
         t.y_coord = npcs[i]->y_coord;
         t.spawnedInTerrain = map->arr[t.y_coord][t.x_coord].terrainPiece;
-        insertTurns(turnOrder, t);
+        insertTurns(turnOrder, &t);
     }
 //    t.priority = 0;
 //    t.y_coord = player->y_coord;
@@ -116,24 +117,25 @@ TurnOrder* createTurnPriority(int num_npcs, NPC *npcs[num_npcs], PlayerCharacter
 }
 
 void takeTurn(TurnOrder *heap, PokeMap *map) {
-    Turn* t;
+    Turn t;
     int numNeighbors, i, minDistance, minX, minY;
     terrainCell neighbors[8];
 
     t = extractMinTurn(heap);
-    printf("Character Symbol: %c\n\n", t->characterSymbol);
-    if (t->characterSymbol == 'r' || t->characterSymbol == 'h') {
-        numNeighbors = getNeighbors8Directions(X_BOUND, Y_BOUND, map->arr, map->arr[t->y_coord][t->x_coord], neighbors);
+
+    printf("Character Symbol: %c\n\n", t.characterSymbol);
+    if (t.characterSymbol == 'r' || t.characterSymbol == 'h') {
+        numNeighbors = getNeighbors8Directions(X_BOUND, Y_BOUND, map->arr, map->arr[t.y_coord][t.x_coord], neighbors);
         minDistance = minX = minY = INT_MAX;
         for (i = 0; i < numNeighbors; i++) {
-            if (t->characterSymbol == 'r') {
+            if (t.characterSymbol == 'r') {
                 if (minDistance > neighbors[i].rival_total_distance && map->arr[neighbors[i].y_coord][neighbors[i].x_coord].character_present == 0) {
                     minDistance = neighbors[i].rival_total_distance;
                     minY = neighbors[i].y_coord;
                     minX = neighbors[i].x_coord;
                 }
             } else {
-                if (minDistance > neighbors[i].hiker_total_distance) {
+                if (minDistance > neighbors[i].hiker_total_distance && map->arr[neighbors[i].y_coord][neighbors[i].x_coord].character_present == 0) {
                     minDistance = neighbors[i].hiker_total_distance;
                     minY = neighbors[i].y_coord;
                     minX = neighbors[i].x_coord;
@@ -141,22 +143,22 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
             }
         }
         // Move character off of current cell
-        map->arr[t->y_coord][t->x_coord].present_character = NULL;
-        map->arr[t->y_coord][t->x_coord].character_present = 0;
+        map->arr[t.y_coord][t.x_coord].present_character = NULL;
+        map->arr[t.y_coord][t.x_coord].character_present = 0;
 
         // Move character to new cell
-        map->arr[minY][minX].present_character = &t->characterSymbol;
+        map->arr[minY][minX].present_character = &t.characterSymbol;
         map->arr[minY][minX].character_present = 1;
 
-        if (t->characterSymbol == 'r') {
-            t->priority += map->arr[minY][minX].rival_distance;
+        if (t.characterSymbol == 'r') {
+            t.priority += map->arr[minY][minX].rival_distance;
+        } else if (t.characterSymbol == 'h') {
+            t.priority += map->arr[minY][minX].hiker_distance;
         }
-        if (t->characterSymbol == 'h') {
-            t->priority += map->arr[minY][minX].hiker_distance;
-        }
-        t->x_coord = minX;
-        t->y_coord = minY;
-        insertTurns(heap, *t);
+        t.x_coord = minX;
+        t.y_coord = minY;
+
+        insertTurns(heap, &t);
     } else {
         printf("Not Hiker or Rival\n\n");
     }
