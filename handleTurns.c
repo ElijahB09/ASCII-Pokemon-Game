@@ -148,6 +148,9 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
         // Move character to new cell
         map->arr[minY][minX].present_character = &t->characterSymbol;
         map->arr[minY][minX].character_present = 1;
+
+        t->priority += t->characterSymbol == 'r' ? map->arr[minY][minX].rival_distance : map->arr[minY][minX].hiker_distance;
+        insertTurns(heap, *t);
     } else {
         printf("Not Hiker or Rival\n\n");
     }
