@@ -10,7 +10,7 @@ typedef struct {
 typedef struct {
     int front, rear, size;
     unsigned capacity;
-    terrainCell *array;
+    terrainCell * array;
 } Queue;
 
 Queue* createQueue(unsigned capacity);

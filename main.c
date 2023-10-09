@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
     int current_x, current_y, i, j, /*fly_x, fly_y,*/ num_npcs;
     //char userInput;
     TurnOrder *turnOrder;
-    num_npcs = 2;
+    num_npcs = 1;
 
     if (argc == 2) {
         if (strncmp(argv[1], "--numtrainers", 13) == 0) {
@@ -56,6 +56,7 @@ int main(int argc, char *argv[]) {
     //userInput = 'x';
     //fly_x = fly_y = -999;
     turnOrder = createTurnPriority(num_npcs, npcs, player, world[current_y][current_x]);
+    printf("%d\n\n", turnOrder->size);
 
     for (i = 0; i < Y_BOUND; i++) {
         for (j = 0; j < X_BOUND; j++) {
