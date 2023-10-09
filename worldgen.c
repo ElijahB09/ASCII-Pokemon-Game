@@ -103,10 +103,18 @@ void initNPCS(PokeMap *map, int num_npcs, PlayerCharacter *player, NPC *npcs[num
         test_x = (rand() % 77) + 1;
         test_y = (rand() % 18) + 1;
 
-        while (map->arr[test_y][test_x].character_present == 1) {
-            test_x = (rand() % 77) + 1;
-            test_y = (rand() % 18) + 1;
+        if (npcs[i]->symbol == 'r') {
+            while (map->arr[test_y][test_x].character_present == 1 || map->arr[test_y][test_x].rival_distance == INT_MAX) {
+                test_x = (rand() % 77) + 1;
+                test_y = (rand() % 18) + 1;
+            }
+        } else {
+            while (map->arr[test_y][test_x].character_present == 1) {
+                test_x = (rand() % 77) + 1;
+                test_y = (rand() % 18) + 1;
+            }
         }
+
         npcs[i]->x_coord = test_x; npcs[i]->y_coord = test_y;
         map->arr[test_y][test_x].character_present = 1;
         map->arr[test_y][test_x].present_character = &npcs[i]->symbol;
