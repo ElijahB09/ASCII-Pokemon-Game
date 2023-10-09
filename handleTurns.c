@@ -2,7 +2,6 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <limits.h>
 
 #define X_BOUND 80
 #define Y_BOUND 21
