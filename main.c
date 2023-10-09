@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <unistd.h>
 #include "buildings.h"
 #include "worldgen.h"
 #include "handleTurns.h"
@@ -68,17 +69,20 @@ int main(int argc, char *argv[]) {
         printf("\n");
     }
 
-    takeTurn(turnOrder, world[current_y][current_x]);
+    while (1) {
+        takeTurn(turnOrder, world[current_y][current_x]);
 
-    for (i = 0; i < Y_BOUND; i++) {
-        for (j = 0; j < X_BOUND; j++) {
-            if (world[current_y][current_x]->arr[i][j].present_character) {
-                printf("%c", *(world[current_y][current_x]->arr[i][j].present_character));
-            } else {
-                printf("%c", world[current_y][current_x]->arr[i][j].terrainPiece);
+        for (i = 0; i < Y_BOUND; i++) {
+            for (j = 0; j < X_BOUND; j++) {
+                if (world[current_y][current_x]->arr[i][j].present_character) {
+                    printf("%c", *(world[current_y][current_x]->arr[i][j].present_character));
+                } else {
+                    printf("%c", world[current_y][current_x]->arr[i][j].terrainPiece);
+                }
             }
+            printf("\n");
         }
-        printf("\n");
+        sleep(2);
     }
 
 // Comment out functionality for moving between maps
