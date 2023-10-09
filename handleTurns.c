@@ -17,7 +17,7 @@ TurnOrder* buildPriority(unsigned capacity) {
     heap->size = 0;
     heap->capacity = capacity;
 
-    heap->arr = (Turn*) malloc(capacity * sizeof(Turn*));
+    heap->arr = (Turn*) malloc(capacity * sizeof(Turn));
     if (heap->arr == NULL) {
         printf("Uh oh, computer broke");
         return NULL;
