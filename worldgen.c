@@ -108,8 +108,9 @@ void initNPCS(PokeMap *map, int num_npcs, PlayerCharacter *player, NPC *npcs[num
                 test_x = (rand() % 77) + 1;
                 test_y = (rand() % 18) + 1;
             }
-        } else {
-            while (map->arr[test_y][test_x].character_present == 1) {
+        }
+        else if (npcs[i]->symbol == 'h') {
+            while (map->arr[test_y][test_x].character_present == 1 || map->arr[test_y][test_x].hiker_distance == INT_MAX) {
                 test_x = (rand() % 77) + 1;
                 test_y = (rand() % 18) + 1;
             }
