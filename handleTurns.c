@@ -71,18 +71,16 @@ void minHeapifyTurns(TurnOrder * heap, int index)
     }
 }
 
-Turn extractMinTurn(TurnOrder * heap)
+Turn* extractMinTurn(TurnOrder * heap)
 {
-    Turn deleteItem;
-    //Adding a default value here to help get rid of warnings
-    deleteItem.x_coord = deleteItem.y_coord = -1;
+    Turn *deleteItem = NULL;
 
     if (heap->size == 0) {
         printf("\nHeap id empty.");
         return deleteItem;
     }
 
-    deleteItem = heap->arr[0];
+    deleteItem = &heap->arr[0];
     heap->arr[0] = heap->arr[heap->size - 1];
     heap->size--;
 
@@ -118,17 +116,17 @@ TurnOrder* createTurnPriority(int num_npcs, NPC *npcs[num_npcs], PlayerCharacter
 }
 
 void takeTurn(TurnOrder *heap, PokeMap *map) {
-    Turn t;
+    Turn* t;
     int numNeighbors, i, minDistance, minX, minY;
     terrainCell neighbors[8];
 
     t = extractMinTurn(heap);
-    printf("Character Symbol: %p\n\n", &t.characterSymbol);
-    if (t.characterSymbol == 'r' || t.characterSymbol == 'h') {
-        numNeighbors = getNeighbors8Directions(X_BOUND, Y_BOUND, map->arr, map->arr[t.y_coord][t.x_coord], neighbors);
+    printf("Character Symbol: %c\n\n", t->characterSymbol);
+    if (t->characterSymbol == 'r' || t->characterSymbol == 'h') {
+        numNeighbors = getNeighbors8Directions(X_BOUND, Y_BOUND, map->arr, map->arr[t->y_coord][t->x_coord], neighbors);
         minDistance = minX = minY = INT_MAX;
         for (i = 0; i < numNeighbors; i++) {
-            if (t.characterSymbol == 'r') {
+            if (t->characterSymbol == 'r') {
                 if (minDistance > neighbors[i].rival_distance) {
                     minDistance = neighbors[i].rival_distance;
                     minY = neighbors[i].y_coord;
@@ -143,13 +141,13 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
             }
         }
         // Move character off of current cell
-        map->arr[t.y_coord][t.x_coord].present_character = '\0';
-        map->arr[t.y_coord][t.x_coord].character_present = 0;
+        map->arr[t->y_coord][t->x_coord].present_character = NULL;
+        map->arr[t->y_coord][t->x_coord].character_present = 0;
 
         // Move character to new cell
-        map->arr[minY][minX].present_character = &t.characterSymbol;
+        map->arr[minY][minX].present_character = &t->characterSymbol;
         map->arr[minY][minX].character_present = 1;
     } else {
-        printf("Not Hiker or Rival");
+        printf("Not Hiker or Rival\n\n");
     }
 }
