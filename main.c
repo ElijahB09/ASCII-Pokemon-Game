@@ -59,8 +59,8 @@ int main(int argc, char *argv[]) {
 
     for (i = 0; i < Y_BOUND; i++) {
         for (j = 0; j < X_BOUND; j++) {
-            if (world[current_y][current_x]->arr[i][j].character_present) {
-                printf("%c", *(world[current_y][current_x]->arr[i][j].present_character));
+            if (world[current_y][current_x]->arr[i][j].character_present == 1) {
+                printf("%c", world[current_y][current_x]->arr[i][j].present_character);
             } else {
                 printf("%c", world[current_y][current_x]->arr[i][j].terrainPiece);
             }
@@ -73,8 +73,8 @@ int main(int argc, char *argv[]) {
 
         for (i = 0; i < Y_BOUND; i++) {
             for (j = 0; j < X_BOUND; j++) {
-                if (world[current_y][current_x]->arr[i][j].present_character) {
-                    printf("%c", *(world[current_y][current_x]->arr[i][j].present_character));
+                if (world[current_y][current_x]->arr[i][j].character_present == 1) {
+                    printf("%c", world[current_y][current_x]->arr[i][j].present_character);
                 } else {
                     printf("%c", world[current_y][current_x]->arr[i][j].terrainPiece);
                 }
