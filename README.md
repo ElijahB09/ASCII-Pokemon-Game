@@ -57,3 +57,18 @@ considered unreachable and the cost map will have a 00 for the player and everyt
 spaces. This is intentional by design as an npc should not be able to step onto a gate, but it does look
 as if the program has a bug in it. Although I don't think this should happen because I have since
 restricted the ability for this to happen, regardless, I feel as though it was deserving of a comment.
+
+## Assignment 1.04
+
+I had a rough time on this assignment solving some of my bugs from the previous assignment, but I think
+I managed to get a good bit of them solved. Moving onto this assignment, I chose to re-use my priority queue
+which I had implemented through a minimum heap, albiet with some slight alterations. I had a lot of trouble
+using new variables as I found that for some reason even just adding them would cause a seg fault, this is something
+I intend to look into when I have more time. Re-using my min heap worked out perfectly for me and I have a solid
+turn order function for future assignments. I did decide to leave the player character stationary as I was running
+out of time. I used two new structs, one a PlayerCharacter struct and the other for NPCs as a whole, these structs
+sort of act as enums which I intend to use more when we add functionality to the game, but for now I have let them
+just sit and serve the purpose of being integrated early. During this assignment I also created a ton of files and 
+split up my main.c file because I was getting annoyed with how crowded the file was getting. This caused me to run
+into some include issues which I solved by creating a struct.h file which contains all of the structs for my project. I
+also managed to implement the switch which was fun and interesting to find out how to do that.

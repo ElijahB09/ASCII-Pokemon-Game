@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
     int current_x, current_y, i, j, /*fly_x, fly_y,*/ num_npcs;
     //char userInput;
     TurnOrder *turnOrder;
-    num_npcs = 1;
+    num_npcs = 10;
 
     if (argc == 2) {
         if (strncmp(argv[1], "--numtrainers", 13) == 0) {
