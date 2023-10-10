@@ -1,3 +1,9 @@
+commit 8b17a2e690b8f192054ddbecaa9f3d35ccaf1535
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Mon Oct 9 05:50:54 2023 -0500
+
+    Finished it all up, its a little rough but yea
+
 commit 73439b816255f5c90ea8945a92c539aca802ef70
 Author: Elijah Brady <bradyeli09@gmail.com>
 Date:   Mon Oct 9 05:18:35 2023 -0500

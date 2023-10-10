@@ -70,6 +70,9 @@ int main(int argc, char *argv[]) {
 
     while (1) {
         takeTurn(turnOrder, world[current_y][current_x]);
+        for (i = 0; i < turnOrder->size; i++) {
+            printf("Character: %c, Priority: %d\n", turnOrder->arr[i].characterSymbol, turnOrder->arr[i].priority);
+        }
 
         for (i = 0; i < Y_BOUND; i++) {
             for (j = 0; j < X_BOUND; j++) {
@@ -81,7 +84,7 @@ int main(int argc, char *argv[]) {
             }
             printf("\n");
         }
-        sleep(2);
+        sleep(4);
     }
 
 // Comment out functionality for moving between maps

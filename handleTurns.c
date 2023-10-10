@@ -117,6 +117,67 @@ TurnOrder* createTurnPriority(int num_npcs, NPC *npcs[num_npcs], PlayerCharacter
     return turnOrder;
 }
 
+char decideNewDirection8(char currDirection) {
+    char direction;
+    int val, coinflip;
+    val = 0;
+
+    while (val == 0) {
+        coinflip = rand() % 8;
+        switch (coinflip) {
+            case 0:
+                if (currDirection != 'l') {
+                    direction = 'l';
+                    val = 1;
+                }
+                break;
+            case 1:
+                if (currDirection != 'u') {
+                    direction = 'u';
+                    val = 1;
+                }
+                break;
+            case 2:
+                if (currDirection != 'w') {
+                    direction = 'w';
+                    val = 1;
+                }
+                break;
+            case 3:
+                if (currDirection != 'z') {
+                    direction = 'z';
+                    val = 1;
+                }
+                break;
+            case 4:
+                if (currDirection != 'r') {
+                    direction = 'r';
+                    val = 1;
+                }
+                break;
+            case 5:
+                if (currDirection != 'd') {
+                    direction = 'd';
+                    val = 1;
+                }
+                break;
+            case 6:
+                if (currDirection != 'x') {
+                    direction = 'x';
+                    val = 1;
+                }
+                break;
+            case 7:
+                if (currDirection != 'e') {
+                    direction = 'e';
+                    val = 1;
+                }
+                break;
+        }
+    }
+    return direction;
+}
+
 void takeTurn(TurnOrder *heap, PokeMap *map) {
     Turn t;
     int numNeighbors, i, minDistance, minX, minY;
@@ -162,21 +223,7 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
     } else if (t.characterSymbol == 'p' || t.characterSymbol == 'w' || t.characterSymbol == 's' || t.characterSymbol == 'e') {
         if (t.characterSymbol == 'p') {
             if (t.direction != 'l' && t.direction != 'u' && t.direction != 'w' && t.direction != 'z' && t.direction != 'r' && t.direction != 'd' && t.direction != 'x' && t.direction != 'e') {
-                int coinflip = rand() % 4;
-                switch (coinflip) {
-                    case 0:
-                        t.direction = 'l';
-                        break;
-                    case 1:
-                        t.direction = 'u';
-                        break;
-                    case 2:
-                        t.direction = 'w';
-                        break;
-                    case 3:
-                        t.direction = 'z';
-                        break;
-                }
+                t.direction = decideNewDirection8('\0');
             }
             switch (t.direction) {
                 case 'l':
@@ -190,7 +237,7 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord][t.x_coord - 1].character_present = 1;
                         t.x_coord = t.x_coord - 1;
                         t.y_coord = t.y_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord - 1].rival_distance;
+                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
                         t.direction = 'r';
@@ -204,7 +251,7 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                             map->arr[t.y_coord][t.x_coord + 1].character_present = 1;
                             t.x_coord = t.x_coord + 1;
                             t.y_coord = t.y_coord;
-                            t.priority += map->arr[t.y_coord][t.x_coord + 1].rival_distance;
+                            t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                             insertTurns(heap, &t);
                         }
                     }
@@ -220,7 +267,7 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord][t.x_coord + 1].character_present = 1;
                         t.x_coord = t.x_coord + 1;
                         t.y_coord = t.y_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord + 1].rival_distance;
+                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
                         t.direction = 'l';
@@ -234,7 +281,7 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                             map->arr[t.y_coord][t.x_coord - 1].character_present = 1;
                             t.x_coord = t.x_coord - 1;
                             t.y_coord = t.y_coord;
-                            t.priority += map->arr[t.y_coord][t.x_coord - 1].rival_distance;
+                            t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                             insertTurns(heap, &t);
                         }
                     }
@@ -250,7 +297,7 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord - 1][t.x_coord].character_present = 1;
                         t.x_coord = t.x_coord;
                         t.y_coord = t.y_coord - 1;
-                        t.priority += map->arr[t.y_coord - 1][t.x_coord].rival_distance;
+                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
                         t.direction = 'd';
@@ -264,7 +311,7 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                             map->arr[t.y_coord + 1][t.x_coord].character_present = 1;
                             t.x_coord = t.x_coord;
                             t.y_coord = t.y_coord + 1;
-                            t.priority += map->arr[t.y_coord + 1][t.x_coord].rival_distance;
+                            t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                             insertTurns(heap, &t);
                         }
                     }
@@ -280,7 +327,7 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord + 1][t.x_coord].character_present = 1;
                         t.x_coord = t.x_coord;
                         t.y_coord = t.y_coord + 1;
-                        t.priority += map->arr[t.y_coord + 1][t.x_coord].rival_distance;
+                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
                         t.direction = 'u';
@@ -294,7 +341,7 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                             map->arr[t.y_coord - 1][t.x_coord].character_present = 1;
                             t.x_coord = t.x_coord;
                             t.y_coord = t.y_coord - 1;
-                            t.priority += map->arr[t.y_coord - 1][t.x_coord].rival_distance;
+                            t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                             insertTurns(heap, &t);
                         }
                     }
@@ -310,11 +357,11 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord - 1][t.x_coord - 1].character_present = 1;
                         t.x_coord = t.x_coord - 1;
                         t.y_coord = t.y_coord - 1;
-                        t.priority += map->arr[t.y_coord - 1][t.x_coord - 1].rival_distance;
+                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
                         t.direction = 'x';
-                        if (map->arr[t.y_coord + 1][t.x_coord + 1].character_present == 0 && map->arr[t.y_coord + 1][t.x_coord].rival_distance != INT_MAX) {
+                        if (map->arr[t.y_coord + 1][t.x_coord + 1].character_present == 0 && map->arr[t.y_coord + 1][t.x_coord + 1].rival_distance != INT_MAX) {
                             // Move character off of current cell
                             map->arr[t.y_coord][t.x_coord].character_present = 0;
 
@@ -324,7 +371,7 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                             map->arr[t.y_coord + 1][t.x_coord + 1].character_present = 1;
                             t.x_coord = t.x_coord + 1;
                             t.y_coord = t.y_coord + 1;
-                            t.priority += map->arr[t.y_coord + 1][t.x_coord + 1].rival_distance;
+                            t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                             insertTurns(heap, &t);
                         }
                     }
@@ -340,7 +387,7 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord + 1][t.x_coord + 1].character_present = 1;
                         t.x_coord = t.x_coord + 1;
                         t.y_coord = t.y_coord + 1;
-                        t.priority += map->arr[t.y_coord + 1][t.x_coord + 1].rival_distance;
+                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
                         t.direction = 'w';
@@ -354,7 +401,7 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                             map->arr[t.y_coord - 1][t.x_coord - 1].character_present = 1;
                             t.x_coord = t.x_coord - 1;
                             t.y_coord = t.y_coord - 1;
-                            t.priority += map->arr[t.y_coord - 1][t.x_coord - 1].rival_distance;
+                            t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                             insertTurns(heap, &t);
                         }
                     }
@@ -370,7 +417,7 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord + 1][t.x_coord - 1].character_present = 1;
                         t.x_coord = t.x_coord - 1;
                         t.y_coord = t.y_coord + 1;
-                        t.priority += map->arr[t.y_coord + 1][t.x_coord - 1].rival_distance;
+                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
                         t.direction = 'e';
@@ -384,7 +431,7 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                             map->arr[t.y_coord - 1][t.x_coord + 1].character_present = 1;
                             t.x_coord = t.x_coord + 1;
                             t.y_coord = t.y_coord - 1;
-                            t.priority += map->arr[t.y_coord - 1][t.x_coord + 1].rival_distance;
+                            t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                             insertTurns(heap, &t);
                         }
                     }
@@ -400,7 +447,7 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord - 1][t.x_coord + 1].character_present = 1;
                         t.x_coord = t.x_coord + 1;
                         t.y_coord = t.y_coord - 1;
-                        t.priority += map->arr[t.y_coord - 1][t.x_coord + 1].rival_distance;
+                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
                         t.direction = 'z';
@@ -414,7 +461,7 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                             map->arr[t.y_coord + 1][t.x_coord - 1].character_present = 1;
                             t.x_coord = t.x_coord - 1;
                             t.y_coord = t.y_coord + 1;
-                            t.priority += map->arr[t.y_coord + 1][t.x_coord - 1].rival_distance;
+                            t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                             insertTurns(heap, &t);
                         }
                     }
@@ -424,33 +471,7 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
         else if (t.characterSymbol == 'w') {
             t.spawnedInTerrain = map->arr[t.y_coord][t.x_coord].terrainPiece;
             if (t.direction != 'l' && t.direction != 'u' && t.direction != 'w' && t.direction != 'z' && t.direction != 'r' && t.direction != 'd' && t.direction != 'x' && t.direction != 'e') {
-                int coinflip = rand() % 8;
-                switch (coinflip) {
-                    case 0:
-                        t.direction = 'l';
-                        break;
-                    case 1:
-                        t.direction = 'u';
-                        break;
-                    case 2:
-                        t.direction = 'w';
-                        break;
-                    case 3:
-                        t.direction = 'z';
-                        break;
-                    case 4:
-                        t.direction = 'r';
-                        break;
-                    case 5:
-                        t.direction = 'd';
-                        break;
-                    case 6:
-                        t.direction = 'x';
-                        break;
-                    case 7:
-                        t.direction = 'e';
-                        break;
-                }
+                t.direction = decideNewDirection8('\0');
             }
             switch (t.direction) {
                 case 'l':
@@ -466,33 +487,10 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord][t.x_coord - 1].character_present = 1;
                         t.x_coord = t.x_coord - 1;
                         t.y_coord = t.y_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord - 1].rival_distance;
+                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
-                        int coinflip = rand() % 7;
-                        switch (coinflip) {
-                            case 0:
-                                t.direction = 'u';
-                                break;
-                            case 1:
-                                t.direction = 'w';
-                                break;
-                            case 2:
-                                t.direction = 'z';
-                                break;
-                            case 3:
-                                t.direction = 'r';
-                                break;
-                            case 4:
-                                t.direction = 'd';
-                                break;
-                            case 5:
-                                t.direction = 'x';
-                                break;
-                            case 6:
-                                t.direction = 'e';
-                                break;
-                        }
+                        t.direction = decideNewDirection8(t.direction);
                         insertTurns(heap, &t);
                     }
                     break;
@@ -509,33 +507,10 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord][t.x_coord + 1].character_present = 1;
                         t.x_coord = t.x_coord + 1;
                         t.y_coord = t.y_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord + 1].rival_distance;
+                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
-                        int coinflip = rand() % 7;
-                        switch (coinflip) {
-                            case 0:
-                                t.direction = 'l';
-                                break;
-                            case 1:
-                                t.direction = 'u';
-                                break;
-                            case 2:
-                                t.direction = 'w';
-                                break;
-                            case 3:
-                                t.direction = 'z';
-                                break;
-                            case 4:
-                                t.direction = 'd';
-                                break;
-                            case 5:
-                                t.direction = 'x';
-                                break;
-                            case 6:
-                                t.direction = 'e';
-                                break;
-                        }
+                        t.direction = decideNewDirection8(t.direction);
                         insertTurns(heap, &t);
                     }
                     break;
@@ -552,33 +527,10 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord - 1][t.x_coord].character_present = 1;
                         t.x_coord = t.x_coord;
                         t.y_coord = t.y_coord - 1;
-                        t.priority += map->arr[t.y_coord - 1][t.x_coord].rival_distance;
+                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
-                        int coinflip = rand() % 7;
-                        switch (coinflip) {
-                            case 0:
-                                t.direction = 'l';
-                                break;
-                            case 1:
-                                t.direction = 'w';
-                                break;
-                            case 2:
-                                t.direction = 'z';
-                                break;
-                            case 3:
-                                t.direction = 'r';
-                                break;
-                            case 4:
-                                t.direction = 'd';
-                                break;
-                            case 5:
-                                t.direction = 'x';
-                                break;
-                            case 6:
-                                t.direction = 'e';
-                                break;
-                        }
+                        t.direction = decideNewDirection8(t.direction);
                         insertTurns(heap, &t);
                     }
                     break;
@@ -595,33 +547,10 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord + 1][t.x_coord].character_present = 1;
                         t.x_coord = t.x_coord;
                         t.y_coord = t.y_coord + 1;
-                        t.priority += map->arr[t.y_coord + 1][t.x_coord].rival_distance;
+                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
-                        int coinflip = rand() % 7;
-                        switch (coinflip) {
-                            case 0:
-                                t.direction = 'l';
-                                break;
-                            case 1:
-                                t.direction = 'u';
-                                break;
-                            case 2:
-                                t.direction = 'w';
-                                break;
-                            case 3:
-                                t.direction = 'z';
-                                break;
-                            case 4:
-                                t.direction = 'r';
-                                break;
-                            case 5:
-                                t.direction = 'x';
-                                break;
-                            case 6:
-                                t.direction = 'e';
-                                break;
-                        }
+                        t.direction = decideNewDirection8(t.direction);
                         insertTurns(heap, &t);
                     }
                     break;
@@ -638,33 +567,10 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord - 1][t.x_coord - 1].character_present = 1;
                         t.x_coord = t.x_coord - 1;
                         t.y_coord = t.y_coord - 1;
-                        t.priority += map->arr[t.y_coord - 1][t.x_coord - 1].rival_distance;
+                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
-                        int coinflip = rand() % 7;
-                        switch (coinflip) {
-                            case 0:
-                                t.direction = 'l';
-                                break;
-                            case 1:
-                                t.direction = 'u';
-                                break;
-                            case 2:
-                                t.direction = 'z';
-                                break;
-                            case 3:
-                                t.direction = 'r';
-                                break;
-                            case 4:
-                                t.direction = 'd';
-                                break;
-                            case 5:
-                                t.direction = 'x';
-                                break;
-                            case 6:
-                                t.direction = 'e';
-                                break;
-                        }
+                        t.direction = decideNewDirection8(t.direction);
                         insertTurns(heap, &t);
                     }
                     break;
@@ -681,33 +587,10 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord + 1][t.x_coord + 1].character_present = 1;
                         t.x_coord = t.x_coord + 1;
                         t.y_coord = t.y_coord + 1;
-                        t.priority += map->arr[t.y_coord + 1][t.x_coord + 1].rival_distance;
+                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
-                        int coinflip = rand() % 7;
-                        switch (coinflip) {
-                            case 0:
-                                t.direction = 'l';
-                                break;
-                            case 1:
-                                t.direction = 'u';
-                                break;
-                            case 2:
-                                t.direction = 'w';
-                                break;
-                            case 3:
-                                t.direction = 'z';
-                                break;
-                            case 4:
-                                t.direction = 'r';
-                                break;
-                            case 5:
-                                t.direction = 'd';
-                                break;
-                            case 6:
-                                t.direction = 'e';
-                                break;
-                        }
+                        t.direction = decideNewDirection8(t.direction);
                         insertTurns(heap, &t);
                     }
                     break;
@@ -724,33 +607,10 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord + 1][t.x_coord - 1].character_present = 1;
                         t.x_coord = t.x_coord - 1;
                         t.y_coord = t.y_coord + 1;
-                        t.priority += map->arr[t.y_coord + 1][t.x_coord - 1].rival_distance;
+                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
-                        int coinflip = rand() % 7;
-                        switch (coinflip) {
-                            case 0:
-                                t.direction = 'l';
-                                break;
-                            case 1:
-                                t.direction = 'u';
-                                break;
-                            case 2:
-                                t.direction = 'w';
-                                break;
-                            case 3:
-                                t.direction = 'r';
-                                break;
-                            case 4:
-                                t.direction = 'd';
-                                break;
-                            case 5:
-                                t.direction = 'x';
-                                break;
-                            case 6:
-                                t.direction = 'e';
-                                break;
-                        }
+                        t.direction = decideNewDirection8(t.direction);
                         insertTurns(heap, &t);
                     }
                     break;
@@ -767,33 +627,10 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord - 1][t.x_coord + 1].character_present = 1;
                         t.x_coord = t.x_coord + 1;
                         t.y_coord = t.y_coord - 1;
-                        t.priority += map->arr[t.y_coord - 1][t.x_coord + 1].rival_distance;
+                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
-                        int coinflip = rand() % 7;
-                        switch (coinflip) {
-                            case 0:
-                                t.direction = 'l';
-                                break;
-                            case 1:
-                                t.direction = 'u';
-                                break;
-                            case 2:
-                                t.direction = 'w';
-                                break;
-                            case 3:
-                                t.direction = 'z';
-                                break;
-                            case 4:
-                                t.direction = 'r';
-                                break;
-                            case 5:
-                                t.direction = 'd';
-                                break;
-                            case 6:
-                                t.direction = 'x';
-                                break;
-                        }
+                        t.direction = decideNewDirection8(t.direction);
                         insertTurns(heap, &t);
                     }
                     break;
@@ -801,33 +638,7 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
         }
         else if (t.characterSymbol == 'e') {
             if (t.direction != 'l' && t.direction != 'u' && t.direction != 'w' && t.direction != 'z' && t.direction != 'r' && t.direction != 'd' && t.direction != 'x' && t.direction != 'e') {
-                int coinflip = rand() % 8;
-                switch (coinflip) {
-                    case 0:
-                        t.direction = 'l';
-                        break;
-                    case 1:
-                        t.direction = 'u';
-                        break;
-                    case 2:
-                        t.direction = 'w';
-                        break;
-                    case 3:
-                        t.direction = 'z';
-                        break;
-                    case 4:
-                        t.direction = 'r';
-                        break;
-                    case 5:
-                        t.direction = 'd';
-                        break;
-                    case 6:
-                        t.direction = 'x';
-                        break;
-                    case 7:
-                        t.direction = 'e';
-                        break;
-                }
+                t.direction = decideNewDirection8('\0');
             }
             switch (t.direction) {
                 case 'l':
@@ -842,33 +653,10 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord][t.x_coord - 1].character_present = 1;
                         t.x_coord = t.x_coord - 1;
                         t.y_coord = t.y_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord - 1].rival_distance;
+                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
-                        int coinflip = rand() % 7;
-                        switch (coinflip) {
-                            case 0:
-                                t.direction = 'u';
-                                break;
-                            case 1:
-                                t.direction = 'w';
-                                break;
-                            case 2:
-                                t.direction = 'z';
-                                break;
-                            case 3:
-                                t.direction = 'r';
-                                break;
-                            case 4:
-                                t.direction = 'd';
-                                break;
-                            case 5:
-                                t.direction = 'x';
-                                break;
-                            case 6:
-                                t.direction = 'e';
-                                break;
-                        }
+                        t.direction = decideNewDirection8(t.direction);
                         insertTurns(heap, &t);
                     }
                     break;
@@ -884,33 +672,10 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord][t.x_coord + 1].character_present = 1;
                         t.x_coord = t.x_coord + 1;
                         t.y_coord = t.y_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord + 1].rival_distance;
+                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
-                        int coinflip = rand() % 7;
-                        switch (coinflip) {
-                            case 0:
-                                t.direction = 'l';
-                                break;
-                            case 1:
-                                t.direction = 'u';
-                                break;
-                            case 2:
-                                t.direction = 'w';
-                                break;
-                            case 3:
-                                t.direction = 'z';
-                                break;
-                            case 4:
-                                t.direction = 'd';
-                                break;
-                            case 5:
-                                t.direction = 'x';
-                                break;
-                            case 6:
-                                t.direction = 'e';
-                                break;
-                        }
+                        t.direction = decideNewDirection8(t.direction);
                         insertTurns(heap, &t);
                     }
                     break;
@@ -926,33 +691,10 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord - 1][t.x_coord].character_present = 1;
                         t.x_coord = t.x_coord;
                         t.y_coord = t.y_coord - 1;
-                        t.priority += map->arr[t.y_coord - 1][t.x_coord].rival_distance;
+                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
-                        int coinflip = rand() % 7;
-                        switch (coinflip) {
-                            case 0:
-                                t.direction = 'l';
-                                break;
-                            case 1:
-                                t.direction = 'w';
-                                break;
-                            case 2:
-                                t.direction = 'z';
-                                break;
-                            case 3:
-                                t.direction = 'r';
-                                break;
-                            case 4:
-                                t.direction = 'd';
-                                break;
-                            case 5:
-                                t.direction = 'x';
-                                break;
-                            case 6:
-                                t.direction = 'e';
-                                break;
-                        }
+                        t.direction = decideNewDirection8(t.direction);
                         insertTurns(heap, &t);
                     }
                     break;
@@ -968,33 +710,10 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord + 1][t.x_coord].character_present = 1;
                         t.x_coord = t.x_coord;
                         t.y_coord = t.y_coord + 1;
-                        t.priority += map->arr[t.y_coord + 1][t.x_coord].rival_distance;
+                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
-                        int coinflip = rand() % 7;
-                        switch (coinflip) {
-                            case 0:
-                                t.direction = 'l';
-                                break;
-                            case 1:
-                                t.direction = 'u';
-                                break;
-                            case 2:
-                                t.direction = 'w';
-                                break;
-                            case 3:
-                                t.direction = 'z';
-                                break;
-                            case 4:
-                                t.direction = 'r';
-                                break;
-                            case 5:
-                                t.direction = 'x';
-                                break;
-                            case 6:
-                                t.direction = 'e';
-                                break;
-                        }
+                        t.direction = decideNewDirection8(t.direction);
                         insertTurns(heap, &t);
                     }
                     break;
@@ -1010,33 +729,10 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord - 1][t.x_coord - 1].character_present = 1;
                         t.x_coord = t.x_coord - 1;
                         t.y_coord = t.y_coord - 1;
-                        t.priority += map->arr[t.y_coord - 1][t.x_coord - 1].rival_distance;
+                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
-                        int coinflip = rand() % 7;
-                        switch (coinflip) {
-                            case 0:
-                                t.direction = 'l';
-                                break;
-                            case 1:
-                                t.direction = 'u';
-                                break;
-                            case 2:
-                                t.direction = 'z';
-                                break;
-                            case 3:
-                                t.direction = 'r';
-                                break;
-                            case 4:
-                                t.direction = 'd';
-                                break;
-                            case 5:
-                                t.direction = 'x';
-                                break;
-                            case 6:
-                                t.direction = 'e';
-                                break;
-                        }
+                        t.direction = decideNewDirection8(t.direction);
                         insertTurns(heap, &t);
                     }
                     break;
@@ -1052,33 +748,10 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord + 1][t.x_coord + 1].character_present = 1;
                         t.x_coord = t.x_coord + 1;
                         t.y_coord = t.y_coord + 1;
-                        t.priority += map->arr[t.y_coord + 1][t.x_coord + 1].rival_distance;
+                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
-                        int coinflip = rand() % 7;
-                        switch (coinflip) {
-                            case 0:
-                                t.direction = 'l';
-                                break;
-                            case 1:
-                                t.direction = 'u';
-                                break;
-                            case 2:
-                                t.direction = 'w';
-                                break;
-                            case 3:
-                                t.direction = 'z';
-                                break;
-                            case 4:
-                                t.direction = 'r';
-                                break;
-                            case 5:
-                                t.direction = 'd';
-                                break;
-                            case 6:
-                                t.direction = 'e';
-                                break;
-                        }
+                        t.direction = decideNewDirection8(t.direction);
                         insertTurns(heap, &t);
                     }
                     break;
@@ -1094,33 +767,10 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord + 1][t.x_coord - 1].character_present = 1;
                         t.x_coord = t.x_coord - 1;
                         t.y_coord = t.y_coord + 1;
-                        t.priority += map->arr[t.y_coord + 1][t.x_coord - 1].rival_distance;
+                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
-                        int coinflip = rand() % 7;
-                        switch (coinflip) {
-                            case 0:
-                                t.direction = 'l';
-                                break;
-                            case 1:
-                                t.direction = 'u';
-                                break;
-                            case 2:
-                                t.direction = 'w';
-                                break;
-                            case 3:
-                                t.direction = 'r';
-                                break;
-                            case 4:
-                                t.direction = 'd';
-                                break;
-                            case 5:
-                                t.direction = 'x';
-                                break;
-                            case 6:
-                                t.direction = 'e';
-                                break;
-                        }
+                        t.direction = decideNewDirection8(t.direction);
                         insertTurns(heap, &t);
                     }
                     break;
@@ -1136,33 +786,10 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord - 1][t.x_coord + 1].character_present = 1;
                         t.x_coord = t.x_coord + 1;
                         t.y_coord = t.y_coord - 1;
-                        t.priority += map->arr[t.y_coord - 1][t.x_coord + 1].rival_distance;
+                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
-                        int coinflip = rand() % 7;
-                        switch (coinflip) {
-                            case 0:
-                                t.direction = 'l';
-                                break;
-                            case 1:
-                                t.direction = 'u';
-                                break;
-                            case 2:
-                                t.direction = 'w';
-                                break;
-                            case 3:
-                                t.direction = 'z';
-                                break;
-                            case 4:
-                                t.direction = 'r';
-                                break;
-                            case 5:
-                                t.direction = 'd';
-                                break;
-                            case 6:
-                                t.direction = 'x';
-                                break;
-                        }
+                        t.direction = decideNewDirection8(t.direction);
                         insertTurns(heap, &t);
                     }
                     break;
