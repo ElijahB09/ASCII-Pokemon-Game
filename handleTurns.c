@@ -97,7 +97,7 @@ TurnOrder* createTurnPriority(int num_npcs, NPC *npcs[num_npcs], PlayerCharacter
     TurnOrder *turnOrder;
 
     // +1 for the player
-    turnOrder = buildPriority(num_npcs);
+    turnOrder = buildPriority(num_npcs + 1);
     for (i = 0; i < num_npcs; i++) {
         t.priority = 0;
         t.characterSymbol = npcs[i]->symbol;
@@ -107,13 +107,13 @@ TurnOrder* createTurnPriority(int num_npcs, NPC *npcs[num_npcs], PlayerCharacter
         t.spawnedInTerrain = map->arr[t.y_coord][t.x_coord].terrainPiece;
         insertTurns(turnOrder, &t);
     }
-//    t.priority = 0;
-//    t.y_coord = player->y_coord;
-//    t.x_coord = player->x_coord;
-//    t.currentMap = map;
-//    t.characterSymbol = player->symbol;
-//    t.spawnedInTerrain = map->arr[t.y_coord][t.x_coord].terrainPiece;
-//    insertTurns(turnOrder, t);
+    t.priority = 0;
+    t.y_coord = player->y_coord;
+    t.x_coord = player->x_coord;
+    t.currentMap = map;
+    t.characterSymbol = player->symbol;
+    t.spawnedInTerrain = map->arr[t.y_coord][t.x_coord].terrainPiece;
+    insertTurns(turnOrder, &t);
 
     return turnOrder;
 }
@@ -800,5 +800,16 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
             t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
             insertTurns(heap, &t);
         }
+    } else if (t.characterSymbol == '@') {
+        // Handle movement here
+
+
+        // Handle priority
+        if (map->arr[t.y_coord][t.x_coord].terrainPiece == '.' || map->arr[t.y_coord][t.x_coord].terrainPiece == '#' || map->arr[t.y_coord][t.x_coord].terrainPiece == 'C' || map->arr[t.y_coord][t.x_coord].terrainPiece == 'M') {
+            t.priority += 10;
+        } else if (map->arr[t.y_coord][t.x_coord].terrainPiece == ':') {
+            t.priority += 20;
+        }
+        insertTurns(heap, &t);
     }
 }
