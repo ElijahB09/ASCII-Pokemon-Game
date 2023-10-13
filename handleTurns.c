@@ -58,9 +58,9 @@ void minHeapifyTurns(TurnOrder *heap, int index)
     if (right >= heap->size || right < 0)
         right = -1;
 
-    if (left != -1 && heap->arr[left].priority < heap->arr[index].priority)
+    if (left != -1 && heap->arr[left].priority < heap->arr[min].priority)
         min = left;
-    if (right != -1 && heap->arr[right].priority < heap->arr[index].priority)
+    if (right != -1 && heap->arr[right].priority < heap->arr[min].priority)
         min = right;
 
     if (min != index) {
@@ -72,10 +72,11 @@ void minHeapifyTurns(TurnOrder *heap, int index)
     }
 }
 
+
 Turn extractMinTurn(TurnOrder * heap)
 {
     Turn deleteItem;
-    deleteItem.priority = -1;
+    deleteItem.characterSymbol = '\0';
 
     if (heap->size == 0) {
         printf("\nHeap id empty.");

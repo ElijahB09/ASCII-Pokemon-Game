@@ -53,9 +53,9 @@ void minHeapify(MinHeap* heap, int index)
     if (right >= heap->size || right < 0)
         right = -1;
 
-    if (left != -1 && heap->arr[left].distance < heap->arr[index].distance)
+    if (left != -1 && heap->arr[left].distance < heap->arr[min].distance)
         min = left;
-    if (right != -1 && heap->arr[right].distance < heap->arr[index].distance)
+    if (right != -1 && heap->arr[right].distance < heap->arr[min].distance)
         min = right;
 
     if (min != index) {
