@@ -17,6 +17,7 @@ void io_init_terminal(void)
     noecho();
     curs_set(0);
     keypad(stdscr, TRUE);
+    nodelay(stdscr, FALSE);
 }
 
 int main(int argc, char *argv[]) {
@@ -26,6 +27,8 @@ int main(int argc, char *argv[]) {
     //char userInput;
     TurnOrder *turnOrder;
     num_npcs = 10;
+    int user_input;
+    char charToPrint;
 
     if (argc == 2) {
         if (strncmp(argv[1], "--numtrainers", 13) == 0) {
@@ -69,7 +72,7 @@ int main(int argc, char *argv[]) {
     turnOrder = createTurnPriority(num_npcs, npcs, player, world[current_y][current_x]);
 
     clear();
-    move(1, 0);
+    printw("Starting PokeGame\n");
     for (i = 0; i < Y_BOUND; i++) {
         for (j = 0; j < X_BOUND; j++) {
             if (world[current_y][current_x]->arr[i][j].character_present == 1) {
@@ -82,28 +85,29 @@ int main(int argc, char *argv[]) {
     }
 
     refresh();
-    getch();
-    endwin();
-    return 0;
+    user_input = getch();
 
-    while (1) {
+    while (user_input != 'Q') {
         takeTurn(turnOrder, world[current_y][current_x]);
-        for (i = 0; i < turnOrder->size; i++) {
-            printf("Character: %c, Priority: %d, X: %d, Y: %d\n", turnOrder->arr[i].characterSymbol, turnOrder->arr[i].priority, turnOrder->arr[i].x_coord, turnOrder->arr[i].y_coord);
-        }
-
+	clear();
+	printw("Turn Taking Happening");
         for (i = 0; i < Y_BOUND; i++) {
             for (j = 0; j < X_BOUND; j++) {
                 if (world[current_y][current_x]->arr[i][j].character_present == 1) {
-                    printf("%c", world[current_y][current_x]->arr[i][j].npc != NULL ? world[current_y][current_x]->arr[i][j].npc->symbol : world[current_y][current_x]->arr[i][j].player->symbol);
+		    charToPrint = world[current_y][current_x]->arr[i][j].npc != NULL ? world[current_y][current_x]->arr[i][j].npc->symbol : world[current_y][current_x]->arr[i][j].player->symbol;
+                    mvaddch(i + 1, j, charToPrint);
                 } else {
-                    printf("%c", world[current_y][current_x]->arr[i][j].terrainPiece);
+		    charToPrint = world[current_y][current_x]->arr[i][j].terrainPiece;
+                    mvaddch(i + 1, j, charToPrint);
                 }
             }
-            printf("\n");
         }
-        sleep(2);
+	refresh();
+        user_input = getch();
     }
+
+    endwin();
+    return 0;
 
 // Comment out functionality for moving between maps
 //    while (userInput != 'q') {
