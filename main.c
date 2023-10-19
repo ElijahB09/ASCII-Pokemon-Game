@@ -1,4 +1,3 @@
-#include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -27,7 +26,7 @@ int main(int argc, char *argv[]) {
     //char userInput;
     TurnOrder *turnOrder;
     num_npcs = 10;
-    int user_input;
+    int user_input, gameRunning;
     char charToPrint;
 
     if (argc == 2) {
@@ -75,11 +74,9 @@ int main(int argc, char *argv[]) {
     printw("Starting PokeGame!\n");
     refresh();
     sleep(2);
+    gameRunning = 1;
 
-    while (user_input != 'Q') {
-	for (i = 0; i < num_npcs; i++) {
-	    takeTurn(turnOrder, world[current_y][current_x]);
-	}
+    while (gameRunning) {
 	clear();
 	printw("Turn Taking Happening");
         for (i = 0; i < Y_BOUND; i++) {
@@ -94,7 +91,12 @@ int main(int argc, char *argv[]) {
             }
         }
 	refresh();
-        user_input = getch();
+	for (i = 0; i < num_npcs; i++) {
+	    user_input = takeTurn(turnOrder, world[current_y][current_x]);
+	    if (user_input == 'Q') {
+		gameRunning = 0;
+	    }
+	}
     }
     clear();
     endwin();

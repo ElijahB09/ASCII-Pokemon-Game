@@ -179,7 +179,7 @@ char decideNewDirection8(char currDirection) {
     return direction;
 }
 
-void takeTurn(TurnOrder *heap, PokeMap *map) {
+int takeTurn(TurnOrder *heap, PokeMap *map) {
     Turn t;
     int numNeighbors, i, minDistance, minX, minY;
     terrainCell neighbors[8];
@@ -221,6 +221,7 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
         t.y_coord = minY;
 
         insertTurns(heap, &t);
+	return 0;
     } else if (t.characterSymbol == 'p' || t.characterSymbol == 'w' || t.characterSymbol == 's' || t.characterSymbol == 'e') {
         if (t.characterSymbol == 'p') {
             if (t.direction != 'l' && t.direction != 'u' && t.direction != 'w' && t.direction != 'z' && t.direction != 'r' && t.direction != 'd' && t.direction != 'x' && t.direction != 'e') {
@@ -468,8 +469,7 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                     }
                     break;
             }
-        }
-        else if (t.characterSymbol == 'w') {
+  	} else if (t.characterSymbol == 'w') {
             t.spawnedInTerrain = map->arr[t.y_coord][t.x_coord].terrainPiece;
             if (t.direction != 'l' && t.direction != 'u' && t.direction != 'w' && t.direction != 'z' && t.direction != 'r' && t.direction != 'd' && t.direction != 'x' && t.direction != 'e') {
                 t.direction = decideNewDirection8('\0');
@@ -636,8 +636,7 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
                     }
                     break;
             }
-        }
-        else if (t.characterSymbol == 'e') {
+        } else if (t.characterSymbol == 'e') {
             if (t.direction != 'l' && t.direction != 'u' && t.direction != 'w' && t.direction != 'z' && t.direction != 'r' && t.direction != 'd' && t.direction != 'x' && t.direction != 'e') {
                 t.direction = decideNewDirection8('\0');
             }
@@ -800,9 +799,10 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
             t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
             insertTurns(heap, &t);
         }
+	return 0;
     } else if (t.characterSymbol == '@') {
         // Handle movement here
-
+	int user_input = getch();
 
         // Handle priority
         if (map->arr[t.y_coord][t.x_coord].terrainPiece == '.' || map->arr[t.y_coord][t.x_coord].terrainPiece == '#' || map->arr[t.y_coord][t.x_coord].terrainPiece == 'C' || map->arr[t.y_coord][t.x_coord].terrainPiece == 'M') {
@@ -811,5 +811,8 @@ void takeTurn(TurnOrder *heap, PokeMap *map) {
             t.priority += 20;
         }
         insertTurns(heap, &t);
+	return user_input;
+    } else {
+    	return 0;
     }
 }
