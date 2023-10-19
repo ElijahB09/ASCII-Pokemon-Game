@@ -72,23 +72,14 @@ int main(int argc, char *argv[]) {
     turnOrder = createTurnPriority(num_npcs, npcs, player, world[current_y][current_x]);
 
     clear();
-    printw("Starting PokeGame\n");
-    for (i = 0; i < Y_BOUND; i++) {
-        for (j = 0; j < X_BOUND; j++) {
-            if (world[current_y][current_x]->arr[i][j].character_present == 1) {
-                printw("%c", world[current_y][current_x]->arr[i][j].npc != NULL ? world[current_y][current_x]->arr[i][j].npc->symbol : world[current_y][current_x]->arr[i][j].player->symbol);
-            } else {
-                printw("%c", world[current_y][current_x]->arr[i][j].terrainPiece);
-            }
-        }
-        printw("\n");
-    }
-
+    printw("Starting PokeGame!\n");
     refresh();
-    user_input = getch();
+    sleep(2);
 
     while (user_input != 'Q') {
-        takeTurn(turnOrder, world[current_y][current_x]);
+	for (i = 0; i < num_npcs; i++) {
+	    takeTurn(turnOrder, world[current_y][current_x]);
+	}
 	clear();
 	printw("Turn Taking Happening");
         for (i = 0; i < Y_BOUND; i++) {
