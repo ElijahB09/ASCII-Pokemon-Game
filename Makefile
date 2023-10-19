@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Werror -g
+CFLAGS = -Wall -Werror -g -lncurses
 
 # List of source files
 SOURCES = main.c minHeap.c queue.c neighbors.c buildings.c dijkstra.c worldgen.c handleTurns.c

@@ -1,3 +1,4 @@
+#include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -8,6 +9,15 @@
 #include "handleTurns.h"
 #define X_BOUND 80
 #define Y_BOUND 21
+
+void io_init_terminal(void)
+{
+    initscr();
+    raw();
+    noecho();
+    curs_set(0);
+    keypad(stdscr, TRUE);
+}
 
 int main(int argc, char *argv[]) {
     PokeMap* world[401][401];
@@ -47,6 +57,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    io_init_terminal();
     srand(time(NULL));
 
     current_x = 200;
@@ -57,16 +68,23 @@ int main(int argc, char *argv[]) {
     //fly_x = fly_y = -999;
     turnOrder = createTurnPriority(num_npcs, npcs, player, world[current_y][current_x]);
 
+    clear();
+    move(1, 0);
     for (i = 0; i < Y_BOUND; i++) {
         for (j = 0; j < X_BOUND; j++) {
             if (world[current_y][current_x]->arr[i][j].character_present == 1) {
-                printf("%c", world[current_y][current_x]->arr[i][j].npc != NULL ? world[current_y][current_x]->arr[i][j].npc->symbol : world[current_y][current_x]->arr[i][j].player->symbol);
+                printw("%c", world[current_y][current_x]->arr[i][j].npc != NULL ? world[current_y][current_x]->arr[i][j].npc->symbol : world[current_y][current_x]->arr[i][j].player->symbol);
             } else {
-                printf("%c", world[current_y][current_x]->arr[i][j].terrainPiece);
+                printw("%c", world[current_y][current_x]->arr[i][j].terrainPiece);
             }
         }
-        printf("\n");
+        printw("\n");
     }
+
+    refresh();
+    getch();
+    endwin();
+    return 0;
 
     while (1) {
         takeTurn(turnOrder, world[current_y][current_x]);
