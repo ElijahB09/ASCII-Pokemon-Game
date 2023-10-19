@@ -96,9 +96,26 @@ int main(int argc, char *argv[]) {
 	refresh();
         user_input = getch();
     }
-
+    clear();
     endwin();
+
+    for(i = 0; i < 401; i++) {
+        for(j = 0; j < 401; j++) {
+            if(world[i][j]){
+                free(world[i][j]);
+                world[i][j] = NULL;
+            }
+        }
+    }
+    free(player);
+    for (i = 0; i < num_npcs; i++) {
+        free(npcs[i]);
+    }
+    free(turnOrder->arr);
+    free(turnOrder);
+
     return 0;
+}
 
 // Comment out functionality for moving between maps
 //    while (userInput != 'q') {
@@ -176,21 +193,3 @@ int main(int argc, char *argv[]) {
 //            printf("Bad input, commands are n, s, e, w, 'f x y', and q\n");
 //        }
 //    }
-
-    for(i = 0; i < 401; i++) {
-        for(j = 0; j < 401; j++) {
-            if(world[i][j]){
-                free(world[i][j]);
-                world[i][j] = NULL;
-            }
-        }
-    }
-    free(player);
-    for (i = 0; i < num_npcs; i++) {
-        free(npcs[i]);
-    }
-    free(turnOrder->arr);
-    free(turnOrder);
-
-    return 0;
-}
