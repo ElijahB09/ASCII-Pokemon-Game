@@ -179,25 +179,49 @@ char decideNewDirection8(char currDirection) {
     return direction;
 }
 
-void handlePlayerMovement(PokeMap *map, int userInput, Turn t) {
+void handlePlayerMovement(PokeMap *map, int userInput, Turn *t) {
     switch (userInput) {
         case '1':
 	case 'b':
-	    if (t.y_coord != 19 && t.x_coord != 1 && map->arr[t.y_coord + 1][t.x_coord - 1].character_present == 0 && (map->arr[t.y_coord + 1][t.x_coord - 1].terrainPiece == '.' || map->arr[t.y_coord + 1][t.x_coord - 1].terrainPiece == '#' || map->arr[t.y_coord + 1][t.x_coord - 1].terrainPiece == 'C' || map->arr[t.y_coord + 1][t.x_coord - 1].terrainPiece == 'M')) {
-	    	map->arr[t.y_coord][t.x_coord].character_present = 0;
-		map->arr[t.y_coord + 1][t.x_coord - 1].character_present = 1;
-		map->arr[t.y_coord + 1][t.x_coord - 1].player = map->arr[t.y_coord][t.x_coord].player;
-		map->arr[t.y_coord][t.x_coord].player = NULL;
+	    if (t->y_coord != 19 && t->x_coord != 1 && map->arr[t->y_coord + 1][t->x_coord - 1].character_present == 0 && (map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == '.' || map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == '#' || map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == 'C' || map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == 'M')) {
+	    	map->arr[t->y_coord][t->x_coord].character_present = 0;
+		map->arr[t->y_coord + 1][t->x_coord - 1].character_present = 1;
+		map->arr[t->y_coord + 1][t->x_coord - 1].player = map->arr[t->y_coord][t->x_coord].player;
+		map->arr[t->y_coord][t->x_coord].player = NULL;
+		t->y_coord++;
+		t->x_coord--;
 	    }
 	    break;
 	case '2':
 	case 'j':
+	    if (t->y_coord != 19 && map->arr[t->y_coord + 1][t->x_coord].character_present == 0 && (map->arr[t->y_coord + 1][t->x_coord].terrainPiece == '.' || map->arr[t->y_coord + 1][t->x_coord].terrainPiece == '#' || map->arr[t->y_coord + 1][t->x_coord].terrainPiece == 'C' || map->arr[t->y_coord + 1][t->x_coord].terrainPiece == 'M')) {
+                map->arr[t->y_coord][t->x_coord].character_present = 0;
+                map->arr[t->y_coord + 1][t->x_coord].character_present = 1;
+                map->arr[t->y_coord + 1][t->x_coord].player = map->arr[t->y_coord][t->x_coord].player;
+                map->arr[t->y_coord][t->x_coord].player = NULL;
+		t->y_coord++;
+            }
 	    break;
 	case '3':
 	case 'n':
+	    if (t->y_coord != 19 && t->x_coord != 78 && map->arr[t->y_coord + 1][t->x_coord + 1].character_present == 0 && (map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == '.' || map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == '#' || map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == 'C' || map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == 'M')) {
+                map->arr[t->y_coord][t->x_coord].character_present = 0;
+                map->arr[t->y_coord + 1][t->x_coord + 1].character_present = 1;
+                map->arr[t->y_coord + 1][t->x_coord + 1].player = map->arr[t->y_coord][t->x_coord].player;
+                map->arr[t->y_coord][t->x_coord].player = NULL;
+		t->y_coord++;
+		t->x_coord++;
+            }
 	    break;
 	case '4':
 	case 'h':
+	    if (t->x_coord != 1 && map->arr[t->y_coord][t->x_coord - 1].character_present == 0 && (map->arr[t->y_coord][t->x_coord - 1].terrainPiece == '.' || map->arr[t->y_coord][t->x_coord - 1].terrainPiece == '#' || map->arr[t->y_coord][t->x_coord - 1].terrainPiece == 'C' || map->arr[t->y_coord][t->x_coord - 1].terrainPiece == 'M')) {
+                map->arr[t->y_coord][t->x_coord].character_present = 0;
+                map->arr[t->y_coord][t->x_coord - 1].character_present = 1;
+                map->arr[t->y_coord][t->x_coord - 1].player = map->arr[t->y_coord][t->x_coord].player;
+                map->arr[t->y_coord][t->x_coord].player = NULL;
+		t->x_coord--;
+            }
 	    break;
 	case '5':
 	case ' ':
@@ -205,15 +229,45 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn t) {
 	    break;
 	case '6':
 	case 'l':
+	    if (t->x_coord != 78 && map->arr[t->y_coord][t->x_coord + 1].character_present == 0 && (map->arr[t->y_coord][t->x_coord + 1].terrainPiece == '.' || map->arr[t->y_coord][t->x_coord + 1].terrainPiece == '#' || map->arr[t->y_coord][t->x_coord + 1].terrainPiece == 'C' || map->arr[t->y_coord][t->x_coord + 1].terrainPiece == 'M')) {
+                map->arr[t->y_coord][t->x_coord].character_present = 0;
+                map->arr[t->y_coord][t->x_coord + 1].character_present = 1;
+                map->arr[t->y_coord][t->x_coord + 1].player = map->arr[t->y_coord][t->x_coord].player;
+                map->arr[t->y_coord][t->x_coord].player = NULL;
+		t->x_coord++;
+            }
 	    break;
 	case '7':
 	case 'y':
+	    if (t->y_coord != 1 && t->x_coord != 1 && map->arr[t->y_coord - 1][t->x_coord - 1].character_present == 0 && (map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == '.' || map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == '#' || map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == 'C' || map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == 'M')) {
+                map->arr[t->y_coord][t->x_coord].character_present = 0;
+                map->arr[t->y_coord - 1][t->x_coord - 1].character_present = 1;
+                map->arr[t->y_coord - 1][t->x_coord - 1].player = map->arr[t->y_coord][t->x_coord].player;
+                map->arr[t->y_coord][t->x_coord].player = NULL;
+		t->y_coord--;
+		t->x_coord--;
+            }
 	    break;
 	case '8':
 	case 'k':
+	    if (t->y_coord != 1 && map->arr[t->y_coord - 1][t->x_coord].character_present == 0 && (map->arr[t->y_coord - 1][t->x_coord].terrainPiece == '.' || map->arr[t->y_coord - 1][t->x_coord].terrainPiece == '#' || map->arr[t->y_coord - 1][t->x_coord].terrainPiece == 'C' || map->arr[t->y_coord - 1][t->x_coord].terrainPiece == 'M')) {
+                map->arr[t->y_coord][t->x_coord].character_present = 0;
+                map->arr[t->y_coord - 1][t->x_coord].character_present = 1;
+                map->arr[t->y_coord - 1][t->x_coord].player = map->arr[t->y_coord][t->x_coord].player;
+                map->arr[t->y_coord][t->x_coord].player = NULL;
+		t->y_coord--;
+            }
 	    break;
 	case '9':
 	case 'u':
+	    if (t->y_coord != 1 && t->x_coord != 78 && map->arr[t->y_coord - 1][t->x_coord + 1].character_present == 0 && (map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == '.' || map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == '#' || map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == 'C' || map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == 'M')) {
+                map->arr[t->y_coord][t->x_coord].character_present = 0;
+                map->arr[t->y_coord - 1][t->x_coord + 1].character_present = 1;
+                map->arr[t->y_coord - 1][t->x_coord + 1].player = map->arr[t->y_coord][t->x_coord].player;
+                map->arr[t->y_coord][t->x_coord].player = NULL;
+		t->y_coord--;
+		t->x_coord++;
+            }
 	    break;
 	case '<':
 	    break;
@@ -861,7 +915,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
 	int user_input = getch();
 
 	// Allowed ops {1, 2, 3, 4, 5, 6, 7, 8, 9, y, k, u, l, n, j, b, h, >, <, , ., t, up arrow, down arrow, escape, Q} "space itself is allowed"
-	handlePlayerMovement(map, user_input, t);
+	handlePlayerMovement(map, user_input, &t);
         // Handle priority
         if (map->arr[t.y_coord][t.x_coord].terrainPiece == '.' || map->arr[t.y_coord][t.x_coord].terrainPiece == '#' || map->arr[t.y_coord][t.x_coord].terrainPiece == 'C' || map->arr[t.y_coord][t.x_coord].terrainPiece == 'M') {
             t.priority += 10;
