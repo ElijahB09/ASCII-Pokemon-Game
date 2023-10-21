@@ -11,7 +11,7 @@ HEADERS = minHeap.h queue.h neigbors.h buildings.h dijkstra.h worldgen.h handleT
 OBJECTS = $(SOURCES:.c=.o)
 
 # Output executable name
-EXECUTABLE = assignment1.04
+EXECUTABLE = PokeGame
 
 # Default target (the first target in the Makefile)
 all: $(EXECUTABLE)
