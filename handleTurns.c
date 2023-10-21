@@ -287,6 +287,7 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t) {
 	    printw("No op");
 	    break;
     }
+    DijkstraTrainers(80, 21, map->arr, map->arr[t->y_coord][t->x_coord]);
 }
 
 int takeTurn(TurnOrder *heap, PokeMap *map) {
