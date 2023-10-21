@@ -912,6 +912,23 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
         }
 	return 0;
     } else if (t.characterSymbol == '@') {
+	int i, j;
+	char charToPrint;
+	// Print out the map right before user input
+	clear();
+	printw("Make your move");
+	for (i = 0; i < 21; i++){
+	    for (j = 0; j < 80; j++) {
+	        if (map->arr[i][j].character_present == 1) {
+                    charToPrint = map->arr[i][j].npc != NULL ? map->arr[i][j].npc->symbol : map->arr[i][j].player->symbol;
+                    mvaddch(i + 1, j, charToPrint);
+                } else {
+                    charToPrint = map->arr[i][j].terrainPiece;
+                    mvaddch(i + 1, j, charToPrint);
+                }
+	    }
+	}
+	refresh();
         // Handle movement here
 	int user_input = getch();
 
