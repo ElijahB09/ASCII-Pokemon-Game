@@ -269,9 +269,25 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t) {
 		t->x_coord++;
             }
 	    break;
-	case '<':
-	    break;
 	case '>':
+	    int inMartOrCenter;
+	    int input = 0;
+	    if (map->arr[t->y_coord][t->x_coord].terrainPiece == 'M' || map->arr[t->y_coord][t->x_coord].terrainPiece == 'C') {
+	    	inMartOrCenter = 1;
+	    	clear();
+	    	printw("Entered Mart or Center, press < to leave");
+		refresh();
+	    	while (inMartOrCenter == 1) {
+	    	    input = getch();
+		    if (input == '<') {
+		    	inMartOrCenter = 0;
+		    }
+	    	}
+	    }
+	    else {
+	    	printw("Must be on a Pokemart or a Pokecenter");
+		refresh();
+	    }
 	    break;
 	case 't':
 	    break;
@@ -279,7 +295,7 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t) {
 	    break;
 	case KEY_DOWN:
 	    break;
-	case 27:
+	case 27: // Escape key
 	    break;
 	case 'Q':
 	    break;
