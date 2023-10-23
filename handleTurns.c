@@ -290,23 +290,111 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NP
 	    }
 	    break;
 	case 't':
-	    int k, userinput;
+	    int k, userinput, distance_x, distance_y, top_displayed, bottom_displayed, first_npc;
 	    userinput = 0;
-
+	    first_npc = top_displayed = bottom_displayed = 0;
+	    
 	    clear();
 	    printw("Trainer List");
 	    move(1, 0);
-	    for (k = 0; k < num_npcs && k < 21; k++) {
-	        printw("Symbol: %c, X-coord: %d, Y-coord: %d\n", npcs[k]->symbol, npcs[k]->x_coord, npcs[k]->y_coord);
+	    for (k = 0; k < num_npcs && k < 22; k++) {
+		top_displayed = 1;
+		if (k == num_npcs - 1) {
+		    bottom_displayed = 1;
+		}
+		printw("%c ", npcs[k]->symbol);
+		distance_x = t->x_coord - npcs[k]->x_coord;	
+		distance_y = t->y_coord - npcs[k]->y_coord;
+		if (distance_x < 0) {
+		    distance_x *= -1;
+		    printw("%d east ", distance_x);
+		} else {
+		    printw("%d west ", distance_x);
+		}
+
+		if (distance_y < 0) {
+		    distance_y *= -1;
+		    printw("and %d south\n", distance_y);
+		} else {
+		    printw("and %d north\n", distance_y);
+		}
 	    }
 	    refresh();
 	    while (userinput != 27) {
 	        userinput = getch();
+
+		if (num_npcs > 21) {
+		    if (userinput == KEY_UP && top_displayed == 0) {
+		        first_npc--;
+			clear();
+		        printw("Trainer List");
+		        move(1, 0);
+		        for (k = first_npc; k < num_npcs && k < (22 + first_npc); k++) {
+			    if (first_npc == 0) {
+			        top_displayed = 1;
+			    } else {
+			        top_displayed = 0;
+			    }
+			    if (k == num_npcs - 1) {
+			        bottom_displayed = 1;
+			    } else {
+			        bottom_displayed = 0;
+			    }
+			    printw("%c ", npcs[k]->symbol);
+			    distance_x = t->x_coord - npcs[k]->x_coord;
+			    distance_y = t->y_coord - npcs[k]->y_coord;
+			    if (distance_x < 0) {
+			        distance_x *= -1;
+			        printw("%d east ", distance_x);
+			    } else {
+			        printw("%d west ", distance_x);
+			    }
+
+			    if (distance_y < 0) {
+			        distance_y *= -1;
+			        printw("and %d south\n", distance_y);
+			    } else {
+			        printw("and %d north\n", distance_y);
+			    }
+		        }
+		        refresh();
+		    } else if (userinput == KEY_DOWN && bottom_displayed == 0) {
+		        first_npc++;
+			clear();
+                        printw("Trainer List");
+                        move(1, 0);
+                        for (k = first_npc; k < num_npcs && k < (22 + first_npc); k++) {
+                            if (first_npc == 0) {
+                                top_displayed = 1;
+                            } else {
+			        top_displayed = 0;
+			    }
+                            if (k == num_npcs - 1) {
+                                bottom_displayed = 1;
+                            } else {
+			        bottom_displayed = 0;
+			    }
+                            printw("%c ", npcs[k]->symbol);
+                            distance_x = t->x_coord - npcs[k]->x_coord;
+                            distance_y = t->y_coord - npcs[k]->y_coord;
+                            if (distance_x < 0) {
+                                distance_x *= -1;
+                                printw("%d east ", distance_x);
+                            } else {
+                                printw("%d west ", distance_x);
+                            }
+
+                            if (distance_y < 0) {
+                                distance_y *= -1;
+                                printw("and %d south\n", distance_y);
+                            } else {
+                                printw("and %d north\n", distance_y);
+                            }
+                        }
+                        refresh();
+		    }
+		}
 	    }
-	    break;
-	case KEY_UP:
-	    break;
-	case KEY_DOWN:
 	    break;
 	case 'Q':
 	    break;

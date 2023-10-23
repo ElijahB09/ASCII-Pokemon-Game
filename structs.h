@@ -10,7 +10,7 @@ typedef struct {
 } PlayerCharacter;
 
 typedef struct {
-    int x_coord, y_coord;
+    int x_coord, y_coord, defeated;
     char symbol;
 } NPC;
 
