@@ -91,3 +91,8 @@ of time between key presses, maybe something like half a second just so that eve
 do that I discovered is that holding in a direction makes the player rapidly move in the entered direction and I simply think
 it looks funny. All in all, I had to code this on Pyrite in vim because I could not find a good way to go about programming
 with ncurses on Windows, if you have any tips on this, please let me know.
+
+SOME KNOWN BUGS
+-npcs will not attack the player (I was not able to get this done in time)
+-immediate seg fault (This occurs rarely, I'm guessing it occurs in a rare case where an npc tries to move but cannot. I have not been able
+to pinpoint the cause of the error yet.)
