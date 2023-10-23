@@ -185,7 +185,7 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NP
         case '1':
 	case 'b':
 	    if (t->y_coord != 19 && t->x_coord != 1 && (map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == '.' || map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == '#' || map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == 'C' || map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == 'M')) {
-	    	if (map->arr[t->y_coord + 1][t->x_coord - 1].npc != NULL) {
+	    	if (map->arr[t->y_coord + 1][t->x_coord - 1].npc != NULL && map->arr[t->y_coord + 1][t->x_coord - 1].npc->defeated == 0) {
 		    clear();
 		    printw("Holder Battle Screen");
 		    refresh();
@@ -193,7 +193,7 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NP
 		        inputFromUser = getch();
 		    }
 		    map->arr[t->y_coord + 1][t->x_coord - 1].npc->defeated = 1;
-		} else {
+		} else if (map->arr[t->y_coord + 1][t->x_coord - 1].npc == NULL) {
 		    map->arr[t->y_coord][t->x_coord].character_present = 0;
 		    map->arr[t->y_coord + 1][t->x_coord - 1].character_present = 1;
 		    map->arr[t->y_coord + 1][t->x_coord - 1].player = map->arr[t->y_coord][t->x_coord].player;
@@ -206,7 +206,7 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NP
 	case '2':
 	case 'j':
 	    if (t->y_coord != 19 && (map->arr[t->y_coord + 1][t->x_coord].terrainPiece == '.' || map->arr[t->y_coord + 1][t->x_coord].terrainPiece == '#' || map->arr[t->y_coord + 1][t->x_coord].terrainPiece == 'C' || map->arr[t->y_coord + 1][t->x_coord].terrainPiece == 'M')) {
-                if (map->arr[t->y_coord + 1][t->x_coord].npc != NULL) {
+                if (map->arr[t->y_coord + 1][t->x_coord].npc != NULL && map->arr[t->y_coord + 1][t->x_coord].npc->defeated == 0) {
   		    clear();
                     printw("Holder Battle Screen");
                     refresh();
@@ -214,7 +214,7 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NP
                         inputFromUser = getch();
                     }
 		    map->arr[t->y_coord + 1][t->x_coord].npc->defeated = 1;
-		} else {
+		} else if (map->arr[t->y_coord + 1][t->x_coord].npc == NULL) {
 		    map->arr[t->y_coord][t->x_coord].character_present = 0;
                     map->arr[t->y_coord + 1][t->x_coord].character_present = 1;
                     map->arr[t->y_coord + 1][t->x_coord].player = map->arr[t->y_coord][t->x_coord].player;
@@ -226,7 +226,7 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NP
 	case '3':
 	case 'n':
 	    if (t->y_coord != 19 && t->x_coord != 78 && (map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == '.' || map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == '#' || map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == 'C' || map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == 'M')) {
-                if (map->arr[t->y_coord + 1][t->x_coord + 1].npc != NULL) {
+                if (map->arr[t->y_coord + 1][t->x_coord + 1].npc != NULL && map->arr[t->y_coord + 1][t->x_coord + 1].npc->defeated == 0) {
 		    clear();
                     printw("Holder Battle Screen");
                     refresh();
@@ -234,7 +234,7 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NP
                         inputFromUser = getch();
                     }
 		    map->arr[t->y_coord + 1][t->x_coord + 1].npc->defeated = 1;
-		} else {
+		} else if (map->arr[t->y_coord + 1][t->x_coord + 1].npc == NULL) {
 		    map->arr[t->y_coord][t->x_coord].character_present = 0;
                     map->arr[t->y_coord + 1][t->x_coord + 1].character_present = 1;
                     map->arr[t->y_coord + 1][t->x_coord + 1].player = map->arr[t->y_coord][t->x_coord].player;
@@ -247,7 +247,7 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NP
 	case '4':
 	case 'h':
 	    if (t->x_coord != 1 && (map->arr[t->y_coord][t->x_coord - 1].terrainPiece == '.' || map->arr[t->y_coord][t->x_coord - 1].terrainPiece == '#' || map->arr[t->y_coord][t->x_coord - 1].terrainPiece == 'C' || map->arr[t->y_coord][t->x_coord - 1].terrainPiece == 'M')) {
-                if (map->arr[t->y_coord][t->x_coord - 1].npc != NULL) {
+                if (map->arr[t->y_coord][t->x_coord - 1].npc != NULL && map->arr[t->y_coord][t->x_coord - 1].npc->defeated == 0) {
 		    clear();
                     printw("Holder Battle Screen");
                     refresh();
@@ -255,7 +255,7 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NP
                         inputFromUser = getch();
                     }
 		    map->arr[t->y_coord][t->x_coord - 1].npc->defeated = 1;
-		} else {
+		} else if (map->arr[t->y_coord][t->x_coord - 1].npc == NULL) {
 		    map->arr[t->y_coord][t->x_coord].character_present = 0;
                     map->arr[t->y_coord][t->x_coord - 1].character_present = 1;
                     map->arr[t->y_coord][t->x_coord - 1].player = map->arr[t->y_coord][t->x_coord].player;
@@ -271,7 +271,7 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NP
 	case '6':
 	case 'l':
 	    if (t->x_coord != 78 && (map->arr[t->y_coord][t->x_coord + 1].terrainPiece == '.' || map->arr[t->y_coord][t->x_coord + 1].terrainPiece == '#' || map->arr[t->y_coord][t->x_coord + 1].terrainPiece == 'C' || map->arr[t->y_coord][t->x_coord + 1].terrainPiece == 'M')) {
-                if (map->arr[t->y_coord][t->x_coord + 1].npc != NULL) {
+                if (map->arr[t->y_coord][t->x_coord + 1].npc != NULL && map->arr[t->y_coord][t->x_coord + 1].npc->defeated == 0) {
 		    clear();
                     printw("Holder Battle Screen");
                     refresh();
@@ -279,7 +279,7 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NP
                         inputFromUser = getch();
                     }
 		    map->arr[t->y_coord][t->x_coord + 1].npc->defeated = 1;
-		} else {
+		} else if (map->arr[t->y_coord][t->x_coord + 1].npc == NULL) {
 		    map->arr[t->y_coord][t->x_coord].character_present = 0;
                     map->arr[t->y_coord][t->x_coord + 1].character_present = 1;
                     map->arr[t->y_coord][t->x_coord + 1].player = map->arr[t->y_coord][t->x_coord].player;
@@ -291,7 +291,7 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NP
 	case '7':
 	case 'y':
 	    if (t->y_coord != 1 && t->x_coord != 1 && (map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == '.' || map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == '#' || map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == 'C' || map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == 'M')) {
-                if (map->arr[t->y_coord - 1][t->x_coord - 1].npc != NULL) {
+                if (map->arr[t->y_coord - 1][t->x_coord - 1].npc != NULL && map->arr[t->y_coord - 1][t->x_coord - 1].npc->defeated == 0) {
 		    clear();
                     printw("Holder Battle Screen");
                     refresh();
@@ -299,7 +299,7 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NP
                         inputFromUser = getch();
                     }
 		    map->arr[t->y_coord - 1][t->x_coord - 1].npc->defeated = 1;
-		} else {
+		} else if (map->arr[t->y_coord - 1][t->x_coord - 1].npc == NULL) {
 		    map->arr[t->y_coord][t->x_coord].character_present = 0;
                     map->arr[t->y_coord - 1][t->x_coord - 1].character_present = 1;
                     map->arr[t->y_coord - 1][t->x_coord - 1].player = map->arr[t->y_coord][t->x_coord].player;
@@ -312,7 +312,7 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NP
 	case '8':
 	case 'k':
 	    if (t->y_coord != 1 && (map->arr[t->y_coord - 1][t->x_coord].terrainPiece == '.' || map->arr[t->y_coord - 1][t->x_coord].terrainPiece == '#' || map->arr[t->y_coord - 1][t->x_coord].terrainPiece == 'C' || map->arr[t->y_coord - 1][t->x_coord].terrainPiece == 'M')) {
-                if (map->arr[t->y_coord-1][t->x_coord].npc != NULL) {
+                if (map->arr[t->y_coord-1][t->x_coord].npc != NULL && map->arr[t->y_coord - 1][t->x_coord].npc->defeated == 0) {
 		    clear();
                     printw("Holder Battle Screen");
                     refresh();
@@ -320,7 +320,7 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NP
                         inputFromUser = getch();
                     }
 		    map->arr[t->y_coord - 1][t->x_coord].npc->defeated = 1;
-		} else {
+		} else if (map->arr[t->y_coord - 1][t->x_coord].npc == NULL) {
 		    map->arr[t->y_coord][t->x_coord].character_present = 0;
                     map->arr[t->y_coord - 1][t->x_coord].character_present = 1;
                     map->arr[t->y_coord - 1][t->x_coord].player = map->arr[t->y_coord][t->x_coord].player;
@@ -332,7 +332,7 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NP
 	case '9':
 	case 'u':
 	    if (t->y_coord != 1 && t->x_coord != 78 && (map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == '.' || map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == '#' || map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == 'C' || map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == 'M')) {
-                if (map->arr[t->y_coord - 1][t->x_coord + 1].npc != NULL) {
+                if (map->arr[t->y_coord - 1][t->x_coord + 1].npc != NULL && map->arr[t->y_coord - 1][t->x_coord + 1].npc->defeated == 0) {
 		    clear();
 		    printw("Holder Battle Screen");
                     refresh();
@@ -340,7 +340,7 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NP
                         inputFromUser = getch();
                     }
 		    map->arr[t->y_coord - 1][t->x_coord + 1].npc->defeated = 1;
-		} else {
+		} else if (map->arr[t->y_coord - 1][t->x_coord + 1].npc == NULL) {
 		    map->arr[t->y_coord][t->x_coord].character_present = 0;
                     map->arr[t->y_coord - 1][t->x_coord + 1].character_present = 1;
                     map->arr[t->y_coord - 1][t->x_coord + 1].player = map->arr[t->y_coord][t->x_coord].player;
