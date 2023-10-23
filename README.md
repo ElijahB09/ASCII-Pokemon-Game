@@ -72,3 +72,22 @@ just sit and serve the purpose of being integrated early. During this assignment
 split up my main.c file because I was getting annoyed with how crowded the file was getting. This caused me to run
 into some include issues which I solved by creating a struct.h file which contains all of the structs for my project. I
 also managed to implement the switch which was fun and interesting to find out how to do that.
+
+## Assignment 1.05
+
+This iteration has a lot of bug fixes so hopefully it is more stable. I forgot to mention in the last assignment that
+when using --numtrainers, it must be used as --numtrainers='number here' which will be necessary to verify the paging
+of trainers when they exceed the height of the terminal. To keep the terminal clean when displaying trainers I decided to
+limit the display to about 21 or 22, this was so that it would display as many as the height of the map. When the user
+is over a Center or Mart and presses >, they are entered into a temporary menu where various things will take place later.
+For now, the menu simply serves as a place holder until the user presses < to escape the menu. I decided to have pressing t
+and, entering and exiting a mart or center count as player moves so the npcs will still move even if these stationary actions
+are being used. The temporary battle mechanic I managed to get working with the player character attacking npcs, but I wasn't able to
+get it to work with the npcs attacking the player so this is a known bug. My decided movement for the hikers and rivals after
+they have been defeated was for them to sit still as they are sad and crying at having been beaten and won't be moving
+anytime soon. Lastly, I'm certain the player movement is pretty good, I myself did not find any errors while testing the
+player's movement so I believe it is very stable. My only recommendation is that when moving the player, take a small amount
+of time between key presses, maybe something like half a second just so that everything will load properly. Something fun you can
+do that I discovered is that holding in a direction makes the player rapidly move in the entered direction and I simply think
+it looks funny. All in all, I had to code this on Pyrite in vim because I could not find a good way to go about programming
+with ncurses on Windows, if you have any tips on this, please let me know.

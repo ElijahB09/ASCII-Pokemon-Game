@@ -180,47 +180,88 @@ char decideNewDirection8(char currDirection) {
 }
 
 void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NPC *npcs[num_npcs]) {
+    int inputFromUser = 0;
     switch (userInput) {
         case '1':
 	case 'b':
-	    if (t->y_coord != 19 && t->x_coord != 1 && map->arr[t->y_coord + 1][t->x_coord - 1].character_present == 0 && (map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == '.' || map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == '#' || map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == 'C' || map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == 'M')) {
-	    	map->arr[t->y_coord][t->x_coord].character_present = 0;
-		map->arr[t->y_coord + 1][t->x_coord - 1].character_present = 1;
-		map->arr[t->y_coord + 1][t->x_coord - 1].player = map->arr[t->y_coord][t->x_coord].player;
-		map->arr[t->y_coord][t->x_coord].player = NULL;
-		t->y_coord++;
-		t->x_coord--;
+	    if (t->y_coord != 19 && t->x_coord != 1 && (map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == '.' || map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == '#' || map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == 'C' || map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == 'M')) {
+	    	if (map->arr[t->y_coord + 1][t->x_coord - 1].npc != NULL) {
+		    clear();
+		    printw("Holder Battle Screen");
+		    refresh();
+		    while(inputFromUser != 27) {
+		        inputFromUser = getch();
+		    }
+		    map->arr[t->y_coord + 1][t->x_coord - 1].npc->defeated = 1;
+		} else {
+		    map->arr[t->y_coord][t->x_coord].character_present = 0;
+		    map->arr[t->y_coord + 1][t->x_coord - 1].character_present = 1;
+		    map->arr[t->y_coord + 1][t->x_coord - 1].player = map->arr[t->y_coord][t->x_coord].player;
+		    map->arr[t->y_coord][t->x_coord].player = NULL;
+		    t->y_coord++;
+		    t->x_coord--;
+		}
 	    }
 	    break;
 	case '2':
 	case 'j':
-	    if (t->y_coord != 19 && map->arr[t->y_coord + 1][t->x_coord].character_present == 0 && (map->arr[t->y_coord + 1][t->x_coord].terrainPiece == '.' || map->arr[t->y_coord + 1][t->x_coord].terrainPiece == '#' || map->arr[t->y_coord + 1][t->x_coord].terrainPiece == 'C' || map->arr[t->y_coord + 1][t->x_coord].terrainPiece == 'M')) {
-                map->arr[t->y_coord][t->x_coord].character_present = 0;
-                map->arr[t->y_coord + 1][t->x_coord].character_present = 1;
-                map->arr[t->y_coord + 1][t->x_coord].player = map->arr[t->y_coord][t->x_coord].player;
-                map->arr[t->y_coord][t->x_coord].player = NULL;
-		t->y_coord++;
-            }
+	    if (t->y_coord != 19 && (map->arr[t->y_coord + 1][t->x_coord].terrainPiece == '.' || map->arr[t->y_coord + 1][t->x_coord].terrainPiece == '#' || map->arr[t->y_coord + 1][t->x_coord].terrainPiece == 'C' || map->arr[t->y_coord + 1][t->x_coord].terrainPiece == 'M')) {
+                if (map->arr[t->y_coord + 1][t->x_coord].npc != NULL) {
+  		    clear();
+                    printw("Holder Battle Screen");
+                    refresh();
+                    while(inputFromUser != 27) {
+                        inputFromUser = getch();
+                    }
+		    map->arr[t->y_coord + 1][t->x_coord].npc->defeated = 1;
+		} else {
+		    map->arr[t->y_coord][t->x_coord].character_present = 0;
+                    map->arr[t->y_coord + 1][t->x_coord].character_present = 1;
+                    map->arr[t->y_coord + 1][t->x_coord].player = map->arr[t->y_coord][t->x_coord].player;
+                    map->arr[t->y_coord][t->x_coord].player = NULL;
+		    t->y_coord++;
+		}
+            } 
 	    break;
 	case '3':
 	case 'n':
-	    if (t->y_coord != 19 && t->x_coord != 78 && map->arr[t->y_coord + 1][t->x_coord + 1].character_present == 0 && (map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == '.' || map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == '#' || map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == 'C' || map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == 'M')) {
-                map->arr[t->y_coord][t->x_coord].character_present = 0;
-                map->arr[t->y_coord + 1][t->x_coord + 1].character_present = 1;
-                map->arr[t->y_coord + 1][t->x_coord + 1].player = map->arr[t->y_coord][t->x_coord].player;
-                map->arr[t->y_coord][t->x_coord].player = NULL;
-		t->y_coord++;
-		t->x_coord++;
+	    if (t->y_coord != 19 && t->x_coord != 78 && (map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == '.' || map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == '#' || map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == 'C' || map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == 'M')) {
+                if (map->arr[t->y_coord + 1][t->x_coord + 1].npc != NULL) {
+		    clear();
+                    printw("Holder Battle Screen");
+                    refresh();
+                    while(inputFromUser != 27) {
+                        inputFromUser = getch();
+                    }
+		    map->arr[t->y_coord + 1][t->x_coord + 1].npc->defeated = 1;
+		} else {
+		    map->arr[t->y_coord][t->x_coord].character_present = 0;
+                    map->arr[t->y_coord + 1][t->x_coord + 1].character_present = 1;
+                    map->arr[t->y_coord + 1][t->x_coord + 1].player = map->arr[t->y_coord][t->x_coord].player;
+                    map->arr[t->y_coord][t->x_coord].player = NULL;
+		    t->y_coord++;
+		    t->x_coord++;
+		}
             }
 	    break;
 	case '4':
 	case 'h':
-	    if (t->x_coord != 1 && map->arr[t->y_coord][t->x_coord - 1].character_present == 0 && (map->arr[t->y_coord][t->x_coord - 1].terrainPiece == '.' || map->arr[t->y_coord][t->x_coord - 1].terrainPiece == '#' || map->arr[t->y_coord][t->x_coord - 1].terrainPiece == 'C' || map->arr[t->y_coord][t->x_coord - 1].terrainPiece == 'M')) {
-                map->arr[t->y_coord][t->x_coord].character_present = 0;
-                map->arr[t->y_coord][t->x_coord - 1].character_present = 1;
-                map->arr[t->y_coord][t->x_coord - 1].player = map->arr[t->y_coord][t->x_coord].player;
-                map->arr[t->y_coord][t->x_coord].player = NULL;
-		t->x_coord--;
+	    if (t->x_coord != 1 && (map->arr[t->y_coord][t->x_coord - 1].terrainPiece == '.' || map->arr[t->y_coord][t->x_coord - 1].terrainPiece == '#' || map->arr[t->y_coord][t->x_coord - 1].terrainPiece == 'C' || map->arr[t->y_coord][t->x_coord - 1].terrainPiece == 'M')) {
+                if (map->arr[t->y_coord][t->x_coord - 1].npc != NULL) {
+		    clear();
+                    printw("Holder Battle Screen");
+                    refresh();
+                    while(inputFromUser != 27) {
+                        inputFromUser = getch();
+                    }
+		    map->arr[t->y_coord][t->x_coord - 1].npc->defeated = 1;
+		} else {
+		    map->arr[t->y_coord][t->x_coord].character_present = 0;
+                    map->arr[t->y_coord][t->x_coord - 1].character_present = 1;
+                    map->arr[t->y_coord][t->x_coord - 1].player = map->arr[t->y_coord][t->x_coord].player;
+                    map->arr[t->y_coord][t->x_coord].player = NULL;
+		    t->x_coord--;
+		}
             }
 	    break;
 	case '5':
@@ -229,44 +270,84 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NP
 	    break;
 	case '6':
 	case 'l':
-	    if (t->x_coord != 78 && map->arr[t->y_coord][t->x_coord + 1].character_present == 0 && (map->arr[t->y_coord][t->x_coord + 1].terrainPiece == '.' || map->arr[t->y_coord][t->x_coord + 1].terrainPiece == '#' || map->arr[t->y_coord][t->x_coord + 1].terrainPiece == 'C' || map->arr[t->y_coord][t->x_coord + 1].terrainPiece == 'M')) {
-                map->arr[t->y_coord][t->x_coord].character_present = 0;
-                map->arr[t->y_coord][t->x_coord + 1].character_present = 1;
-                map->arr[t->y_coord][t->x_coord + 1].player = map->arr[t->y_coord][t->x_coord].player;
-                map->arr[t->y_coord][t->x_coord].player = NULL;
-		t->x_coord++;
+	    if (t->x_coord != 78 && (map->arr[t->y_coord][t->x_coord + 1].terrainPiece == '.' || map->arr[t->y_coord][t->x_coord + 1].terrainPiece == '#' || map->arr[t->y_coord][t->x_coord + 1].terrainPiece == 'C' || map->arr[t->y_coord][t->x_coord + 1].terrainPiece == 'M')) {
+                if (map->arr[t->y_coord][t->x_coord + 1].npc != NULL) {
+		    clear();
+                    printw("Holder Battle Screen");
+                    refresh();
+                    while(inputFromUser != 27) {
+                        inputFromUser = getch();
+                    }
+		    map->arr[t->y_coord][t->x_coord + 1].npc->defeated = 1;
+		} else {
+		    map->arr[t->y_coord][t->x_coord].character_present = 0;
+                    map->arr[t->y_coord][t->x_coord + 1].character_present = 1;
+                    map->arr[t->y_coord][t->x_coord + 1].player = map->arr[t->y_coord][t->x_coord].player;
+                    map->arr[t->y_coord][t->x_coord].player = NULL;
+		    t->x_coord++;
+		}
             }
 	    break;
 	case '7':
 	case 'y':
-	    if (t->y_coord != 1 && t->x_coord != 1 && map->arr[t->y_coord - 1][t->x_coord - 1].character_present == 0 && (map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == '.' || map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == '#' || map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == 'C' || map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == 'M')) {
-                map->arr[t->y_coord][t->x_coord].character_present = 0;
-                map->arr[t->y_coord - 1][t->x_coord - 1].character_present = 1;
-                map->arr[t->y_coord - 1][t->x_coord - 1].player = map->arr[t->y_coord][t->x_coord].player;
-                map->arr[t->y_coord][t->x_coord].player = NULL;
-		t->y_coord--;
-		t->x_coord--;
+	    if (t->y_coord != 1 && t->x_coord != 1 && (map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == '.' || map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == '#' || map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == 'C' || map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == 'M')) {
+                if (map->arr[t->y_coord - 1][t->x_coord - 1].npc != NULL) {
+		    clear();
+                    printw("Holder Battle Screen");
+                    refresh();
+                    while(inputFromUser != 27) {
+                        inputFromUser = getch();
+                    }
+		    map->arr[t->y_coord - 1][t->x_coord - 1].npc->defeated = 1;
+		} else {
+		    map->arr[t->y_coord][t->x_coord].character_present = 0;
+                    map->arr[t->y_coord - 1][t->x_coord - 1].character_present = 1;
+                    map->arr[t->y_coord - 1][t->x_coord - 1].player = map->arr[t->y_coord][t->x_coord].player;
+                    map->arr[t->y_coord][t->x_coord].player = NULL;
+		    t->y_coord--;
+		    t->x_coord--;
+		}
             }
 	    break;
 	case '8':
 	case 'k':
-	    if (t->y_coord != 1 && map->arr[t->y_coord - 1][t->x_coord].character_present == 0 && (map->arr[t->y_coord - 1][t->x_coord].terrainPiece == '.' || map->arr[t->y_coord - 1][t->x_coord].terrainPiece == '#' || map->arr[t->y_coord - 1][t->x_coord].terrainPiece == 'C' || map->arr[t->y_coord - 1][t->x_coord].terrainPiece == 'M')) {
-                map->arr[t->y_coord][t->x_coord].character_present = 0;
-                map->arr[t->y_coord - 1][t->x_coord].character_present = 1;
-                map->arr[t->y_coord - 1][t->x_coord].player = map->arr[t->y_coord][t->x_coord].player;
-                map->arr[t->y_coord][t->x_coord].player = NULL;
-		t->y_coord--;
+	    if (t->y_coord != 1 && (map->arr[t->y_coord - 1][t->x_coord].terrainPiece == '.' || map->arr[t->y_coord - 1][t->x_coord].terrainPiece == '#' || map->arr[t->y_coord - 1][t->x_coord].terrainPiece == 'C' || map->arr[t->y_coord - 1][t->x_coord].terrainPiece == 'M')) {
+                if (map->arr[t->y_coord-1][t->x_coord].npc != NULL) {
+		    clear();
+                    printw("Holder Battle Screen");
+                    refresh();
+                    while(inputFromUser != 27) {
+                        inputFromUser = getch();
+                    }
+		    map->arr[t->y_coord - 1][t->x_coord].npc->defeated = 1;
+		} else {
+		    map->arr[t->y_coord][t->x_coord].character_present = 0;
+                    map->arr[t->y_coord - 1][t->x_coord].character_present = 1;
+                    map->arr[t->y_coord - 1][t->x_coord].player = map->arr[t->y_coord][t->x_coord].player;
+                    map->arr[t->y_coord][t->x_coord].player = NULL;
+		    t->y_coord--;
+		}
             }
 	    break;
 	case '9':
 	case 'u':
-	    if (t->y_coord != 1 && t->x_coord != 78 && map->arr[t->y_coord - 1][t->x_coord + 1].character_present == 0 && (map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == '.' || map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == '#' || map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == 'C' || map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == 'M')) {
-                map->arr[t->y_coord][t->x_coord].character_present = 0;
-                map->arr[t->y_coord - 1][t->x_coord + 1].character_present = 1;
-                map->arr[t->y_coord - 1][t->x_coord + 1].player = map->arr[t->y_coord][t->x_coord].player;
-                map->arr[t->y_coord][t->x_coord].player = NULL;
-		t->y_coord--;
-		t->x_coord++;
+	    if (t->y_coord != 1 && t->x_coord != 78 && (map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == '.' || map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == '#' || map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == 'C' || map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == 'M')) {
+                if (map->arr[t->y_coord - 1][t->x_coord + 1].npc != NULL) {
+		    clear();
+		    printw("Holder Battle Screen");
+                    refresh();
+                    while(inputFromUser != 27) {
+                        inputFromUser = getch();
+                    }
+		    map->arr[t->y_coord - 1][t->x_coord + 1].npc->defeated = 1;
+		} else {
+		    map->arr[t->y_coord][t->x_coord].character_present = 0;
+                    map->arr[t->y_coord - 1][t->x_coord + 1].character_present = 1;
+                    map->arr[t->y_coord - 1][t->x_coord + 1].player = map->arr[t->y_coord][t->x_coord].player;
+                    map->arr[t->y_coord][t->x_coord].player = NULL;
+		    t->y_coord--;
+		    t->x_coord++;
+		}
             }
 	    break;
 	case '>':
@@ -430,24 +511,31 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[num_npcs]) {
                 }
             }
         }
-        // Move character off of current cell
-        map->arr[t.y_coord][t.x_coord].character_present = 0;
+	if (map->arr[t.y_coord][t.x_coord].npc->defeated == 0) {
+            // Move character off of current cell
+            map->arr[t.y_coord][t.x_coord].character_present = 0;
 
-        // Move character to new cell
-        map->arr[minY][minX].npc = map->arr[t.y_coord][t.x_coord].npc;
-	map->arr[minY][minX].npc->y_coord = minY;
-	map->arr[minY][minX].npc->x_coord = minX;
-        map->arr[t.y_coord][t.x_coord].npc = NULL;
-        map->arr[minY][minX].character_present = 1;
-
-        if (t.characterSymbol == 'r') {
-            t.priority += map->arr[minY][minX].rival_distance;
-        } else if (t.characterSymbol == 'h') {
-            t.priority += map->arr[minY][minX].hiker_distance;
-        }
-        t.x_coord = minX;
-        t.y_coord = minY;
-
+            // Move character to new cell
+            map->arr[minY][minX].npc = map->arr[t.y_coord][t.x_coord].npc;
+	    map->arr[minY][minX].npc->y_coord = minY;
+	    map->arr[minY][minX].npc->x_coord = minX;
+            map->arr[t.y_coord][t.x_coord].npc = NULL;
+            map->arr[minY][minX].character_present = 1;
+	
+            if (t.characterSymbol == 'r') {
+                t.priority += map->arr[minY][minX].rival_distance;
+            } else if (t.characterSymbol == 'h') {
+                t.priority += map->arr[minY][minX].hiker_distance;
+            }
+            t.x_coord = minX;
+            t.y_coord = minY;
+	} else {
+	    if (t.characterSymbol == 'r') {
+                t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
+            } else if (t.characterSymbol == 'h') {
+                t.priority += map->arr[t.y_coord][t.x_coord].hiker_distance;
+            }
+	}
         insertTurns(heap, &t);
 	return 0;
     } else if (t.characterSymbol == 'p' || t.characterSymbol == 'w' || t.characterSymbol == 's' || t.characterSymbol == 'e') {

@@ -37,12 +37,15 @@ void initNPCS(PokeMap *map, int num_npcs, PlayerCharacter *player, NPC *npcs[num
     if (num_npcs == 1) {
         npcs[0] = malloc(sizeof (NPC));
         npcs[0]->symbol = 'r';
+	npcs[0]->defeated = 0;
     } else if (num_npcs >= 2) {
         npcs[0] = malloc(sizeof (NPC));
         npcs[0]->symbol = 'r';
+	npcs[0]->defeated = 0;
 
         npcs[1] = malloc(sizeof (NPC));
         npcs[1]->symbol = 'h';
+	npcs[1]->defeated = 0;
 
         for (i = 2; i < num_npcs; i++) {
             rand_trainer = (rand() % 6);
@@ -72,6 +75,7 @@ void initNPCS(PokeMap *map, int num_npcs, PlayerCharacter *player, NPC *npcs[num
                     npcs[i]->symbol = 'e';
                     break;
             }
+	    npcs[i]->defeated = 0;
         }
     }
 
