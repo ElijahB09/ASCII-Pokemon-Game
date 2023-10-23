@@ -179,7 +179,7 @@ char decideNewDirection8(char currDirection) {
     return direction;
 }
 
-void handlePlayerMovement(PokeMap *map, int userInput, Turn *t) {
+void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NPC *npcs[num_npcs]) {
     switch (userInput) {
         case '1':
 	case 'b':
@@ -290,12 +290,23 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t) {
 	    }
 	    break;
 	case 't':
+	    int k, userinput;
+	    userinput = 0;
+
+	    clear();
+	    printw("Trainer List");
+	    move(1, 0);
+	    for (k = 0; k < num_npcs && k < 21; k++) {
+	        printw("Symbol: %c, X-coord: %d, Y-coord: %d\n", npcs[k]->symbol, npcs[k]->x_coord, npcs[k]->y_coord);
+	    }
+	    refresh();
+	    while (userinput != 27) {
+	        userinput = getch();
+	    }
 	    break;
 	case KEY_UP:
 	    break;
 	case KEY_DOWN:
-	    break;
-	case 27: // Escape key
 	    break;
 	case 'Q':
 	    break;
@@ -306,7 +317,7 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t) {
     DijkstraTrainers(80, 21, map->arr, map->arr[t->y_coord][t->x_coord]);
 }
 
-int takeTurn(TurnOrder *heap, PokeMap *map) {
+int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[num_npcs]) {
     Turn t;
     int numNeighbors, i, minDistance, minX, minY;
     terrainCell neighbors[8];
@@ -336,6 +347,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
 
         // Move character to new cell
         map->arr[minY][minX].npc = map->arr[t.y_coord][t.x_coord].npc;
+	map->arr[minY][minX].npc->y_coord = minY;
+	map->arr[minY][minX].npc->x_coord = minX;
         map->arr[t.y_coord][t.x_coord].npc = NULL;
         map->arr[minY][minX].character_present = 1;
 
@@ -366,6 +379,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord][t.x_coord - 1].character_present = 1;
                         t.x_coord = t.x_coord - 1;
                         t.y_coord = t.y_coord;
+			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+			map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                         t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
@@ -380,6 +395,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                             map->arr[t.y_coord][t.x_coord + 1].character_present = 1;
                             t.x_coord = t.x_coord + 1;
                             t.y_coord = t.y_coord;
+			    map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                            map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                             t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                             insertTurns(heap, &t);
                         }
@@ -396,7 +413,9 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord][t.x_coord + 1].character_present = 1;
                         t.x_coord = t.x_coord + 1;
                         t.y_coord = t.y_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
+                        map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
+			t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
 			t.direction = 'l';
@@ -410,6 +429,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                             map->arr[t.y_coord][t.x_coord - 1].character_present = 1;
                             t.x_coord = t.x_coord - 1;
                             t.y_coord = t.y_coord;
+			    map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                            map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                             t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                             insertTurns(heap, &t);
                         }
@@ -426,6 +447,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord - 1][t.x_coord].character_present = 1;
                         t.x_coord = t.x_coord;
                         t.y_coord = t.y_coord - 1;
+			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                         t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
@@ -440,6 +463,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                             map->arr[t.y_coord + 1][t.x_coord].character_present = 1;
                             t.x_coord = t.x_coord;
                             t.y_coord = t.y_coord + 1;
+			    map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                            map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                             t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                             insertTurns(heap, &t);
                         }
@@ -456,6 +481,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord + 1][t.x_coord].character_present = 1;
                         t.x_coord = t.x_coord;
                         t.y_coord = t.y_coord + 1;
+			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                         t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
@@ -470,6 +497,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                             map->arr[t.y_coord - 1][t.x_coord].character_present = 1;
                             t.x_coord = t.x_coord;
                             t.y_coord = t.y_coord - 1;
+			    map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                            map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                             t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                             insertTurns(heap, &t);
                         }
@@ -486,6 +515,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord - 1][t.x_coord - 1].character_present = 1;
                         t.x_coord = t.x_coord - 1;
                         t.y_coord = t.y_coord - 1;
+			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                         t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
@@ -500,6 +531,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                             map->arr[t.y_coord + 1][t.x_coord + 1].character_present = 1;
                             t.x_coord = t.x_coord + 1;
                             t.y_coord = t.y_coord + 1;
+			    map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                            map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                             t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                             insertTurns(heap, &t);
                         }
@@ -516,7 +549,9 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord + 1][t.x_coord + 1].character_present = 1;
                         t.x_coord = t.x_coord + 1;
                         t.y_coord = t.y_coord + 1;
-                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
+                        map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
+			t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
                         t.direction = 'w';
@@ -530,6 +565,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                             map->arr[t.y_coord - 1][t.x_coord - 1].character_present = 1;
                             t.x_coord = t.x_coord - 1;
                             t.y_coord = t.y_coord - 1;
+			    map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                            map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                             t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                             insertTurns(heap, &t);
                         }
@@ -546,6 +583,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord + 1][t.x_coord - 1].character_present = 1;
                         t.x_coord = t.x_coord - 1;
                         t.y_coord = t.y_coord + 1;
+			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                         t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
@@ -560,6 +599,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                             map->arr[t.y_coord - 1][t.x_coord + 1].character_present = 1;
                             t.x_coord = t.x_coord + 1;
                             t.y_coord = t.y_coord - 1;
+			    map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                            map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                             t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                             insertTurns(heap, &t);
                         }
@@ -576,6 +617,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord - 1][t.x_coord + 1].character_present = 1;
                         t.x_coord = t.x_coord + 1;
                         t.y_coord = t.y_coord - 1;
+			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                         t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
@@ -590,6 +633,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                             map->arr[t.y_coord + 1][t.x_coord - 1].character_present = 1;
                             t.x_coord = t.x_coord - 1;
                             t.y_coord = t.y_coord + 1;
+			    map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                            map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                             t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                             insertTurns(heap, &t);
                         }
@@ -615,6 +660,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord][t.x_coord - 1].character_present = 1;
                         t.x_coord = t.x_coord - 1;
                         t.y_coord = t.y_coord;
+			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                         t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
@@ -635,6 +682,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord][t.x_coord + 1].character_present = 1;
                         t.x_coord = t.x_coord + 1;
                         t.y_coord = t.y_coord;
+			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                         t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
@@ -655,6 +704,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord - 1][t.x_coord].character_present = 1;
                         t.x_coord = t.x_coord;
                         t.y_coord = t.y_coord - 1;
+			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                         t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
@@ -675,6 +726,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord + 1][t.x_coord].character_present = 1;
                         t.x_coord = t.x_coord;
                         t.y_coord = t.y_coord + 1;
+			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                         t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
@@ -695,6 +748,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord - 1][t.x_coord - 1].character_present = 1;
                         t.x_coord = t.x_coord - 1;
                         t.y_coord = t.y_coord - 1;
+			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                         t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
@@ -715,6 +770,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord + 1][t.x_coord + 1].character_present = 1;
                         t.x_coord = t.x_coord + 1;
                         t.y_coord = t.y_coord + 1;
+			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                         t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
@@ -735,6 +792,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord + 1][t.x_coord - 1].character_present = 1;
                         t.x_coord = t.x_coord - 1;
                         t.y_coord = t.y_coord + 1;
+			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                         t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
@@ -755,6 +814,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord - 1][t.x_coord + 1].character_present = 1;
                         t.x_coord = t.x_coord + 1;
                         t.y_coord = t.y_coord - 1;
+			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                         t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
@@ -780,6 +841,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord][t.x_coord - 1].character_present = 1;
                         t.x_coord = t.x_coord - 1;
                         t.y_coord = t.y_coord;
+			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                         t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
@@ -799,6 +862,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord][t.x_coord + 1].character_present = 1;
                         t.x_coord = t.x_coord + 1;
                         t.y_coord = t.y_coord;
+			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                         t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
@@ -818,6 +883,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord - 1][t.x_coord].character_present = 1;
                         t.x_coord = t.x_coord;
                         t.y_coord = t.y_coord - 1;
+			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                         t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
@@ -837,6 +904,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord + 1][t.x_coord].character_present = 1;
                         t.x_coord = t.x_coord;
                         t.y_coord = t.y_coord + 1;
+			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                         t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
@@ -856,6 +925,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord - 1][t.x_coord - 1].character_present = 1;
                         t.x_coord = t.x_coord - 1;
                         t.y_coord = t.y_coord - 1;
+			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                         t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
@@ -875,6 +946,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord + 1][t.x_coord + 1].character_present = 1;
                         t.x_coord = t.x_coord + 1;
                         t.y_coord = t.y_coord + 1;
+			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                         t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
@@ -894,6 +967,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord + 1][t.x_coord - 1].character_present = 1;
                         t.x_coord = t.x_coord - 1;
                         t.y_coord = t.y_coord + 1;
+			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                         t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
@@ -913,6 +988,8 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
                         map->arr[t.y_coord - 1][t.x_coord + 1].character_present = 1;
                         t.x_coord = t.x_coord + 1;
                         t.y_coord = t.y_coord - 1;
+			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
                         t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
                         insertTurns(heap, &t);
                     } else {
@@ -949,7 +1026,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map) {
 	int user_input = getch();
 
 	// Allowed ops {1, 2, 3, 4, 5, 6, 7, 8, 9, y, k, u, l, n, j, b, h, >, <, , ., t, up arrow, down arrow, escape, Q} "space itself is allowed"
-	handlePlayerMovement(map, user_input, &t);
+	handlePlayerMovement(map, user_input, &t, num_npcs, npcs);
         // Handle priority
         if (map->arr[t.y_coord][t.x_coord].terrainPiece == '.' || map->arr[t.y_coord][t.x_coord].terrainPiece == '#' || map->arr[t.y_coord][t.x_coord].terrainPiece == 'C' || map->arr[t.y_coord][t.x_coord].terrainPiece == 'M') {
             t.priority += 10;

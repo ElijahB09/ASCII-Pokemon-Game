@@ -22,7 +22,7 @@ void io_init_terminal(void)
 int main(int argc, char *argv[]) {
     PokeMap* world[401][401];
     PlayerCharacter *player;
-    int current_x, current_y, i, j, /*fly_x, fly_y,*/ num_npcs;
+    int current_x, current_y, i, j, k,/*fly_x, fly_y,*/ num_npcs;
     //char userInput;
     TurnOrder *turnOrder;
     num_npcs = 10;
@@ -77,6 +77,15 @@ int main(int argc, char *argv[]) {
     gameRunning = 1;
 
     while (gameRunning) {
+	k = 0;
+        for (i = 0; i < Y_BOUND; i++) {
+            for (j = 0; j < X_BOUND; j++) {
+		if (world[current_y][current_x]->arr[i][j].npc != NULL) {
+		    npcs[k] = world[current_y][current_x]->arr[i][j].npc;
+		    k++;
+		}
+	    }
+	}
 	clear();
 	printw("Turn Taking Happening");
         for (i = 0; i < Y_BOUND; i++) {
@@ -92,7 +101,7 @@ int main(int argc, char *argv[]) {
         }
 	refresh();
 	for (i = 0; i < num_npcs; i++) {
-	    user_input = takeTurn(turnOrder, world[current_y][current_x]);
+	    user_input = takeTurn(turnOrder, world[current_y][current_x], num_npcs, npcs);
 	    if (user_input == 'Q') {
 		gameRunning = 0;
 	    }
