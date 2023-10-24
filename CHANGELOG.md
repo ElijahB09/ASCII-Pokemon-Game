@@ -1,3 +1,117 @@
+commit 7d4bf101dbdaee6362ebe98f94fd18a93712c2cc
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Mon Oct 23 01:27:12 2023 -0500
+
+    Update readme
+
+commit f7185a2ed2fc07e389dfa4fbb6266d5c18c78789
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Mon Oct 23 01:24:44 2023 -0500
+
+    Fix bugs with player movement
+
+commit b05e76f138f00e2e60edc842517a72deb3ff8bab
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Mon Oct 23 01:13:42 2023 -0500
+
+    Got rival and hiker defeats working
+
+commit abc816a71e9b968c41f43bfcc0e34a2575b0514f
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Mon Oct 23 00:23:52 2023 -0500
+
+    Built the menu for viewing active trainers on the map
+
+commit 466f101fe9dc62424733e97152884b51e5cb464f
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Oct 22 22:59:35 2023 -0500
+
+    Added list npcs functionality, needs more work to look cleaner
+
+commit a01769424be7f37403f07ca1db2d83d42f850f3a
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Oct 22 13:19:13 2023 -0500
+
+    Added ability to enter and exit pokemarts and pokecenters
+
+commit 74bd84ad6dc65775e748c42b0d69abb156b95470
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Oct 21 13:16:27 2023 -0500
+
+    Changes to make file for better readability
+
+commit de7777fc80d88b2ba3bf18b5a2b0ccf7d83d5930
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Oct 21 12:03:07 2023 -0500
+
+    Make the map print right before its the users turn every time, smoothed out movement bugs
+
+commit 6c28758095d3385a71a6f78f996662d28c720631
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Oct 21 11:47:07 2023 -0500
+
+    Updated rival and hiker maps with each movement of the player
+
+commit f629ee8f66fd426650711df4729e01d113f6ea23
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Thu Oct 19 18:34:13 2023 -0500
+
+    Got movement working, there is a slight bug where everything freezes for one turn, but then moves two times in the next turn
+
+commit ca221a4b08f9a60f01662c672f7b3a37f7d2cfab
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Thu Oct 19 15:03:45 2023 -0500
+
+    Fixed some bugs with the program, I should be able to easily add directions soon
+
+commit ec33282d612232eccc1786963dd989e74b834be6
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Thu Oct 19 14:03:11 2023 -0500
+
+    Make adjustments to take input where turns are handles
+
+commit 4982e49c8b81c283a51a81892196b85e93060b42
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Thu Oct 19 12:39:33 2023 -0500
+
+    Freeing everything that was malloc'd in my own program now, happy is finally clean after 1.04
+
+commit b258b70899156424c192b43af466613615fd0f7b
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Thu Oct 19 12:13:33 2023 -0500
+
+    Made code a litle shorter and cleaner
+
+commit bc179701168aa45777fe739870a9f5ddd04b36b7
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Thu Oct 19 11:56:38 2023 -0500
+
+    Figured out how to do reprinting
+
+commit da2d31a6e61f632bdf6ff7239b0a6c313ad7e94b
+Author: ebrady <ebrady@pyrite-n3.cs.iastate.edu>
+Date:   Thu Oct 19 11:28:40 2023 -0500
+
+    Add basic init for ncurses
+
+commit 2112037c2d28d5979e81e118102d8efacf4c3753
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Fri Oct 13 13:30:30 2023 -0500
+
+    Setup for player movement through curses, I'm pretty positive I got most other things fixed
+
+commit 37ceb4cfdb720b9ca24c2b3b83586d2e5dd3d57f
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Fri Oct 13 12:59:32 2023 -0500
+
+    Big fix, I figured out a small bug I was having with my min heapify method that was causing it to not always put the minimum value at arr[0], everything now looks better
+
+commit 3090be683544b99e97e3e74b50b57b5ecd5b5f40
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Tue Oct 10 16:15:39 2023 -0500
+
+    Big bug fixes for pacer, wanderer, and explorer movement
+
 commit 8b17a2e690b8f192054ddbecaa9f3d35ccaf1535
 Author: Elijah Brady <bradyeli09@gmail.com>
 Date:   Mon Oct 9 05:50:54 2023 -0500

@@ -101,7 +101,6 @@ TurnOrder* createTurnPriority(int num_npcs, NPC *npcs[num_npcs], PlayerCharacter
     for (i = 0; i < num_npcs; i++) {
         t.priority = 0;
         t.characterSymbol = npcs[i]->symbol;
-        t.currentMap = map;
         t.x_coord = npcs[i]->x_coord;
         t.y_coord = npcs[i]->y_coord;
         t.spawnedInTerrain = map->arr[t.y_coord][t.x_coord].terrainPiece;
@@ -110,7 +109,6 @@ TurnOrder* createTurnPriority(int num_npcs, NPC *npcs[num_npcs], PlayerCharacter
     t.priority = 0;
     t.y_coord = player->y_coord;
     t.x_coord = player->x_coord;
-    t.currentMap = map;
     t.characterSymbol = player->symbol;
     t.spawnedInTerrain = map->arr[t.y_coord][t.x_coord].terrainPiece;
     insertTurns(turnOrder, &t);
@@ -186,6 +184,7 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NP
 	case 'b':
 	    if (t->y_coord != 19 && t->x_coord != 1 && (map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == '.' || map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == '#' || map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == 'C' || map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == 'M')) {
 	    	if (map->arr[t->y_coord + 1][t->x_coord - 1].npc != NULL && map->arr[t->y_coord + 1][t->x_coord - 1].npc->defeated == 0) {
+		    // Begin battle, I need a battle.c
 		    clear();
 		    printw("Holder Battle Screen");
 		    refresh();
@@ -498,16 +497,22 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[num_npcs]) {
         minDistance = minX = minY = INT_MAX;
         for (i = 0; i < numNeighbors; i++) {
             if (t.characterSymbol == 'r') {
-                if (minDistance > neighbors[i].rival_total_distance && map->arr[neighbors[i].y_coord][neighbors[i].x_coord].character_present == 0) {
+                if (minDistance > neighbors[i].rival_total_distance && map->arr[neighbors[i].y_coord][neighbors[i].x_coord].npc == NULL) {
                     minDistance = neighbors[i].rival_total_distance;
                     minY = neighbors[i].y_coord;
                     minX = neighbors[i].x_coord;
+		    if (map->arr[neighbors[i].y_coord][neighbors[i].x_coord].character_present == 1) {
+		        // Begin battle
+		    }
                 }
             } else {
-                if (minDistance > neighbors[i].hiker_total_distance && map->arr[neighbors[i].y_coord][neighbors[i].x_coord].character_present == 0) {
+                if (minDistance > neighbors[i].hiker_total_distance && map->arr[neighbors[i].y_coord][neighbors[i].x_coord].npc == NULL) {
                     minDistance = neighbors[i].hiker_total_distance;
                     minY = neighbors[i].y_coord;
                     minX = neighbors[i].x_coord;
+		    if (map->arr[neighbors[i].y_coord][neighbors[i].x_coord].character_present == 1) {
+		        // Begin battle
+		    }
                 }
             }
         }

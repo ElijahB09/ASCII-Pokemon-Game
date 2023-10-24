@@ -28,18 +28,10 @@ typedef struct {
 } MinHeap;
 
 typedef struct {
-    terrainCell arr[Y_BOUND][X_BOUND];
-    int left_exit, right_exit, up_exit, down_exit;
-    int world_x, world_y;
-    int is_created;
-} PokeMap;
-
-typedef struct {
     char characterSymbol;
     char spawnedInTerrain;
     char direction;
     int priority, x_coord, y_coord;
-    PokeMap *currentMap;
 } Turn;
 
 typedef struct {
@@ -47,6 +39,14 @@ typedef struct {
     int size;
     unsigned capacity;
 } TurnOrder;
+
+typedef struct {
+    terrainCell arr[Y_BOUND][X_BOUND];
+    int left_exit, right_exit, up_exit, down_exit;
+    int world_x, world_y;
+    int is_created;
+    TurnOrder* order;
+} PokeMap;
 
 typedef struct {
     int front, rear, size;

@@ -24,7 +24,6 @@ int main(int argc, char *argv[]) {
     PlayerCharacter *player;
     int current_x, current_y, i, j, k,/*fly_x, fly_y,*/ num_npcs;
     //char userInput;
-    TurnOrder *turnOrder;
     num_npcs = 10;
     int user_input, gameRunning;
     char charToPrint;
@@ -68,7 +67,7 @@ int main(int argc, char *argv[]) {
     // Comment out unused values for this week
     //userInput = 'x';
     //fly_x = fly_y = -999;
-    turnOrder = createTurnPriority(num_npcs, npcs, player, world[current_y][current_x]);
+    world[current_y][current_x]->order = createTurnPriority(num_npcs, npcs, player, world[current_y][current_x]);
 
     clear();
     printw("Starting PokeGame!\n");
@@ -101,7 +100,7 @@ int main(int argc, char *argv[]) {
         }
 	refresh();
 	for (i = 0; i < num_npcs; i++) {
-	    user_input = takeTurn(turnOrder, world[current_y][current_x], num_npcs, npcs);
+	    user_input = takeTurn(world[current_y][current_x]->order, world[current_y][current_x], num_npcs, npcs);
 	    if (user_input == 'Q') {
 		gameRunning = 0;
 	    }
@@ -113,6 +112,10 @@ int main(int argc, char *argv[]) {
     for(i = 0; i < 401; i++) {
         for(j = 0; j < 401; j++) {
             if(world[i][j]){
+		free(world[i][j]->order->arr);
+		world[i][j]->order->arr = NULL;
+		free(world[i][j]->order);
+		world[i][j]->order = NULL;
                 free(world[i][j]);
                 world[i][j] = NULL;
             }
@@ -122,8 +125,6 @@ int main(int argc, char *argv[]) {
     for (i = 0; i < num_npcs; i++) {
         free(npcs[i]);
     }
-    free(turnOrder->arr);
-    free(turnOrder);
 
     return 0;
 }
