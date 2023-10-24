@@ -1,8 +1,7 @@
 #ifndef HANDLETURNS_H
 #define HANDLETURNS_H
 
-#include "worldgen.h"
-#include <ncurses.h>
+#include "handleBattle.h"
 
 TurnOrder* buildPriority(unsigned capacity);
 void insertTurns(TurnOrder *heap, Turn *element);
