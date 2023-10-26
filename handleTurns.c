@@ -177,34 +177,47 @@ char decideNewDirection8(char currDirection) {
     return direction;
 }
 
-void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NPC *npcs[num_npcs]) {
-    int oldX, oldY;
+int handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NPC *npcs[num_npcs]) {
+    int oldX, oldY, returnVal;
     oldX = t->x_coord;
     oldY = t->y_coord;
+    returnVal = userInput;
     switch (userInput) {
         case '1':
 	case 'b':
-	    if (t->y_coord != 19 && t->x_coord != 1 && (map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == '.' || map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == '#' || map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == 'C' || map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == 'M' || map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == ':')) {
+	    if (t->y_coord + 1 == 20 && t->x_coord - 1 == map->down_exit) {
+		returnVal = 'D';
+	    } else if (t->y_coord + 1 == map->left_exit && t->x_coord - 1 == 0) {
+	        returnVal = 'L';
+	    } else if (t->y_coord != 19 && t->x_coord != 1 && (map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == '.' || map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == '#' || map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == 'C' || map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == 'M' || map->arr[t->y_coord + 1][t->x_coord - 1].terrainPiece == ':')) {
 	    	t->y_coord++;
 		t->x_coord--;
 	    }
 	    break;
 	case '2':
 	case 'j':
-	    if (t->y_coord != 19 && (map->arr[t->y_coord + 1][t->x_coord].terrainPiece == '.' || map->arr[t->y_coord + 1][t->x_coord].terrainPiece == '#' || map->arr[t->y_coord + 1][t->x_coord].terrainPiece == 'C' || map->arr[t->y_coord + 1][t->x_coord].terrainPiece == 'M' || map->arr[t->y_coord + 1][t->x_coord].terrainPiece == ':')) {
+	    if (t->y_coord + 1 == 20 && t->x_coord == map->down_exit) {
+                returnVal = 'D';
+            } else if (t->y_coord != 19 && (map->arr[t->y_coord + 1][t->x_coord].terrainPiece == '.' || map->arr[t->y_coord + 1][t->x_coord].terrainPiece == '#' || map->arr[t->y_coord + 1][t->x_coord].terrainPiece == 'C' || map->arr[t->y_coord + 1][t->x_coord].terrainPiece == 'M' || map->arr[t->y_coord + 1][t->x_coord].terrainPiece == ':')) {
                 t->y_coord++;
 	    }
 	    break;
 	case '3':
 	case 'n':
-	    if (t->y_coord != 19 && t->x_coord != 78 && (map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == '.' || map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == '#' || map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == 'C' || map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == 'M' || map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == ':')) {
+	    if (t->y_coord + 1 == 20 && t->x_coord + 1 == map->down_exit) {
+                returnVal = 'D';
+            } else if (t->y_coord + 1 == map->right_exit && t->x_coord + 1 == 79) {
+                returnVal = 'R';
+            } else if (t->y_coord != 19 && t->x_coord != 78 && (map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == '.' || map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == '#' || map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == 'C' || map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == 'M' || map->arr[t->y_coord + 1][t->x_coord + 1].terrainPiece == ':')) {
                 t->y_coord++;
 		t->x_coord++;
 	    }
 	    break;
 	case '4':
 	case 'h':
-	    if (t->x_coord != 1 && (map->arr[t->y_coord][t->x_coord - 1].terrainPiece == '.' || map->arr[t->y_coord][t->x_coord - 1].terrainPiece == '#' || map->arr[t->y_coord][t->x_coord - 1].terrainPiece == 'C' || map->arr[t->y_coord][t->x_coord - 1].terrainPiece == 'M' || map->arr[t->y_coord][t->x_coord - 1].terrainPiece == ':')) {
+	    if (t->y_coord == map->left_exit && t->x_coord - 1 == 0) {
+                returnVal = 'L';
+            } else if (t->x_coord != 1 && (map->arr[t->y_coord][t->x_coord - 1].terrainPiece == '.' || map->arr[t->y_coord][t->x_coord - 1].terrainPiece == '#' || map->arr[t->y_coord][t->x_coord - 1].terrainPiece == 'C' || map->arr[t->y_coord][t->x_coord - 1].terrainPiece == 'M' || map->arr[t->y_coord][t->x_coord - 1].terrainPiece == ':')) {
                 t->x_coord--;
 	    }
 	    break;
@@ -214,26 +227,38 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NP
 	    break;
 	case '6':
 	case 'l':
-	    if (t->x_coord != 78 && (map->arr[t->y_coord][t->x_coord + 1].terrainPiece == '.' || map->arr[t->y_coord][t->x_coord + 1].terrainPiece == '#' || map->arr[t->y_coord][t->x_coord + 1].terrainPiece == 'C' || map->arr[t->y_coord][t->x_coord + 1].terrainPiece == 'M' || map->arr[t->y_coord][t->x_coord + 1].terrainPiece == ':')) {
+	    if (t->y_coord == map->right_exit && t->x_coord + 1 == 79) {
+                returnVal = 'R';
+            } else if (t->x_coord != 78 && (map->arr[t->y_coord][t->x_coord + 1].terrainPiece == '.' || map->arr[t->y_coord][t->x_coord + 1].terrainPiece == '#' || map->arr[t->y_coord][t->x_coord + 1].terrainPiece == 'C' || map->arr[t->y_coord][t->x_coord + 1].terrainPiece == 'M' || map->arr[t->y_coord][t->x_coord + 1].terrainPiece == ':')) {
                 t->x_coord++;
             }
 	    break;
 	case '7':
 	case 'y':
-	    if (t->y_coord != 1 && t->x_coord != 1 && (map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == '.' || map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == '#' || map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == 'C' || map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == 'M' || map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == ':')) {
+	    if (t->y_coord - 1 == 0 && t->x_coord - 1 == map->up_exit) {
+                returnVal = 'U';
+            } else if (t->y_coord - 1 == map->left_exit && t->x_coord - 1 == 0) {
+                returnVal = 'L';
+            } else if (t->y_coord != 1 && t->x_coord != 1 && (map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == '.' || map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == '#' || map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == 'C' || map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == 'M' || map->arr[t->y_coord - 1][t->x_coord - 1].terrainPiece == ':')) {
                 t->y_coord--;
 		t->x_coord--;
             }
 	    break;
 	case '8':
 	case 'k':
-	    if (t->y_coord != 1 && (map->arr[t->y_coord - 1][t->x_coord].terrainPiece == '.' || map->arr[t->y_coord - 1][t->x_coord].terrainPiece == '#' || map->arr[t->y_coord - 1][t->x_coord].terrainPiece == 'C' || map->arr[t->y_coord - 1][t->x_coord].terrainPiece == 'M' || map->arr[t->y_coord - 1][t->x_coord].terrainPiece == ':')) {
+	    if (t->y_coord - 1 == 0 && t->x_coord == map->up_exit) {
+                returnVal = 'U';
+            } else if (t->y_coord != 1 && (map->arr[t->y_coord - 1][t->x_coord].terrainPiece == '.' || map->arr[t->y_coord - 1][t->x_coord].terrainPiece == '#' || map->arr[t->y_coord - 1][t->x_coord].terrainPiece == 'C' || map->arr[t->y_coord - 1][t->x_coord].terrainPiece == 'M' || map->arr[t->y_coord - 1][t->x_coord].terrainPiece == ':')) {
                 t->y_coord--;
 	    }
 	    break;
 	case '9':
 	case 'u':
-	    if (t->y_coord != 1 && t->x_coord != 78 && (map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == '.' || map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == '#' || map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == 'C' || map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == 'M' || map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == ':')) {
+	    if (t->y_coord - 1 == 0 && t->x_coord + 1 == map->up_exit) {
+                returnVal = 'U';
+            } else if (t->y_coord - 1 == map->right_exit && t->x_coord + 1 == 79) {
+                returnVal = 'R';
+            } else if (t->y_coord != 1 && t->x_coord != 78 && (map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == '.' || map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == '#' || map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == 'C' || map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == 'M' || map->arr[t->y_coord - 1][t->x_coord + 1].terrainPiece == ':')) {
                 t->y_coord--;
 		t->x_coord++;
             }
@@ -392,6 +417,7 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NP
     }
 
     DijkstraTrainers(80, 21, map->arr, map->arr[t->y_coord][t->x_coord]);
+    return returnVal;
 }
 
 int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[num_npcs]) {
@@ -812,9 +838,10 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[num_npcs]) {
 	refresh();
         // Handle movement here
 	int user_input = getch();
+	int returnVal;
 
 	// Allowed ops {1, 2, 3, 4, 5, 6, 7, 8, 9, y, k, u, l, n, j, b, h, >, <, , ., t, up arrow, down arrow, escape, Q} "space itself is allowed"
-	handlePlayerMovement(map, user_input, &t, num_npcs, npcs);
+	returnVal = handlePlayerMovement(map, user_input, &t, num_npcs, npcs);
         // Handle priority
         if (map->arr[t.y_coord][t.x_coord].terrainPiece == '.' || map->arr[t.y_coord][t.x_coord].terrainPiece == '#' || map->arr[t.y_coord][t.x_coord].terrainPiece == 'C' || map->arr[t.y_coord][t.x_coord].terrainPiece == 'M') {
             t.priority += 10;
@@ -837,7 +864,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[num_npcs]) {
 	    }
 	}
 	refresh();
-	return user_input;
+	return returnVal;
     } else {
     	return 0;
     }
