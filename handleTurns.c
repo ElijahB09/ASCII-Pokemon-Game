@@ -375,6 +375,8 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NP
     if (t->x_coord != oldX || t->y_coord != oldY) {
         if (map->arr[t->y_coord][t->x_coord].npc != NULL && map->arr[t->y_coord][t->x_coord].npc->defeated == 0) {
             map->arr[t->y_coord][t->x_coord].npc->defeated = battle(map, map->arr[t->y_coord][t->x_coord].npc);
+	    t->y_coord = oldY;
+	    t->x_coord = oldX;
         } else if (map->arr[t->y_coord][t->x_coord].npc == NULL) {
             map->arr[oldY][oldX].character_present = 0;
             map->arr[t->y_coord][t->x_coord].character_present = 1;
@@ -384,6 +386,9 @@ void handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NP
 	    t->x_coord = oldX;
 	    t->y_coord = oldY;
 	}
+    } else {
+        t->x_coord = oldX;
+	t->y_coord = oldY;
     }
 
     DijkstraTrainers(80, 21, map->arr, map->arr[t->y_coord][t->x_coord]);
@@ -450,643 +455,339 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[num_npcs]) {
         insertTurns(heap, &t);
 	return 0;
     } else if (t.characterSymbol == 'p' || t.characterSymbol == 'w' || t.characterSymbol == 's' || t.characterSymbol == 'e') {
-        if (t.characterSymbol == 'p') {
+        int oldNPCX, oldNPCY;
+	if (t.characterSymbol == 'p') {
             if (t.direction != 'l' && t.direction != 'u' && t.direction != 'w' && t.direction != 'z' && t.direction != 'r' && t.direction != 'd' && t.direction != 'x' && t.direction != 'e') {
                 t.direction = decideNewDirection8('\0');
             }
+	    oldNPCY = t.y_coord;
+	    oldNPCX = t.x_coord;
             switch (t.direction) {
                 case 'l':
                     if (map->arr[t.y_coord][t.x_coord - 1].character_present == 0 && map->arr[t.y_coord][t.x_coord - 1].rival_distance != INT_MAX) {
-                        // Move character off of current cell
-                        map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                        // Move character to new cell
-                        map->arr[t.y_coord][t.x_coord - 1].npc = map->arr[t.y_coord][t.x_coord].npc;
-                        map->arr[t.y_coord][t.x_coord].npc = NULL;
-                        map->arr[t.y_coord][t.x_coord - 1].character_present = 1;
-                        t.x_coord = t.x_coord - 1;
-                        t.y_coord = t.y_coord;
-			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-			map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                        insertTurns(heap, &t);
-                    } else {
-                        t.direction = 'r';
-                        if (map->arr[t.y_coord][t.x_coord + 1].character_present == 0 && map->arr[t.y_coord][t.x_coord + 1].rival_distance != INT_MAX) {
-                            // Move character off of current cell
-                            map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                            // Move character to new cell
-                            map->arr[t.y_coord][t.x_coord + 1].npc = map->arr[t.y_coord][t.x_coord].npc;
-                            map->arr[t.y_coord][t.x_coord].npc = NULL;
-                            map->arr[t.y_coord][t.x_coord + 1].character_present = 1;
-                            t.x_coord = t.x_coord + 1;
-                            t.y_coord = t.y_coord;
-			    map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                            map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                            t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                            insertTurns(heap, &t);
-                        }
-                    }
+			t.x_coord--;
+                    } else if (map->arr[t.y_coord][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord][t.x_coord - 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0) {
+		        map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
+		    } else {
+		        t.direction = 'r';
+		    }
                     break;
                 case 'r':
                     if (map->arr[t.y_coord][t.x_coord + 1].character_present == 0 && map->arr[t.y_coord][t.x_coord + 1].rival_distance != INT_MAX) {
-                        // Move character off of current cell
-                        map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                        // Move character to new cell
-                        map->arr[t.y_coord][t.x_coord + 1].npc = map->arr[t.y_coord][t.x_coord].npc;
-                        map->arr[t.y_coord][t.x_coord].npc = NULL;
-                        map->arr[t.y_coord][t.x_coord + 1].character_present = 1;
-                        t.x_coord = t.x_coord + 1;
-                        t.y_coord = t.y_coord;
-                        map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-			t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                        insertTurns(heap, &t);
+                        t.x_coord++;
+                    } else if (map->arr[t.y_coord][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord][t.x_coord + 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0) {
+                        map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                     } else {
-			t.direction = 'l';
-                        if (map->arr[t.y_coord][t.x_coord - 1].character_present == 0 && map->arr[t.y_coord][t.x_coord - 1].rival_distance != INT_MAX) {
-                            // Move character off of current cell
-                            map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                            // Move character to new cell
-                            map->arr[t.y_coord][t.x_coord - 1].npc = map->arr[t.y_coord][t.x_coord].npc;
-                            map->arr[t.y_coord][t.x_coord].npc = NULL;
-                            map->arr[t.y_coord][t.x_coord - 1].character_present = 1;
-                            t.x_coord = t.x_coord - 1;
-                            t.y_coord = t.y_coord;
-			    map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                            map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                            t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                            insertTurns(heap, &t);
-                        }
+                        t.direction = 'l';
                     }
                     break;
                 case 'u':
                     if (map->arr[t.y_coord - 1][t.x_coord].character_present == 0 && map->arr[t.y_coord - 1][t.x_coord].rival_distance != INT_MAX) {
-                        // Move character off of current cell
-                        map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                        // Move character to new cell
-                        map->arr[t.y_coord - 1][t.x_coord].npc = map->arr[t.y_coord][t.x_coord].npc;
-                        map->arr[t.y_coord][t.x_coord].npc = NULL;
-                        map->arr[t.y_coord - 1][t.x_coord].character_present = 1;
-                        t.x_coord = t.x_coord;
-                        t.y_coord = t.y_coord - 1;
-			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                        insertTurns(heap, &t);
+                        t.y_coord--;
+                    } else if (map->arr[t.y_coord - 1][t.x_coord].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0) {
+                        map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                     } else {
                         t.direction = 'd';
-                        if (map->arr[t.y_coord + 1][t.x_coord].character_present == 0 && map->arr[t.y_coord + 1][t.x_coord].rival_distance != INT_MAX) {
-                            // Move character off of current cell
-                            map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                            // Move character to new cell
-                            map->arr[t.y_coord + 1][t.x_coord].npc = map->arr[t.y_coord][t.x_coord].npc;
-                            map->arr[t.y_coord][t.x_coord].npc = NULL;
-                            map->arr[t.y_coord + 1][t.x_coord].character_present = 1;
-                            t.x_coord = t.x_coord;
-                            t.y_coord = t.y_coord + 1;
-			    map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                            map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                            t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                            insertTurns(heap, &t);
-                        }
                     }
                     break;
                 case 'd':
                     if (map->arr[t.y_coord + 1][t.x_coord].character_present == 0 && map->arr[t.y_coord + 1][t.x_coord].rival_distance != INT_MAX) {
-                        // Move character off of current cell
-                        map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                        // Move character to new cell
-                        map->arr[t.y_coord + 1][t.x_coord].npc = map->arr[t.y_coord][t.x_coord].npc;
-                        map->arr[t.y_coord][t.x_coord].npc = NULL;
-                        map->arr[t.y_coord + 1][t.x_coord].character_present = 1;
-                        t.x_coord = t.x_coord;
-                        t.y_coord = t.y_coord + 1;
-			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                        insertTurns(heap, &t);
+                        t.y_coord++;
+                    } else if (map->arr[t.y_coord + 1][t.x_coord].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0) {
+                        map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                     } else {
                         t.direction = 'u';
-                        if (map->arr[t.y_coord - 1][t.x_coord].character_present == 0 && map->arr[t.y_coord - 1][t.x_coord].rival_distance != INT_MAX) {
-                            // Move character off of current cell
-                            map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                            // Move character to new cell
-                            map->arr[t.y_coord - 1][t.x_coord].npc = map->arr[t.y_coord][t.x_coord].npc;
-                            map->arr[t.y_coord][t.x_coord].npc = NULL;
-                            map->arr[t.y_coord - 1][t.x_coord].character_present = 1;
-                            t.x_coord = t.x_coord;
-                            t.y_coord = t.y_coord - 1;
-			    map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                            map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                            t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                            insertTurns(heap, &t);
-                        }
                     }
                     break;
                 case 'w':
                     if (map->arr[t.y_coord - 1][t.x_coord - 1].character_present == 0 && map->arr[t.y_coord - 1][t.x_coord - 1].rival_distance != INT_MAX) {
-                        // Move character off of current cell
-                        map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                        // Move character to new cell
-                        map->arr[t.y_coord - 1][t.x_coord - 1].npc = map->arr[t.y_coord][t.x_coord].npc;
-                        map->arr[t.y_coord][t.x_coord].npc = NULL;
-                        map->arr[t.y_coord - 1][t.x_coord - 1].character_present = 1;
-                        t.x_coord = t.x_coord - 1;
-                        t.y_coord = t.y_coord - 1;
-			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                        insertTurns(heap, &t);
+                        t.y_coord--;
+			t.x_coord--;
+                    } else if (map->arr[t.y_coord - 1][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord - 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0) {
+                        map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                     } else {
                         t.direction = 'x';
-                        if (map->arr[t.y_coord + 1][t.x_coord + 1].character_present == 0 && map->arr[t.y_coord + 1][t.x_coord + 1].rival_distance != INT_MAX) {
-                            // Move character off of current cell
-                            map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                            // Move character to new cell
-                            map->arr[t.y_coord + 1][t.x_coord + 1].npc = map->arr[t.y_coord][t.x_coord].npc;
-                            map->arr[t.y_coord][t.x_coord].npc = NULL;
-                            map->arr[t.y_coord + 1][t.x_coord + 1].character_present = 1;
-                            t.x_coord = t.x_coord + 1;
-                            t.y_coord = t.y_coord + 1;
-			    map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                            map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                            t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                            insertTurns(heap, &t);
-                        }
                     }
                     break;
                 case 'x':
                     if (map->arr[t.y_coord + 1][t.x_coord + 1].character_present == 0 && map->arr[t.y_coord + 1][t.x_coord + 1].rival_distance != INT_MAX) {
-                        // Move character off of current cell
-                        map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                        // Move character to new cell
-                        map->arr[t.y_coord + 1][t.x_coord + 1].npc = map->arr[t.y_coord][t.x_coord].npc;
-                        map->arr[t.y_coord][t.x_coord].npc = NULL;
-                        map->arr[t.y_coord + 1][t.x_coord + 1].character_present = 1;
-                        t.x_coord = t.x_coord + 1;
-                        t.y_coord = t.y_coord + 1;
-                        map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-			t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                        insertTurns(heap, &t);
+                        t.y_coord--;
+			t.x_coord++;
+                    } else if (map->arr[t.y_coord + 1][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord + 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0) {
+                        map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                     } else {
                         t.direction = 'w';
-                        if (map->arr[t.y_coord - 1][t.x_coord - 1].character_present == 0 && map->arr[t.y_coord - 1][t.x_coord - 1].rival_distance != INT_MAX) {
-                            // Move character off of current cell
-                            map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                            // Move character to new cell
-                            map->arr[t.y_coord - 1][t.x_coord - 1].npc = map->arr[t.y_coord][t.x_coord].npc;
-                            map->arr[t.y_coord][t.x_coord].npc = NULL;
-                            map->arr[t.y_coord - 1][t.x_coord - 1].character_present = 1;
-                            t.x_coord = t.x_coord - 1;
-                            t.y_coord = t.y_coord - 1;
-			    map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                            map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                            t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                            insertTurns(heap, &t);
-                        }
                     }
                     break;
                 case 'z':
                     if (map->arr[t.y_coord + 1][t.x_coord - 1].character_present == 0 && map->arr[t.y_coord + 1][t.x_coord - 1].rival_distance != INT_MAX) {
-                        // Move character off of current cell
-                        map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                        // Move character to new cell
-                        map->arr[t.y_coord + 1][t.x_coord - 1].npc = map->arr[t.y_coord][t.x_coord].npc;
-                        map->arr[t.y_coord][t.x_coord].npc = NULL;
-                        map->arr[t.y_coord + 1][t.x_coord - 1].character_present = 1;
-                        t.x_coord = t.x_coord - 1;
-                        t.y_coord = t.y_coord + 1;
-			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                        insertTurns(heap, &t);
+                        t.y_coord++;
+			t.x_coord--;
+                    } else if (map->arr[t.y_coord + 1][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord - 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0) {
+                        map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                     } else {
                         t.direction = 'e';
-                        if (map->arr[t.y_coord - 1][t.x_coord + 1].character_present == 0 && map->arr[t.y_coord - 1][t.x_coord + 1].rival_distance != INT_MAX) {
-                            // Move character off of current cell
-                            map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                            // Move character to new cell
-                            map->arr[t.y_coord - 1][t.x_coord + 1].npc = map->arr[t.y_coord][t.x_coord].npc;
-                            map->arr[t.y_coord][t.x_coord].npc = NULL;
-                            map->arr[t.y_coord - 1][t.x_coord + 1].character_present = 1;
-                            t.x_coord = t.x_coord + 1;
-                            t.y_coord = t.y_coord - 1;
-			    map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                            map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                            t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                            insertTurns(heap, &t);
-                        }
                     }
                     break;
                 case 'e':
                     if (map->arr[t.y_coord - 1][t.x_coord + 1].character_present == 0 && map->arr[t.y_coord - 1][t.x_coord + 1].rival_distance != INT_MAX) {
-                        // Move character off of current cell
-                        map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                        // Move character to new cell
-                        map->arr[t.y_coord - 1][t.x_coord + 1].npc = map->arr[t.y_coord][t.x_coord].npc;
-                        map->arr[t.y_coord][t.x_coord].npc = NULL;
-                        map->arr[t.y_coord - 1][t.x_coord + 1].character_present = 1;
-                        t.x_coord = t.x_coord + 1;
-                        t.y_coord = t.y_coord - 1;
-			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                        insertTurns(heap, &t);
+                        t.y_coord--;
+			t.x_coord++;
+                    } else if (map->arr[t.y_coord - 1][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord + 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0) {
+                        map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                     } else {
                         t.direction = 'z';
-                        if (map->arr[t.y_coord + 1][t.x_coord - 1].character_present == 0 && map->arr[t.y_coord + 1][t.x_coord - 1].rival_distance != INT_MAX) {
-                            // Move character off of current cell
-                            map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                            // Move character to new cell
-                            map->arr[t.y_coord + 1][t.x_coord - 1].npc = map->arr[t.y_coord][t.x_coord].npc;
-                            map->arr[t.y_coord][t.x_coord].npc = NULL;
-                            map->arr[t.y_coord + 1][t.x_coord - 1].character_present = 1;
-                            t.x_coord = t.x_coord - 1;
-                            t.y_coord = t.y_coord + 1;
-			    map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                            map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                            t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                            insertTurns(heap, &t);
-                        }
                     }
                     break;
             }
+	    if (t.y_coord != oldNPCY || t.x_coord != oldNPCX) {
+                // Move character off of current cell
+	        map->arr[oldNPCY][oldNPCX].character_present = 0;
+
+	        // Move character to new cell
+                map->arr[t.y_coord][t.x_coord].npc = map->arr[oldNPCY][oldNPCX].npc;
+	        map->arr[oldNPCY][oldNPCX].npc = NULL;
+	        map->arr[t.y_coord][t.x_coord].character_present = 1;
+
+	        map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+	        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
+	    } else {
+	        t.y_coord = oldNPCY;
+		t.x_coord = oldNPCX;
+	    }
+
+	    t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
+	    insertTurns(heap, &t);
   	} else if (t.characterSymbol == 'w') {
             t.spawnedInTerrain = map->arr[t.y_coord][t.x_coord].terrainPiece;
             if (t.direction != 'l' && t.direction != 'u' && t.direction != 'w' && t.direction != 'z' && t.direction != 'r' && t.direction != 'd' && t.direction != 'x' && t.direction != 'e') {
                 t.direction = decideNewDirection8('\0');
             }
+	    oldNPCY = t.y_coord;
+	    oldNPCX = t.x_coord;
             switch (t.direction) {
                 case 'l':
                     if (map->arr[t.y_coord][t.x_coord - 1].character_present == 0 &&
                         map->arr[t.y_coord][t.x_coord - 1].rival_distance != INT_MAX &&
                         map->arr[t.y_coord][t.x_coord - 1].terrainPiece == t.spawnedInTerrain) {
-                        // Move character off of current cell
-                        map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                        // Move character to new cell
-                        map->arr[t.y_coord][t.x_coord - 1].npc = map->arr[t.y_coord][t.x_coord].npc;
-                        map->arr[t.y_coord][t.x_coord].npc = NULL;
-                        map->arr[t.y_coord][t.x_coord - 1].character_present = 1;
-                        t.x_coord = t.x_coord - 1;
-                        t.y_coord = t.y_coord;
-			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                        insertTurns(heap, &t);
+			t.x_coord--;
+                    } else if (map->arr[t.y_coord][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord][t.x_coord - 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0) {
+                        map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                     } else {
                         t.direction = decideNewDirection8(t.direction);
-                        insertTurns(heap, &t);
                     }
                     break;
                 case 'r':
                     if (map->arr[t.y_coord][t.x_coord + 1].character_present == 0 &&
                         map->arr[t.y_coord][t.x_coord + 1].rival_distance != INT_MAX &&
                         map->arr[t.y_coord][t.x_coord + 1].terrainPiece == t.spawnedInTerrain) {
-                        // Move character off of current cell
-                        map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                        // Move character to new cell
-                        map->arr[t.y_coord][t.x_coord + 1].npc = map->arr[t.y_coord][t.x_coord].npc;
-                        map->arr[t.y_coord][t.x_coord].npc = NULL;
-                        map->arr[t.y_coord][t.x_coord + 1].character_present = 1;
-                        t.x_coord = t.x_coord + 1;
-                        t.y_coord = t.y_coord;
-			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                        insertTurns(heap, &t);
+                        t.x_coord++;
+                    } else if (map->arr[t.y_coord][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord][t.x_coord + 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0) {
+                        map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                     } else {
                         t.direction = decideNewDirection8(t.direction);
-                        insertTurns(heap, &t);
                     }
                     break;
                 case 'u':
                     if (map->arr[t.y_coord - 1][t.x_coord].character_present == 0 &&
                         map->arr[t.y_coord - 1][t.x_coord].rival_distance != INT_MAX &&
                         map->arr[t.y_coord - 1][t.x_coord].terrainPiece == t.spawnedInTerrain) {
-                        // Move character off of current cell
-                        map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                        // Move character to new cell
-                        map->arr[t.y_coord - 1][t.x_coord].npc = map->arr[t.y_coord][t.x_coord].npc;
-                        map->arr[t.y_coord][t.x_coord].npc = NULL;
-                        map->arr[t.y_coord - 1][t.x_coord].character_present = 1;
-                        t.x_coord = t.x_coord;
-                        t.y_coord = t.y_coord - 1;
-			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                        insertTurns(heap, &t);
+                        t.y_coord--;
+                    } else if (map->arr[t.y_coord - 1][t.x_coord].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0) {
+                        map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                     } else {
                         t.direction = decideNewDirection8(t.direction);
-                        insertTurns(heap, &t);
                     }
                     break;
                 case 'd':
                     if (map->arr[t.y_coord + 1][t.x_coord].character_present == 0 &&
                         map->arr[t.y_coord + 1][t.x_coord].rival_distance != INT_MAX &&
                         map->arr[t.y_coord + 1][t.x_coord].terrainPiece == t.spawnedInTerrain) {
-                        // Move character off of current cell
-                        map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                        // Move character to new cell
-                        map->arr[t.y_coord + 1][t.x_coord].npc = map->arr[t.y_coord][t.x_coord].npc;
-                        map->arr[t.y_coord][t.x_coord].npc = NULL;
-                        map->arr[t.y_coord + 1][t.x_coord].character_present = 1;
-                        t.x_coord = t.x_coord;
-                        t.y_coord = t.y_coord + 1;
-			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                        insertTurns(heap, &t);
+                        t.y_coord++;
+                    } else if (map->arr[t.y_coord + 1][t.x_coord].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0) {
+                        map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                     } else {
                         t.direction = decideNewDirection8(t.direction);
-                        insertTurns(heap, &t);
                     }
                     break;
                 case 'w':
                     if (map->arr[t.y_coord - 1][t.x_coord - 1].character_present == 0 &&
                         map->arr[t.y_coord - 1][t.x_coord - 1].rival_distance != INT_MAX &&
                         map->arr[t.y_coord - 1][t.x_coord - 1].terrainPiece == t.spawnedInTerrain) {
-                        // Move character off of current cell
-                        map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                        // Move character to new cell
-                        map->arr[t.y_coord - 1][t.x_coord - 1].npc = map->arr[t.y_coord][t.x_coord].npc;
-                        map->arr[t.y_coord][t.x_coord].npc = NULL;
-                        map->arr[t.y_coord - 1][t.x_coord - 1].character_present = 1;
-                        t.x_coord = t.x_coord - 1;
-                        t.y_coord = t.y_coord - 1;
-			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                        insertTurns(heap, &t);
+                        t.y_coord--;
+			t.x_coord--;
+                    } else if (map->arr[t.y_coord - 1][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord - 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0) {
+                        map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                     } else {
                         t.direction = decideNewDirection8(t.direction);
-                        insertTurns(heap, &t);
                     }
                     break;
                 case 'x':
                     if (map->arr[t.y_coord + 1][t.x_coord + 1].character_present == 0 &&
                         map->arr[t.y_coord + 1][t.x_coord + 1].rival_distance != INT_MAX &&
                         map->arr[t.y_coord + 1][t.x_coord + 1].terrainPiece == t.spawnedInTerrain) {
-                        // Move character off of current cell
-                        map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                        // Move character to new cell
-                        map->arr[t.y_coord + 1][t.x_coord + 1].npc = map->arr[t.y_coord][t.x_coord].npc;
-                        map->arr[t.y_coord][t.x_coord].npc = NULL;
-                        map->arr[t.y_coord + 1][t.x_coord + 1].character_present = 1;
-                        t.x_coord = t.x_coord + 1;
-                        t.y_coord = t.y_coord + 1;
-			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                        insertTurns(heap, &t);
+                        t.y_coord++;
+			t.x_coord++;
+                    } else if (map->arr[t.y_coord + 1][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord + 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0) {
+                        map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                     } else {
                         t.direction = decideNewDirection8(t.direction);
-                        insertTurns(heap, &t);
                     }
                     break;
                 case 'z':
                     if (map->arr[t.y_coord + 1][t.x_coord - 1].character_present == 0 &&
                         map->arr[t.y_coord + 1][t.x_coord - 1].rival_distance != INT_MAX &&
                         map->arr[t.y_coord + 1][t.x_coord - 1].terrainPiece == t.spawnedInTerrain) {
-                        // Move character off of current cell
-                        map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                        // Move character to new cell
-                        map->arr[t.y_coord + 1][t.x_coord - 1].npc = map->arr[t.y_coord][t.x_coord].npc;
-                        map->arr[t.y_coord][t.x_coord].npc = NULL;
-                        map->arr[t.y_coord + 1][t.x_coord - 1].character_present = 1;
-                        t.x_coord = t.x_coord - 1;
-                        t.y_coord = t.y_coord + 1;
-			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                        insertTurns(heap, &t);
+                        t.y_coord++;
+			t.x_coord--;
+                    } else if (map->arr[t.y_coord + 1][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord - 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0) {
+                        map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                     } else {
                         t.direction = decideNewDirection8(t.direction);
-                        insertTurns(heap, &t);
                     }
                     break;
                 case 'e':
                     if (map->arr[t.y_coord - 1][t.x_coord + 1].character_present == 0 &&
                         map->arr[t.y_coord - 1][t.x_coord + 1].rival_distance != INT_MAX &&
                         map->arr[t.y_coord - 1][t.x_coord + 1].terrainPiece == t.spawnedInTerrain) {
-                        // Move character off of current cell
-                        map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                        // Move character to new cell
-                        map->arr[t.y_coord - 1][t.x_coord + 1].npc = map->arr[t.y_coord][t.x_coord].npc;
-                        map->arr[t.y_coord][t.x_coord].npc = NULL;
-                        map->arr[t.y_coord - 1][t.x_coord + 1].character_present = 1;
-                        t.x_coord = t.x_coord + 1;
-                        t.y_coord = t.y_coord - 1;
-			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                        insertTurns(heap, &t);
+                        t.y_coord--;
+			t.x_coord++;
+                    } else if (map->arr[t.y_coord - 1][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord + 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0) {
+                        map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                     } else {
                         t.direction = decideNewDirection8(t.direction);
-                        insertTurns(heap, &t);
                     }
                     break;
             }
+	    if (t.y_coord != oldNPCY || t.x_coord != oldNPCX) {
+	        // Move character off of current cell
+                map->arr[oldNPCY][oldNPCX].character_present = 0;
+
+                // Move character to new cell
+		map->arr[t.y_coord][t.x_coord].npc = map->arr[oldNPCY][oldNPCX].npc;
+		map->arr[oldNPCY][oldNPCX].npc = NULL;
+		map->arr[t.y_coord][t.x_coord].character_present = 1;
+
+		map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+		map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
+	    } else {
+	        t.y_coord = oldNPCY;
+		t.x_coord = oldNPCX;
+	    }
+
+	    t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
+            insertTurns(heap, &t);
         } else if (t.characterSymbol == 'e') {
             if (t.direction != 'l' && t.direction != 'u' && t.direction != 'w' && t.direction != 'z' && t.direction != 'r' && t.direction != 'd' && t.direction != 'x' && t.direction != 'e') {
                 t.direction = decideNewDirection8('\0');
             }
+	    oldNPCY = t.y_coord;
+	    oldNPCX = t.x_coord;
             switch (t.direction) {
                 case 'l':
                     if (map->arr[t.y_coord][t.x_coord - 1].character_present == 0 &&
                         map->arr[t.y_coord][t.x_coord - 1].rival_distance != INT_MAX) {
-                        // Move character off of current cell
-                        map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                        // Move character to new cell
-                        map->arr[t.y_coord][t.x_coord - 1].npc = map->arr[t.y_coord][t.x_coord].npc;
-                        map->arr[t.y_coord][t.x_coord].npc = NULL;
-                        map->arr[t.y_coord][t.x_coord - 1].character_present = 1;
-                        t.x_coord = t.x_coord - 1;
-                        t.y_coord = t.y_coord;
-			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                        insertTurns(heap, &t);
+			t.x_coord--;
+                    } else if (map->arr[t.y_coord][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord][t.x_coord - 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0) {
+                        map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                     } else {
                         t.direction = decideNewDirection8(t.direction);
-                        insertTurns(heap, &t);
                     }
                     break;
                 case 'r':
                     if (map->arr[t.y_coord][t.x_coord + 1].character_present == 0 &&
                         map->arr[t.y_coord][t.x_coord + 1].rival_distance != INT_MAX) {
-                        // Move character off of current cell
-                        map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                        // Move character to new cell
-                        map->arr[t.y_coord][t.x_coord + 1].npc = map->arr[t.y_coord][t.x_coord].npc;
-                        map->arr[t.y_coord][t.x_coord].npc = NULL;
-                        map->arr[t.y_coord][t.x_coord + 1].character_present = 1;
-                        t.x_coord = t.x_coord + 1;
-                        t.y_coord = t.y_coord;
-			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                        insertTurns(heap, &t);
+                        t.x_coord++;
+                    } else if (map->arr[t.y_coord][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord][t.x_coord + 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0) {
+                        map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                     } else {
                         t.direction = decideNewDirection8(t.direction);
-                        insertTurns(heap, &t);
                     }
                     break;
                 case 'u':
                     if (map->arr[t.y_coord - 1][t.x_coord].character_present == 0 &&
                         map->arr[t.y_coord - 1][t.x_coord].rival_distance != INT_MAX) {
-                        // Move character off of current cell
-                        map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                        // Move character to new cell
-                        map->arr[t.y_coord - 1][t.x_coord].npc = map->arr[t.y_coord][t.x_coord].npc;
-                        map->arr[t.y_coord][t.x_coord].npc = NULL;
-                        map->arr[t.y_coord - 1][t.x_coord].character_present = 1;
-                        t.x_coord = t.x_coord;
-                        t.y_coord = t.y_coord - 1;
-			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                        insertTurns(heap, &t);
+                        t.y_coord--;
+                    } else if (map->arr[t.y_coord - 1][t.x_coord].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0) {
+                        map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                     } else {
                         t.direction = decideNewDirection8(t.direction);
-                        insertTurns(heap, &t);
                     }
                     break;
                 case 'd':
                     if (map->arr[t.y_coord + 1][t.x_coord].character_present == 0 &&
                         map->arr[t.y_coord + 1][t.x_coord].rival_distance != INT_MAX) {
-                        // Move character off of current cell
-                        map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                        // Move character to new cell
-                        map->arr[t.y_coord + 1][t.x_coord].npc = map->arr[t.y_coord][t.x_coord].npc;
-                        map->arr[t.y_coord][t.x_coord].npc = NULL;
-                        map->arr[t.y_coord + 1][t.x_coord].character_present = 1;
-                        t.x_coord = t.x_coord;
-                        t.y_coord = t.y_coord + 1;
-			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                        insertTurns(heap, &t);
+                        t.y_coord++;
+                    } else if (map->arr[t.y_coord + 1][t.x_coord].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0) {
+                        map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                     } else {
                         t.direction = decideNewDirection8(t.direction);
-                        insertTurns(heap, &t);
                     }
                     break;
                 case 'w':
                     if (map->arr[t.y_coord - 1][t.x_coord - 1].character_present == 0 &&
                         map->arr[t.y_coord - 1][t.x_coord - 1].rival_distance != INT_MAX) {
-                        // Move character off of current cell
-                        map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                        // Move character to new cell
-                        map->arr[t.y_coord - 1][t.x_coord - 1].npc = map->arr[t.y_coord][t.x_coord].npc;
-                        map->arr[t.y_coord][t.x_coord].npc = NULL;
-                        map->arr[t.y_coord - 1][t.x_coord - 1].character_present = 1;
-                        t.x_coord = t.x_coord - 1;
-                        t.y_coord = t.y_coord - 1;
-			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                        insertTurns(heap, &t);
+                        t.y_coord--;
+			t.x_coord--;
+                    } else if (map->arr[t.y_coord - 1][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord - 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0) {
+                        map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                     } else {
                         t.direction = decideNewDirection8(t.direction);
-                        insertTurns(heap, &t);
                     }
                     break;
                 case 'x':
                     if (map->arr[t.y_coord + 1][t.x_coord + 1].character_present == 0 &&
                         map->arr[t.y_coord + 1][t.x_coord + 1].rival_distance != INT_MAX) {
-                        // Move character off of current cell
-                        map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                        // Move character to new cell
-                        map->arr[t.y_coord + 1][t.x_coord + 1].npc = map->arr[t.y_coord][t.x_coord].npc;
-                        map->arr[t.y_coord][t.x_coord].npc = NULL;
-                        map->arr[t.y_coord + 1][t.x_coord + 1].character_present = 1;
-                        t.x_coord = t.x_coord + 1;
-                        t.y_coord = t.y_coord + 1;
-			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                        insertTurns(heap, &t);
+                        t.y_coord++;
+			t.x_coord++;
+                    } else if (map->arr[t.y_coord + 1][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord + 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0) {
+                        map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                     } else {
                         t.direction = decideNewDirection8(t.direction);
-                        insertTurns(heap, &t);
                     }
                     break;
                 case 'z':
                     if (map->arr[t.y_coord + 1][t.x_coord - 1].character_present == 0 &&
                         map->arr[t.y_coord + 1][t.x_coord - 1].rival_distance != INT_MAX) {
-                        // Move character off of current cell
-                        map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                        // Move character to new cell
-                        map->arr[t.y_coord + 1][t.x_coord - 1].npc = map->arr[t.y_coord][t.x_coord].npc;
-                        map->arr[t.y_coord][t.x_coord].npc = NULL;
-                        map->arr[t.y_coord + 1][t.x_coord - 1].character_present = 1;
-                        t.x_coord = t.x_coord - 1;
-                        t.y_coord = t.y_coord + 1;
-			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                        insertTurns(heap, &t);
+                        t.y_coord++;
+			t.x_coord--;
+                    } else if (map->arr[t.y_coord + 1][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord - 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0) {
+                        map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                     } else {
                         t.direction = decideNewDirection8(t.direction);
-                        insertTurns(heap, &t);
                     }
                     break;
                 case 'e':
                     if (map->arr[t.y_coord - 1][t.x_coord + 1].character_present == 0 &&
                         map->arr[t.y_coord - 1][t.x_coord + 1].rival_distance != INT_MAX) {
-                        // Move character off of current cell
-                        map->arr[t.y_coord][t.x_coord].character_present = 0;
-
-                        // Move character to new cell
-                        map->arr[t.y_coord - 1][t.x_coord + 1].npc = map->arr[t.y_coord][t.x_coord].npc;
-                        map->arr[t.y_coord][t.x_coord].npc = NULL;
-                        map->arr[t.y_coord - 1][t.x_coord + 1].character_present = 1;
-                        t.x_coord = t.x_coord + 1;
-                        t.y_coord = t.y_coord - 1;
-			map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
-                        map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
-                        t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
-                        insertTurns(heap, &t);
+                        t.y_coord--;
+			t.x_coord++;
+                    } else if (map->arr[t.y_coord - 1][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord + 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0) {
+                        map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                     } else {
                         t.direction = decideNewDirection8(t.direction);
-                        insertTurns(heap, &t);
                     }
                     break;
             }
-        }
-        else if (t.characterSymbol == 's') {
+	    if (t.y_coord != oldNPCY || t.x_coord != oldNPCX) {
+	        // Move character off of current cell
+                map->arr[oldNPCY][oldNPCX].character_present = 0;
+
+                // Move character to new cell
+		map->arr[t.y_coord][t.x_coord].npc = map->arr[oldNPCY][oldNPCX].npc;
+		map->arr[oldNPCY][oldNPCX].npc = NULL;
+		map->arr[t.y_coord][t.x_coord].character_present = 1;
+
+		map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
+		map->arr[t.y_coord][t.x_coord].npc->x_coord = t.x_coord;
+	    } else {
+	        t.y_coord = oldNPCY;
+		t.x_coord = oldNPCX;
+	    }
+
+	    t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
+            insertTurns(heap, &t);
+        } else if (t.characterSymbol == 's') {
             t.priority += map->arr[t.y_coord][t.x_coord].rival_distance;
             insertTurns(heap, &t);
         }
@@ -1096,7 +797,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[num_npcs]) {
 	char charToPrint;
 	// Print out the map right before user input
 	clear();
-	printw("Make your move");
+	printw("Player X: %d, Player Y: %d", t.x_coord, t.y_coord);
 	for (i = 0; i < 21; i++){
 	    for (j = 0; j < 80; j++) {
 	        if (map->arr[i][j].character_present == 1) {
@@ -1121,6 +822,21 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[num_npcs]) {
             t.priority += 20;
         }
         insertTurns(heap, &t);
+	// Print right after player movement
+	clear();
+	printw("Player X: %d, Player Y: %d", t.x_coord, t.y_coord);
+	for (i = 0; i < 21; i++){
+	    for (j = 0; j < 80; j++) {
+	        if (map->arr[i][j].character_present == 1) {
+                    charToPrint = map->arr[i][j].npc != NULL ? map->arr[i][j].npc->symbol : map->arr[i][j].player->symbol;
+                    mvaddch(i + 1, j, charToPrint);
+                } else {
+                    charToPrint = map->arr[i][j].terrainPiece;
+                    mvaddch(i + 1, j, charToPrint);
+                }
+	    }
+	}
+	refresh();
 	return user_input;
     } else {
     	return 0;

@@ -74,6 +74,21 @@ int main(int argc, char *argv[]) {
     refresh();
     sleep(2);
     gameRunning = 1;
+    
+    clear();
+    printw("Beginning");
+    for (i = 0; i < Y_BOUND; i++) {
+        for (j = 0; j < X_BOUND; j++) {
+            if (world[current_y][current_x]->arr[i][j].character_present == 1) {
+		charToPrint = world[current_y][current_x]->arr[i][j].npc != NULL ? world[current_y][current_x]->arr[i][j].npc->symbol : world[current_y][current_x]->arr[i][j].player->symbol;
+                mvaddch(i + 1, j, charToPrint);
+            } else {
+		charToPrint = world[current_y][current_x]->arr[i][j].terrainPiece;
+                mvaddch(i + 1, j, charToPrint);
+            }
+        }
+    }
+    refresh();
 
     while (gameRunning) {
 	k = 0;
@@ -85,20 +100,6 @@ int main(int argc, char *argv[]) {
 		}
 	    }
 	}
-	clear();
-	printw("Turn Taking Happening");
-        for (i = 0; i < Y_BOUND; i++) {
-            for (j = 0; j < X_BOUND; j++) {
-                if (world[current_y][current_x]->arr[i][j].character_present == 1) {
-		    charToPrint = world[current_y][current_x]->arr[i][j].npc != NULL ? world[current_y][current_x]->arr[i][j].npc->symbol : world[current_y][current_x]->arr[i][j].player->symbol;
-                    mvaddch(i + 1, j, charToPrint);
-                } else {
-		    charToPrint = world[current_y][current_x]->arr[i][j].terrainPiece;
-                    mvaddch(i + 1, j, charToPrint);
-                }
-            }
-        }
-	refresh();
 	for (i = 0; i < num_npcs; i++) {
 	    user_input = takeTurn(world[current_y][current_x]->order, world[current_y][current_x], num_npcs, npcs);
 	    if (user_input == 'Q') {

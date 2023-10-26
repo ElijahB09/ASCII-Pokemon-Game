@@ -11,5 +11,6 @@ int battle(PokeMap* map, NPC* opponent) {
     while(inputFromUser != 27) {
 	inputFromUser = getch();
     }
+    // Return 1 for a defeated trainer
     return 1;
 }
