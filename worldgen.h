@@ -7,6 +7,6 @@
 
 #include "buildings.h"
 
-PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_y, int num_npcs, PlayerCharacter *player, NPC *npcs[num_npcs]);
+PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_y, int num_npcs, NPC *npcs[num_npcs]);
 
 #endif

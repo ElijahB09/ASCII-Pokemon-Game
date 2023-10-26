@@ -22,7 +22,7 @@ void io_init_terminal(void)
 int main(int argc, char *argv[]) {
     PokeMap* world[401][401];
     PlayerCharacter *player;
-    int current_x, current_y, i, j, k,/*fly_x, fly_y,*/ num_npcs;
+    int current_x, current_y, i, j, k,/*fly_x, fly_y,*/ num_npcs, found, tempx, tempy;
     //char userInput;
     num_npcs = 10;
     int user_input, gameRunning;
@@ -63,12 +63,33 @@ int main(int argc, char *argv[]) {
 
     current_x = 200;
     current_y = 200;
-    *world[current_y][current_x] = *generateMap(world[current_y][current_x], world, current_x, current_y, num_npcs, player, npcs);
+    *world[current_y][current_x] = *generateMap(world[current_y][current_x], world, current_x, current_y, num_npcs, npcs);
     // Comment out unused values for this week
     //userInput = 'x';
     //fly_x = fly_y = -999;
-    world[current_y][current_x]->order = createTurnPriority(num_npcs, npcs, player, world[current_y][current_x]);
 
+    // place player, this may have to move later due to the nature of the player moving between maps
+    // For now its okay
+    found = 0;
+    for (i = 0; i < Y_BOUND; i++) {
+        for (j = 0; j < X_BOUND; j++) {
+            if (world[current_y][current_x]->arr[i][j].terrainPiece == '#' && i > 0 && j > 0 && found == 0 && world[current_y][current_x]->arr[i][j].character_present == 0) {
+                player->x_coord = j; player->y_coord = i;
+                world[current_y][current_x]->arr[i][j].player = player;
+                world[current_y][current_x]->arr[i][j].character_present = 1;
+                tempx = j;
+                tempy = i;
+                found = 1;
+            }
+        }
+    }
+    // Get cost maps
+    DijkstraTrainers(X_BOUND, Y_BOUND, world[current_y][current_x]->arr, world[current_y][current_x]->arr[tempy][tempx]);
+
+    // Bottom of what may have to move
+
+    world[current_y][current_x]->order = createTurnPriority(num_npcs, npcs, player, world[current_y][current_x]);
+    
     clear();
     printw("Starting PokeGame!\n");
     refresh();

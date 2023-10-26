@@ -3,8 +3,8 @@
 #include <limits.h>
 #include <stdio.h>
 
-void initNPCS(PokeMap *map, int num_npcs, PlayerCharacter *player, NPC *npcs[num_npcs]) {
-    int tempx, tempy, found, i, j, rand_trainer, test_x, test_y;
+void initNPCS(PokeMap *map, int num_npcs, NPC *npcs[num_npcs]) {
+    int i, j, rand_trainer, test_x, test_y;
 
     // No characters are on the map
     for (i = 0; i < Y_BOUND; i++) {
@@ -12,26 +12,6 @@ void initNPCS(PokeMap *map, int num_npcs, PlayerCharacter *player, NPC *npcs[num
             map->arr[i][j].character_present = 0;
         }
     }
-
-    // place player, this may have to move later due to the nature of the player moving between maps
-    // For now its okay
-    found = 0;
-    for (i = 0; i < Y_BOUND; i++) {
-        for (j = 0; j < X_BOUND; j++) {
-            if (map->arr[i][j].terrainPiece == '#' && i > 0 && j > 0 && found == 0 && map->arr[i][j].character_present == 0) {
-                player->x_coord = j; player->y_coord = i;
-                map->arr[i][j].player = player;
-                map->arr[i][j].character_present = 1;
-                tempx = j;
-                tempy = i;
-                found = 1;
-            }
-        }
-    }
-    // Get cost maps
-    DijkstraTrainers(X_BOUND, Y_BOUND, map->arr, map->arr[tempy][tempx]);
-
-    // Bottom of what may have to move
 
     // Generate npcs
     if (num_npcs == 1) {
@@ -102,7 +82,7 @@ void initNPCS(PokeMap *map, int num_npcs, PlayerCharacter *player, NPC *npcs[num
     }
 }
 
-PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_y, int num_npcs, PlayerCharacter *player, NPC *npcs[num_npcs]) {
+PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_y, int num_npcs, NPC *npcs[num_npcs]) {
     if (world[map_y][map_x]) {
         return world[map_y][map_x];
     }
@@ -477,7 +457,7 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
         Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[0][rand_path_up], map->arr[Y_BOUND - 1][rand_path_down]);
     }
     buildPokeStuffFancy(X_BOUND, Y_BOUND, map);
-    initNPCS(map, num_npcs, player, npcs);
+    initNPCS(map, num_npcs, npcs);
 
     map->is_created = 1;
     world[map_y][map_x] = map;
