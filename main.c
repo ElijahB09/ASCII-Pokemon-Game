@@ -23,7 +23,6 @@ int main(int argc, char *argv[]) {
     PokeMap* world[401][401];
     PlayerCharacter *player;
     int current_x, current_y, i, j, k,/*fly_x, fly_y,*/ num_npcs, found, tempx, tempy;
-    //char userInput;
     num_npcs = 10;
     int user_input, gameRunning;
     char charToPrint;
@@ -45,7 +44,6 @@ int main(int argc, char *argv[]) {
 
     // Init characters
     NPC *npcs[num_npcs];
-    // This malloc is here cause valgrind was angry otherwise
     player = malloc(sizeof (PlayerCharacter));
     player->symbol = '@';
     for (i = 0; i < num_npcs; i++) {
@@ -65,11 +63,8 @@ int main(int argc, char *argv[]) {
     current_y = 200;
     *world[current_y][current_x] = *generateMap(world[current_y][current_x], world, current_x, current_y, num_npcs, npcs);
     // Comment out unused values for this week
-    //userInput = 'x';
     //fly_x = fly_y = -999;
 
-    // place player, this may have to move later due to the nature of the player moving between maps
-    // For now its okay
     found = 0;
     for (i = 0; i < Y_BOUND; i++) {
         for (j = 0; j < X_BOUND; j++) {
@@ -85,8 +80,6 @@ int main(int argc, char *argv[]) {
     }
     // Get cost maps
     DijkstraTrainers(X_BOUND, Y_BOUND, world[current_y][current_x]->arr, world[current_y][current_x]->arr[tempy][tempx]);
-
-    // Bottom of what may have to move
 
     world[current_y][current_x]->order = createTurnPriority(num_npcs, npcs, player, world[current_y][current_x]);
     
@@ -123,8 +116,81 @@ int main(int argc, char *argv[]) {
 	}
 	for (i = 0; i < num_npcs; i++) {
 	    user_input = takeTurn(world[current_y][current_x]->order, world[current_y][current_x], num_npcs, npcs);
+
 	    if (user_input == 'Q') {
 		gameRunning = 0;
+	    } else if (user_input == 'L') {
+	        current_x--;
+                if (current_x >= 0) {
+                    *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y, num_npcs, npcs);
+		    world[current_y][current_x]->arr[world[current_y][current_x + 1]->left_exit][78].player = player;
+		    world[current_y][current_x]->arr[world[current_y][current_x + 1]->left_exit][78].character_present = 1;
+		    player->y_coord = world[current_y][current_x + 1]->left_exit;
+		    player->x_coord = 78;
+		    if (world[current_y][current_x]->order == NULL) {
+                        world[current_y][current_x]->order = createTurnPriority(num_npcs, npcs, player, world[current_y][current_x]);
+		    }
+                } else {
+                    current_x++;
+		    clear();
+                    printw("Error cannot go beyond world limits\n");
+		    refresh();
+                }
+		break;
+	    } else if (user_input == 'R') {
+	        current_x++;
+                if (current_x < 401) {
+                    *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y, num_npcs, npcs);
+		    world[current_y][current_x]->arr[world[current_y][current_x - 1]->right_exit][1].player = player;
+		    world[current_y][current_x]->arr[world[current_y][current_x - 1]->right_exit][1].character_present = 1;
+		    player->y_coord = world[current_y][current_x - 1]->right_exit;
+		    player->x_coord = 1;
+		    if (world[current_y][current_x]->order == NULL) {
+                        world[current_y][current_x]->order = createTurnPriority(num_npcs, npcs, player, world[current_y][current_x]);
+		    }
+		} else {
+                    current_x--;
+		    clear();
+                    printw("Error cannot go beyond world limits\n");
+		    refresh();
+                }
+		break;
+	    } else if (user_input == 'U') {
+	        current_y--;
+                if (current_y >= 0) {
+                    *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y, num_npcs, npcs); 
+		    world[current_y][current_x]->arr[19][world[current_y + 1][current_x]->up_exit].player = player;
+		    world[current_y][current_x]->arr[19][world[current_y + 1][current_x]->up_exit].character_present = 1;
+		    player->y_coord = 19;
+		    player->x_coord = world[current_y + 1][current_x]->up_exit;
+		    if (world[current_y][current_x]->order == NULL) {
+		        world[current_y][current_x]->order = createTurnPriority(num_npcs, npcs, player, world[current_y][current_x]);
+                    }
+		} else {
+                    current_y++;
+		    clear();
+                    printw("Error cannot go beyond world limits\n");
+		    refresh();
+                }
+		break;
+	    } else if (user_input == 'D') {
+	        current_y++;
+                if (current_y < 401) {
+                    *world[current_y][current_x] = *generateMap(world[current_y][current_x],world,current_x, current_y, num_npcs, npcs);
+		    world[current_y][current_x]->arr[1][world[current_y - 1][current_x]->down_exit].player = player;
+		    world[current_y][current_x]->arr[1][world[current_y - 1][current_x]->down_exit].character_present = 1;
+		    player->y_coord = 1;
+		    player->x_coord = world[current_y - 1][current_x]->down_exit;
+		    if (world[current_y][current_x]->order == NULL) {
+		        world[current_y][current_x]->order = createTurnPriority(num_npcs, npcs, player, world[current_y][current_x]);
+		    }
+                } else {
+                    current_y--;
+		    clear();
+                    printw("Error cannot go beyond world limits\n");
+		    refresh();
+                }
+		break;
 	    }
 	}
     }

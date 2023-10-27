@@ -411,7 +411,10 @@ int handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NPC
 	    t->x_coord = oldX;
 	    t->y_coord = oldY;
 	}
-    } else {
+    } else if (returnVal == 'L' || returnVal == 'R' || returnVal == 'U' || returnVal == 'D') {
+        map->arr[oldY][oldX].character_present = 0;
+	map->arr[oldY][oldX].player = NULL;
+    }else {
         t->x_coord = oldX;
 	t->y_coord = oldY;
     }
