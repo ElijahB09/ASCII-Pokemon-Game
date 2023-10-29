@@ -210,11 +210,6 @@ int main(int argc, char *argv[]) {
 		    scanw("%d", &fly_y);
 		} while (fly_y < -200 || fly_y > 200);
 
-		clear();
-		printw("X: %d, Y: %d", fly_x, fly_y);
-		refresh();
-		sleep(10);
-
 		raw();
 		curs_set(0);
 		noecho();
@@ -249,7 +244,6 @@ int main(int argc, char *argv[]) {
 		if (world[current_y][current_x]->order == NULL) {
 		    world[current_y][current_x]->order = createTurnPriority(num_npcs, npcs, player, world[current_y][current_x]);
 		}
-		raw();
 	    }
 	}
     }
