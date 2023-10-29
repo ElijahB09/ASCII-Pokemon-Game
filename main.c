@@ -22,7 +22,7 @@ void io_init_terminal(void)
 int main(int argc, char *argv[]) {
     PokeMap* world[401][401];
     PlayerCharacter *player;
-    int current_x, current_y, i, j, k,/*fly_x, fly_y,*/ num_npcs, found, tempx, tempy;
+    int current_x, current_y, i, j, k, fly_x, fly_y, num_npcs, found, tempx, tempy;
     num_npcs = 10;
     int user_input, gameRunning;
     char charToPrint;
@@ -63,7 +63,8 @@ int main(int argc, char *argv[]) {
     current_y = 200;
     *world[current_y][current_x] = *generateMap(world[current_y][current_x], world, current_x, current_y, num_npcs, npcs);
     // Comment out unused values for this week
-    //fly_x = fly_y = -999;
+    fly_x = current_x;
+    fly_y = current_y;
 
     found = 0;
     for (i = 0; i < Y_BOUND; i++) {
@@ -191,6 +192,64 @@ int main(int argc, char *argv[]) {
 		    refresh();
                 }
 		break;
+	    } else if (user_input == 'f') {
+	        clear();
+		printw("Enter in the desired fly coords, x first from -200 to 200 inclusive, then y with the same bounds.");
+		refresh();
+
+		noraw();
+		curs_set(1);
+		echo();
+		move(1, 0);
+
+		do {
+		    scanw("%d", &fly_x);
+		} while (fly_x < -200 || fly_x > 200);
+		
+		do {
+		    scanw("%d", &fly_y);
+		} while (fly_y < -200 || fly_y > 200);
+
+		clear();
+		printw("X: %d, Y: %d", fly_x, fly_y);
+		refresh();
+		sleep(10);
+
+		raw();
+		curs_set(0);
+		noecho();
+
+		tempx = current_x;
+		tempy = current_y;
+		current_x = fly_x + 200;
+		current_y = fly_y + 200;
+
+                *world[current_y][current_x] = *generateMap(world[current_y][current_x], world, current_x, current_y, num_npcs, npcs);
+
+		if (tempx < current_x) {
+		    tempx = 78;
+		    tempy = world[current_y][current_x]->right_exit;
+		} else {
+		    tempx = 1;
+		    tempy = world[current_y][current_x]->left_exit;
+		}
+
+		if (tempy < current_y) {
+		    tempy = 19;
+		    tempx = world[current_y][current_x]->down_exit;
+		} else {
+		    tempy = 1;
+		    tempx = world[current_y][current_x]->up_exit;
+		}
+
+		world[current_y][current_x]->arr[tempy][tempx].player = player;
+		world[current_y][current_x]->arr[tempy][tempx].character_present = 1;
+		player->y_coord = tempy;
+		player->x_coord = tempx;
+		if (world[current_y][current_x]->order == NULL) {
+		    world[current_y][current_x]->order = createTurnPriority(num_npcs, npcs, player, world[current_y][current_x]);
+		}
+		raw();
 	    }
 	}
     }
