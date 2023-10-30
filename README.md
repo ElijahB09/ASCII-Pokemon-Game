@@ -108,3 +108,9 @@ Known bugs: (1) The edge cases of the world, something like (400, 400) produces 
 Fears: (1) I have tested it a fair amount, probably gone through about 50 map transitions and flies without crashing, but I'm always scared that it won't work when it matters. 
 
 New Functionality: The fly command should be executed as such: 1st: press f, this will open a menu with some descriptive text. 2nd: enter in the desired x coordinate of the new map on the overall 401 x 401 world, hit enter. 3rd: repeat step 2, but for the desired y coordinate.
+
+Also note that since moving around can be pretty annoying with ten other trainers use the following after using make:
+```
+./PokeGame --numtrainers=2
+```
+This will only spawn two trainers, a hiker and a rival.
