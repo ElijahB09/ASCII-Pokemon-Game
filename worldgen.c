@@ -3,13 +3,15 @@
 #include <limits.h>
 #include <stdio.h>
 
-void initNPCS(PokeMap *map, int num_npcs, NPC *npcs[num_npcs]) {
+void initNPCS(PokeMap *map, int num_npcs, NPC* npcs[]) {
     int i, j, rand_trainer, test_x, test_y;
 
     // No characters are on the map
     for (i = 0; i < Y_BOUND; i++) {
         for (j = 0; j < X_BOUND; j++) {
-            map->arr[i][j].character_present = 0;
+            if (map->arr[i][j].character_present == 1 && map->arr[i][j].player == NULL) {
+                map->arr[i][j].character_present = 0;
+            }
         }
     }
 
@@ -82,12 +84,12 @@ void initNPCS(PokeMap *map, int num_npcs, NPC *npcs[num_npcs]) {
     }
 }
 
-PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_y, int num_npcs, NPC *npcs[num_npcs]) {
+PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_y, int num_npcs) {
     if (world[map_y][map_x]) {
         return world[map_y][map_x];
     }
 
-    map = (PokeMap *) malloc(sizeof (PokeMap));
+    map = (PokeMap *) malloc(sizeof(PokeMap) + num_npcs * sizeof(NPC*));
 
     terrainCell (*randomCells) = malloc(sizeof (terrainCell[NUM_RAN_COORDS]));
     terrainCell (*currentCell) = malloc(sizeof (terrainCell));
@@ -457,7 +459,6 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
         Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[0][rand_path_up], map->arr[Y_BOUND - 1][rand_path_down]);
     }
     buildPokeStuffFancy(X_BOUND, Y_BOUND, map);
-    initNPCS(map, num_npcs, npcs);
 
     map->is_created = 1;
     world[map_y][map_x] = map;

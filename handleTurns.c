@@ -91,7 +91,7 @@ Turn extractMinTurn(TurnOrder * heap)
     return deleteItem;
 }
 
-TurnOrder* createTurnPriority(int num_npcs, NPC *npcs[num_npcs], PlayerCharacter *player, PokeMap *map) {
+TurnOrder* createTurnPriority(int num_npcs, NPC *npcs[], PlayerCharacter *player, PokeMap *map) {
     int i;
     Turn t;
     TurnOrder *turnOrder;
@@ -177,7 +177,7 @@ char decideNewDirection8(char currDirection) {
     return direction;
 }
 
-int handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NPC *npcs[num_npcs]) {
+int handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NPC *npcs[]) {
     int oldX, oldY, returnVal;
     oldX = t->x_coord;
     oldY = t->y_coord;
@@ -426,7 +426,7 @@ int handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NPC
     return returnVal;
 }
 
-int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[num_npcs]) {
+int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[]) {
     Turn t;
     int numNeighbors, i, minDistance, minX, minY;
     terrainCell neighbors[8];
@@ -846,7 +846,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[num_npcs]) {
 	int user_input = getch();
 	int returnVal;
 
-	// Allowed ops {1, 2, 3, 4, 5, 6, 7, 8, 9, y, k, u, l, n, j, b, h, >, <, , ., t, up arrow, down arrow, escape, Q} "space itself is allowed"
+	// Allowed ops {1, 2, 3, 4, 5, 6, 7, 8, 9, y, k, u, l, n, j, b, h, >, <, , ., t, f, up arrow, down arrow, escape, Q} "space itself is allowed"
 	returnVal = handlePlayerMovement(map, user_input, &t, num_npcs, npcs);
         // Handle priority
         if (map->arr[t.y_coord][t.x_coord].terrainPiece == '.' || map->arr[t.y_coord][t.x_coord].terrainPiece == '#' || map->arr[t.y_coord][t.x_coord].terrainPiece == 'C' || map->arr[t.y_coord][t.x_coord].terrainPiece == 'M') {
