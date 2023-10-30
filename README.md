@@ -103,6 +103,8 @@ This assignment saw a lot of refactors in certain ways that I handle npcs, movem
 
 Bug fixes: (1) The immediate seg fault from 1.05 has been resolved as it was an error with how npcs were being placed which would sometimes cause rivals to be placed in such a way that they could never reach the player.
 
-Known bugs: (1) The current iteration seems unstable as I am testing it, so far it has segfaulted once out of about 10 times. (2) Map generation is unstable and seems to fail rougly 1/10 times, also the edge cases of the world, something like (400, 400) produce an infinite loop which requires shutting down the terminal. (3) Seg faults when moving off the map occasionally after switching to using new and delete, specific error is "malloc: corrupted top size" which seems to be related to how I am allocating memory for arrays.
+Known bugs: (1) The edge cases of the world, something like (400, 400) produces an infinite loop which requires shutting down the terminal. After porting to C++ this now just crashes, so doing a command like: f, 200, 200, with [enter] pressed after each integer, will crash the code with an error message. Unfortunately I still don't have an answer to this problem with the edge cases. (note you will have to close your terminal if you hit this issue).
 
-New Functionality: The fly command should be executed as such: 1st press f, this will open a menu with some descriptive text. 2nd enter in the desired x coordinate of the new map on the overall 401 x 401 world, hit enter. 3rd repeat step 2, but for the desired y coordinate.
+Fears: (1) I have tested it a fair amount, probably gone through about 50 map transitions and flies without crashing, but I'm always scared that it won't work when it matters. 
+
+New Functionality: The fly command should be executed as such: 1st: press f, this will open a menu with some descriptive text. 2nd: enter in the desired x coordinate of the new map on the overall 401 x 401 world, hit enter. 3rd: repeat step 2, but for the desired y coordinate.

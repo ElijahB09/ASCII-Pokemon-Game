@@ -46,7 +46,7 @@ public:
     int world_x, world_y;
     int is_created;
     TurnOrder* order;
-    NPC* npcs[];
+    NPC** npcs;
 };
 
 #endif

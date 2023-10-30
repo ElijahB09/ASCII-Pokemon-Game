@@ -96,6 +96,7 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
     }
 
     map = new PokeMap();
+    map->npcs = new NPC*[num_npcs];
 
     terrainCell* randomCells = new terrainCell[NUM_RAN_COORDS];
     terrainCell* currentCell = new terrainCell;

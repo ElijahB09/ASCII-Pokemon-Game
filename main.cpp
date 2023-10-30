@@ -336,6 +336,8 @@ int main(int argc, char *argv[])
 					delete world[i][j]->npcs[k];
 					world[i][j]->npcs[k] = nullptr;
 				}
+				delete world[i][j]->npcs;
+				world[i][j]->npcs = nullptr;
 				delete world[i][j];
 				world[i][j] = nullptr;
 			}
