@@ -3,7 +3,7 @@
 
 #include "handleBattle.h"
 
-TurnOrder* buildPriority(unsigned capacity);
+TurnOrder* buildPriority(int capacity);
 void insertTurns(TurnOrder *heap, Turn *element);
 Turn extractMinTurn(TurnOrder *heap);
 TurnOrder* createTurnPriority(int num_npcs, NPC *npcs[], PlayerCharacter *player, PokeMap *map);

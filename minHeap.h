@@ -3,9 +3,19 @@
 
 #include "queue.h"
 
-MinHeap* buildMinHeap(unsigned capacity);
-void insert(MinHeap* heap, terrainCell element);
-void minHeapify(MinHeap * heap, int index);
-terrainCell extractMin(MinHeap* heap);
+class MinHeap {
+public:
+    MinHeap(unsigned capacity);
+    void insert(const terrainCell& element);
+    terrainCell extractMin();
+    int getSize();
+
+private:
+    void minHeapify(int index);
+    void insertHelper(int index);
+    terrainCell* array;
+    int capacity;
+    int size;
+};
 
 #endif

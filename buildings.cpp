@@ -1,7 +1,7 @@
-#include <stdlib.h>
+#include <cstdlib>
 #include "buildings.h"
 
-void buildPokeStuffFancy(int x, int y, PokeMap *map) {
+void buildPokeStuffFancy(int x, int y, PokeMap* map) {
     int coin_flip, rand_mart_x, rand_center_x, rand_mart_y, rand_center_y, i, j, k, road_start_x, road_end_x, road_start_y, road_end_y, started_x, ended_x, road_in_column, road_in_row, started_y, ended_y;
     int mart_placed, center_placed, num_neighbors, size, manhattan_distance;
     int valid_mart_y_coords[y];
@@ -84,7 +84,7 @@ void buildPokeStuffFancy(int x, int y, PokeMap *map) {
 
             k = 0;
             while (mart_placed == 0 && k < size) {
-                num_neighbors = getNeighbors(x, y, map->arr, map->arr[valid_mart_y_coords[k]][rand_mart_x], neighbors);
+                num_neighbors = getNeighbors(x, y, map, map->arr[valid_mart_y_coords[k]][rand_mart_x], neighbors);
                 for (i = 0; i < num_neighbors && mart_placed == 0; i++) {
                     if (map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable == 1) {
                         map->arr[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'M';
@@ -116,7 +116,7 @@ void buildPokeStuffFancy(int x, int y, PokeMap *map) {
 
             k = 0;
             while (center_placed == 0 && k < size) {
-                num_neighbors = getNeighbors(x, y, map->arr, map->arr[valid_center_y_coords[k]][rand_center_x], neighbors);
+                num_neighbors = getNeighbors(x, y, map, map->arr[valid_center_y_coords[k]][rand_center_x], neighbors);
                 for (i = 0; i < num_neighbors && center_placed == 0; i++) {
                     if (map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable == 1) {
                         map->arr[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'C';
@@ -145,7 +145,7 @@ void buildPokeStuffFancy(int x, int y, PokeMap *map) {
 
             k = 0;
             while (mart_placed == 0 && k < size) {
-                num_neighbors = getNeighbors(x, y, map->arr, map->arr[rand_mart_y][valid_mart_x_coords[k]], neighbors);
+                num_neighbors = getNeighbors(x, y, map, map->arr[rand_mart_y][valid_mart_x_coords[k]], neighbors);
                 for (i = 0; i < num_neighbors && mart_placed == 0; i++) {
                     if (map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable == 1) {
                         map->arr[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'M';
@@ -177,7 +177,7 @@ void buildPokeStuffFancy(int x, int y, PokeMap *map) {
 
             k = 0;
             while (center_placed == 0 && k < size) {
-                num_neighbors = getNeighbors(x, y, map->arr, map->arr[rand_center_y][valid_center_x_coords[k]], neighbors);
+                num_neighbors = getNeighbors(x, y, map, map->arr[rand_center_y][valid_center_x_coords[k]], neighbors);
                 for (i = 0; i < num_neighbors && center_placed == 0; i++) {
                     if (map->arr[neighbors[i].y_coord][neighbors[i].x_coord].buildable == 1) {
                         map->arr[neighbors[i].y_coord][neighbors[i].x_coord].terrainPiece = 'C';

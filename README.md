@@ -99,10 +99,10 @@ to pinpoint the cause of the error yet.)
 
 ## Assignment 1.06
 
-This assignment saw a lot of refactors in certain ways that I handle npcs, movement, and map moving from the previous assignment 1.02. My process was to finish the functionality portion of the assignment in C and then update everything to C++ after.
+This assignment saw a lot of refactors in certain ways that I handle npcs, movement, and map moving from the previous assignment 1.02. My process was to finish the functionality portion of the assignment in C and then update everything to C++ after. The C++ transition went fairly well, I personally wanted to move to using new and delete and I believe a few bugs were born from it. The initial iteration is about as rough as I was expecting.
 
 Bug fixes: (1) The immediate seg fault from 1.05 has been resolved as it was an error with how npcs were being placed which would sometimes cause rivals to be placed in such a way that they could never reach the player.
 
-Known bugs: (1) The current iteration seems unstable as I am testing it, so far it has segfaulted once out of about 10 times. (2) Map generation is unstable and seems to fail rougly 1/10 times, also the edge cases of the world, something like (400, 400) produce an infinite loop which requires shutting down the terminal.
+Known bugs: (1) The current iteration seems unstable as I am testing it, so far it has segfaulted once out of about 10 times. (2) Map generation is unstable and seems to fail rougly 1/10 times, also the edge cases of the world, something like (400, 400) produce an infinite loop which requires shutting down the terminal. (3) Seg faults when moving off the map occasionally after switching to using new and delete, specific error is "malloc: corrupted top size" which seems to be related to how I am allocating memory for arrays.
 
 New Functionality: The fly command should be executed as such: 1st press f, this will open a menu with some descriptive text. 2nd enter in the desired x coordinate of the new map on the overall 401 x 401 world, hit enter. 3rd repeat step 2, but for the desired y coordinate.

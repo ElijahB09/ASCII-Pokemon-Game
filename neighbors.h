@@ -3,7 +3,7 @@
 
 #include "minHeap.h"
 
-int getNeighbors(int x, int y, terrainCell map[y][x], terrainCell cell, terrainCell* neighbors);
-int getNeighbors8Directions(int x, int y, terrainCell map[y][x], terrainCell cell, terrainCell* neighbors);
+int getNeighbors(int x, int y, PokeMap *map, terrainCell cell, terrainCell* neighbors);
+int getNeighbors8Directions(int x, int y, PokeMap *map, terrainCell cell, terrainCell* neighbors);
 
 #endif

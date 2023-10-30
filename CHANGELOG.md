@@ -1,3 +1,15 @@
+commit a740cd4fa751d183d8e3e65bb5c614688ba77707
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Oct 29 22:48:29 2023 -0500
+
+    Update README
+
+commit e580c9adecc90a7dda96857d6079d03266f7fd44
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Oct 29 22:29:06 2023 -0500
+
+    Fixed bug with rivals and hikers spawning in places where the player is un reachable
+
 commit b94a81e9d9343875cee5356e5c2e6da090d44931
 Author: Elijah Brady <bradyeli09@gmail.com>
 Date:   Sun Oct 29 22:03:41 2023 -0500

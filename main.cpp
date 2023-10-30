@@ -1,15 +1,14 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <string.h>
-#include <unistd.h>
-#include "buildings.h"
-#include "worldgen.h"
+#include <iostream>
+#include <ctime>
+#include <cstring>
+#include <chrono>
+#include <thread>
 #include "handleTurns.h"
+
 #define X_BOUND 80
 #define Y_BOUND 21
 
-void io_init_terminal(void)
+void io_init_terminal()
 {
 	initscr();
 	raw();
@@ -22,7 +21,7 @@ void io_init_terminal(void)
 int main(int argc, char *argv[])
 {
 	PokeMap *world[401][401];
-	PlayerCharacter *player;
+	PlayerCharacter *player = new PlayerCharacter;
 	int current_x, current_y, i, j, k, fly_x, fly_y, num_npcs, found, tempx, tempy;
 	num_npcs = 10;
 	int user_input, gameRunning;
@@ -34,40 +33,39 @@ int main(int argc, char *argv[])
 		{
 			char *num_npcs_str = argv[1] + 14;
 			char *endptr;
-			num_npcs = (int)strtol(num_npcs_str, &endptr, 10);
+			num_npcs = static_cast<int>(strtol(num_npcs_str, &endptr, 10));
 
 			if (*endptr != '\0' || num_npcs <= 0)
 			{
-				printf("ERROR: use --numtrainers=x where x >= 0, instead passed: %s\n", num_npcs_str);
+				std::cout << "ERROR: use --numtrainers=x where x >= 0, instead passed: " << num_npcs_str << std::endl;
 				return 1;
 			}
 		}
 	}
 	else if (argc > 2)
 	{
-		printf("ERROR: usage ./<assignment_name> --numtrainers=x where x >= 0");
+		std::cout << "ERROR: usage ./<assignment_name> --numtrainers=x where x >= 0" << std::endl;
+		return 1;
 	}
 
 	// Init characters
-	player = malloc(sizeof(PlayerCharacter));
 	player->symbol = '@';
 
 	for (i = 0; i < 401; i++)
 	{
 		for (j = 0; j < 401; j++)
 		{
-			world[i][j] = NULL;
+			world[i][j] = nullptr;
 		}
 	}
 
 	io_init_terminal();
-	srand(time(NULL));
+	srand(static_cast<unsigned>(time(nullptr)));
 
 	current_x = 200;
 	current_y = 200;
 	*world[current_y][current_x] = *generateMap(world[current_y][current_x], world, current_x, current_y, num_npcs);
 
-	// Comment out unused values for this week
 	fly_x = current_x;
 	fly_y = current_y;
 
@@ -89,7 +87,7 @@ int main(int argc, char *argv[])
 		}
 	}
 	// Get cost maps
-	DijkstraTrainers(X_BOUND, Y_BOUND, world[current_y][current_x]->arr, world[current_y][current_x]->arr[tempy][tempx]);
+	DijkstraTrainers(X_BOUND, Y_BOUND, world[current_y][current_x], world[current_y][current_x]->arr[tempy][tempx]);
 	initNPCS(world[current_y][current_x], num_npcs, world[current_y][current_x]->npcs);
 
 	world[current_y][current_x]->order = createTurnPriority(num_npcs, world[current_y][current_x]->npcs, player, world[current_y][current_x]);
@@ -97,7 +95,7 @@ int main(int argc, char *argv[])
 	clear();
 	printw("Starting PokeGame!\n");
 	refresh();
-	sleep(2);
+	std::this_thread::sleep_for(std::chrono::seconds(2));
 	gameRunning = 1;
 
 	clear();
@@ -108,7 +106,7 @@ int main(int argc, char *argv[])
 		{
 			if (world[current_y][current_x]->arr[i][j].character_present == 1)
 			{
-				charToPrint = world[current_y][current_x]->arr[i][j].npc != NULL ? world[current_y][current_x]->arr[i][j].npc->symbol : world[current_y][current_x]->arr[i][j].player->symbol;
+				charToPrint = world[current_y][current_x]->arr[i][j].npc != nullptr ? world[current_y][current_x]->arr[i][j].npc->symbol : world[current_y][current_x]->arr[i][j].player->symbol;
 				mvaddch(i + 1, j, charToPrint);
 			}
 			else
@@ -119,7 +117,6 @@ int main(int argc, char *argv[])
 		}
 	}
 	refresh();
-
 	while (gameRunning)
 	{
 		clear();
@@ -129,7 +126,7 @@ int main(int argc, char *argv[])
 			{
 				if (world[current_y][current_x]->arr[i][j].character_present == 1)
 				{
-					charToPrint = world[current_y][current_x]->arr[i][j].npc != NULL ? world[current_y][current_x]->arr[i][j].npc->symbol : world[current_y][current_x]->arr[i][j].player->symbol;
+					charToPrint = world[current_y][current_x]->arr[i][j].npc != nullptr ? world[current_y][current_x]->arr[i][j].npc->symbol : world[current_y][current_x]->arr[i][j].player->symbol;
 					mvaddch(i + 1, j, charToPrint);
 				}
 				else
@@ -159,9 +156,9 @@ int main(int argc, char *argv[])
 					world[current_y][current_x]->arr[world[current_y][current_x + 1]->left_exit][78].character_present = 1;
 					player->y_coord = world[current_y][current_x + 1]->left_exit;
 					player->x_coord = 78;
-					if (world[current_y][current_x]->order == NULL)
+					if (world[current_y][current_x]->order == nullptr)
 					{
-						DijkstraTrainers(X_BOUND, Y_BOUND, world[current_y][current_x]->arr, world[current_y][current_x]->arr[player->y_coord][player->x_coord]);
+						DijkstraTrainers(X_BOUND, Y_BOUND, world[current_y][current_x], world[current_y][current_x]->arr[player->y_coord][player->x_coord]);
 						initNPCS(world[current_y][current_x], num_npcs, world[current_y][current_x]->npcs);
 						world[current_y][current_x]->order = createTurnPriority(num_npcs, world[current_y][current_x]->npcs, player, world[current_y][current_x]);
 					}
@@ -185,9 +182,9 @@ int main(int argc, char *argv[])
 					world[current_y][current_x]->arr[world[current_y][current_x - 1]->right_exit][1].character_present = 1;
 					player->y_coord = world[current_y][current_x - 1]->right_exit;
 					player->x_coord = 1;
-					if (world[current_y][current_x]->order == NULL)
+					if (world[current_y][current_x]->order == nullptr)
 					{
-						DijkstraTrainers(X_BOUND, Y_BOUND, world[current_y][current_x]->arr, world[current_y][current_x]->arr[player->y_coord][player->x_coord]);
+						DijkstraTrainers(X_BOUND, Y_BOUND, world[current_y][current_x], world[current_y][current_x]->arr[player->y_coord][player->x_coord]);
 						initNPCS(world[current_y][current_x], num_npcs, world[current_y][current_x]->npcs);
 						world[current_y][current_x]->order = createTurnPriority(num_npcs, world[current_y][current_x]->npcs, player, world[current_y][current_x]);
 					}
@@ -211,9 +208,9 @@ int main(int argc, char *argv[])
 					world[current_y][current_x]->arr[19][world[current_y + 1][current_x]->up_exit].character_present = 1;
 					player->y_coord = 19;
 					player->x_coord = world[current_y + 1][current_x]->up_exit;
-					if (world[current_y][current_x]->order == NULL)
+					if (world[current_y][current_x]->order == nullptr)
 					{
-						DijkstraTrainers(X_BOUND, Y_BOUND, world[current_y][current_x]->arr, world[current_y][current_x]->arr[player->y_coord][player->x_coord]);
+						DijkstraTrainers(X_BOUND, Y_BOUND, world[current_y][current_x], world[current_y][current_x]->arr[player->y_coord][player->x_coord]);
 						initNPCS(world[current_y][current_x], num_npcs, world[current_y][current_x]->npcs);
 						world[current_y][current_x]->order = createTurnPriority(num_npcs, world[current_y][current_x]->npcs, player, world[current_y][current_x]);
 					}
@@ -237,9 +234,9 @@ int main(int argc, char *argv[])
 					world[current_y][current_x]->arr[1][world[current_y - 1][current_x]->down_exit].character_present = 1;
 					player->y_coord = 1;
 					player->x_coord = world[current_y - 1][current_x]->down_exit;
-					if (world[current_y][current_x]->order == NULL)
+					if (world[current_y][current_x]->order == nullptr)
 					{
-						DijkstraTrainers(X_BOUND, Y_BOUND, world[current_y][current_x]->arr, world[current_y][current_x]->arr[player->y_coord][player->x_coord]);
+						DijkstraTrainers(X_BOUND, Y_BOUND, world[current_y][current_x], world[current_y][current_x]->arr[player->y_coord][player->x_coord]);
 						initNPCS(world[current_y][current_x], num_npcs, world[current_y][current_x]->npcs);
 						world[current_y][current_x]->order = createTurnPriority(num_npcs, world[current_y][current_x]->npcs, player, world[current_y][current_x]);
 					}
@@ -311,9 +308,9 @@ int main(int argc, char *argv[])
 				world[current_y][current_x]->arr[tempy][tempx].character_present = 1;
 				player->y_coord = tempy;
 				player->x_coord = tempx;
-				if (world[current_y][current_x]->order == NULL)
+				if (world[current_y][current_x]->order == nullptr)
 				{
-					DijkstraTrainers(X_BOUND, Y_BOUND, world[current_y][current_x]->arr, world[current_y][current_x]->arr[player->y_coord][player->x_coord]);
+					DijkstraTrainers(X_BOUND, Y_BOUND, world[current_y][current_x], world[current_y][current_x]->arr[player->y_coord][player->x_coord]);
 					initNPCS(world[current_y][current_x], num_npcs, world[current_y][current_x]->npcs);
 					world[current_y][current_x]->order = createTurnPriority(num_npcs, world[current_y][current_x]->npcs, player, world[current_y][current_x]);
 				}
@@ -330,20 +327,22 @@ int main(int argc, char *argv[])
 		{
 			if (world[i][j])
 			{
-				free(world[i][j]->order->arr);
-				world[i][j]->order->arr = NULL;
-				free(world[i][j]->order);
-				world[i][j]->order = NULL;
-				for (k = 0; k < num_npcs; k++) {
-					free(world[i][j]->npcs[k]);
-					world[i][j]->npcs[k] = NULL;
+				delete[] world[i][j]->order->arr;
+				world[i][j]->order->arr = nullptr;
+				delete world[i][j]->order;
+				world[i][j]->order = nullptr;
+				for (k = 0; k < num_npcs; k++)
+				{
+					delete world[i][j]->npcs[k];
+					world[i][j]->npcs[k] = nullptr;
 				}
-				free(world[i][j]);
-				world[i][j] = NULL;
+				delete world[i][j];
+				world[i][j] = nullptr;
 			}
 		}
 	}
-	free(player);
+
+	delete player;
 
 	return 0;
 }

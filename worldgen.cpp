@@ -1,15 +1,14 @@
-#include <stdlib.h>
 #include "worldgen.h"
-#include <limits.h>
-#include <stdio.h>
+#include <climits>
+#include <cstdlib>
 
-void initNPCS(PokeMap *map, int num_npcs, NPC* npcs[]) {
+void initNPCS(PokeMap* map, int num_npcs, NPC* npcs[]) {
     int i, j, rand_trainer, test_x, test_y;
 
     // No characters are on the map
     for (i = 0; i < Y_BOUND; i++) {
         for (j = 0; j < X_BOUND; j++) {
-            if (map->arr[i][j].character_present == 1 && map->arr[i][j].player == NULL) {
+            if (map->arr[i][j].character_present == 1 && map->arr[i][j].player == nullptr) {
                 map->arr[i][j].character_present = 0;
             }
         }
@@ -17,76 +16,75 @@ void initNPCS(PokeMap *map, int num_npcs, NPC* npcs[]) {
 
     // Generate npcs
     if (num_npcs == 1) {
-        npcs[0] = malloc(sizeof (NPC));
+        npcs[0] = new NPC;
         npcs[0]->symbol = 'r';
-	npcs[0]->defeated = 0;
+        npcs[0]->defeated = 0;
     } else if (num_npcs >= 2) {
-        npcs[0] = malloc(sizeof (NPC));
+        npcs[0] = new NPC;
         npcs[0]->symbol = 'r';
-	npcs[0]->defeated = 0;
+        npcs[0]->defeated = 0;
 
-        npcs[1] = malloc(sizeof (NPC));
+        npcs[1] = new NPC;
         npcs[1]->symbol = 'h';
-	npcs[1]->defeated = 0;
+        npcs[1]->defeated = 0;
 
         for (i = 2; i < num_npcs; i++) {
-            rand_trainer = (rand() % 6);
+            rand_trainer = std::rand() % 6;
             switch (rand_trainer) {
                 case 0:
-                    npcs[i] = malloc(sizeof (NPC));
+                    npcs[i] = new NPC;
                     npcs[i]->symbol = 'r';
                     break;
                 case 1:
-                    npcs[i] = malloc(sizeof (NPC));
+                    npcs[i] = new NPC;
                     npcs[i]->symbol = 'h';
                     break;
                 case 2:
-                    npcs[i] = malloc(sizeof (NPC));
+                    npcs[i] = new NPC;
                     npcs[i]->symbol = 'p';
                     break;
                 case 3:
-                    npcs[i] = malloc(sizeof (NPC));
+                    npcs[i] = new NPC;
                     npcs[i]->symbol = 'w';
                     break;
                 case 4:
-                    npcs[i] = malloc(sizeof (NPC));
+                    npcs[i] = new NPC;
                     npcs[i]->symbol = 's';
                     break;
                 case 5:
-                    npcs[i] = malloc(sizeof (NPC));
+                    npcs[i] = new NPC;
                     npcs[i]->symbol = 'e';
                     break;
             }
-	    npcs[i]->defeated = 0;
+            npcs[i]->defeated = 0;
         }
     }
 
     for (i = 0; i < num_npcs; i++) {
-        test_x = (rand() % 77) + 1;
-        test_y = (rand() % 18) + 1;
+        test_x = std::rand() % 77 + 1;
+        test_y = std::rand() % 18 + 1;
 
         if (npcs[i]->symbol == 'r' || npcs[i]->symbol == 'p' || npcs[i]->symbol == 'w' || npcs[i]->symbol == 'e' || npcs[i]->symbol == 's') {
             if (npcs[i]->symbol == 'r') {
                 while (map->arr[test_y][test_x].character_present == 1 || map->arr[test_y][test_x].rival_distance == INT_MAX || map->arr[test_y][test_x].rival_total_distance >= INT_MAX) {
-                    test_x = (rand() % 77) + 1;
-                    test_y = (rand() % 18) + 1;
+                    test_x = std::rand() % 77 + 1;
+                    test_y = std::rand() % 18 + 1;
                 }
-            }
-            else {
+            } else {
                 while (map->arr[test_y][test_x].character_present == 1 || map->arr[test_y][test_x].rival_distance == INT_MAX) {
-                    test_x = (rand() % 77) + 1;
-                    test_y = (rand() % 18) + 1;
+                    test_x = std::rand() % 77 + 1;
+                    test_y = std::rand() % 18 + 1;
                 }
             }
-        }
-        else if (npcs[i]->symbol == 'h') {
+        } else if (npcs[i]->symbol == 'h') {
             while (map->arr[test_y][test_x].character_present == 1 || map->arr[test_y][test_x].hiker_distance == INT_MAX || map->arr[test_y][test_x].hiker_total_distance >= INT_MAX) {
-                test_x = (rand() % 77) + 1;
-                test_y = (rand() % 18) + 1;
+                test_x = std::rand() % 77 + 1;
+                test_y = std::rand() % 18 + 1;
             }
         }
 
-        npcs[i]->x_coord = test_x; npcs[i]->y_coord = test_y;
+        npcs[i]->x_coord = test_x;
+        npcs[i]->y_coord = test_y;
         map->arr[test_y][test_x].character_present = 1;
         map->arr[test_y][test_x].npc = npcs[i];
     }
@@ -97,16 +95,16 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
         return world[map_y][map_x];
     }
 
-    map = (PokeMap *) malloc(sizeof(PokeMap) + num_npcs * sizeof(NPC*));
+    map = new PokeMap();
 
-    terrainCell (*randomCells) = malloc(sizeof (terrainCell[NUM_RAN_COORDS]));
-    terrainCell (*currentCell) = malloc(sizeof (terrainCell));
+    terrainCell* randomCells = new terrainCell[NUM_RAN_COORDS];
+    terrainCell* currentCell = new terrainCell;
     int currentCellXCoord, currentCellYCoord, i, j, k, rand_x_coords[NUM_RAN_COORDS], rand_y_coords[NUM_RAN_COORDS], rand_path_left, rand_path_right, rand_path_up, rand_path_down, rand_offset;
-    Queue* seeding_queue = createQueue(QUEUE_SIZE);
+    Queue* seeding_queue = new Queue(QUEUE_SIZE);
     // Generate 30 random points on the map between 1 - 78 and 1 - 19 exclusive
     for (i = 0; i < NUM_RAN_COORDS; i++) {
-        rand_x_coords[i] = (rand() % 77) + 1;
-        rand_y_coords[i] = (rand() % 18) + 1;
+        rand_x_coords[i] = (std::rand() % 77) + 1;
+        rand_y_coords[i] = (std::rand() % 18) + 1;
     }
 
     for (i = 0; i < Y_BOUND; i++) {
@@ -176,10 +174,10 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
     }
 
     for (i = 0; i < NUM_RAN_COORDS; i++) {
-        enqueue(seeding_queue, randomCells[i]);
+        seeding_queue->enqueue(randomCells[i]);
     }
     while (!(seeding_queue->front == -1 || seeding_queue->front > seeding_queue->rear)) {
-        *currentCell = dequeue(seeding_queue);
+        *currentCell = seeding_queue->dequeue();
         currentCellXCoord = currentCell->x_coord;
         currentCellYCoord = currentCell->y_coord;
         for (i = 0; i < 3; i++) {
@@ -190,7 +188,7 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
                     map->arr[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].buildable = currentCell->buildable;
                     map->arr[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].hiker_distance = currentCell->hiker_distance;
                     map->arr[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)].rival_distance = currentCell->rival_distance;
-                    enqueue(seeding_queue, map->arr[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)]);
+                    seeding_queue->enqueue(map->arr[currentCellYCoord + (i - 1)][currentCellXCoord + (j - 1)]);
                 }
             }
         }
@@ -202,12 +200,12 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
         if (world[map_y][map_x - 1]) {
             rand_path_left = world[map_y][map_x - 1]->right_exit;
         } else {
-            rand_path_left = (rand() % 18) + 1;
+            rand_path_left = (std::rand() % 18) + 1;
         }
         if (world[map_y - 1][map_x]) {
             rand_path_up = world[map_y - 1][map_x]->down_exit;
         } else {
-            rand_path_up = (rand() % 77) + 1;
+            rand_path_up = (std::rand() % 77) + 1;
         }
         map->left_exit = rand_path_left;
         map->up_exit = rand_path_up;
@@ -217,19 +215,19 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
         map->arr[0][rand_path_up].terrainPiece = '#';
         map->arr[0][rand_path_up].elevation = 0;
 
-        Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[rand_path_left][0], map->arr[0][rand_path_up]);
+        Dijkstra(X_BOUND, Y_BOUND, map, map->arr[rand_path_left][0], map->arr[0][rand_path_up]);
 
     } else if (map_x == 400 && map_y == 0) {
         // Upper right
         if (world[map_y][map_x - 1]) {
             rand_path_left = world[map_y][map_x - 1]->right_exit;
         } else {
-            rand_path_left = (rand() % 18) + 1;
+            rand_path_left = (std::rand() % 18) + 1;
         }
         if (world[map_y + 1][map_x]) {
             rand_path_down = world[map_y + 1][map_x]->up_exit;
         } else {
-            rand_path_down = (rand() % 77) + 1;
+            rand_path_down = (std::rand() % 77) + 1;
         }
         map->left_exit = rand_path_left;
         map->down_exit = rand_path_down;
@@ -239,19 +237,19 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
         map->arr[Y_BOUND - 1][rand_path_down].terrainPiece = '#';
         map->arr[Y_BOUND - 1][rand_path_down].elevation = 0;
 
-        Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[rand_path_left][0], map->arr[Y_BOUND - 1][rand_path_down]);
+        Dijkstra(X_BOUND, Y_BOUND, map, map->arr[rand_path_left][0], map->arr[Y_BOUND - 1][rand_path_down]);
 
     } else if (map_x == 0 && map_y == 400) {
         // Lower left
         if (world[map_y][map_x + 1]) {
             rand_path_right = world[map_y][map_x + 1]->left_exit;
         } else {
-            rand_path_right = (rand() % 18) + 1;
+            rand_path_right = (std::rand() % 18) + 1;
         }
         if (world[map_y - 1][map_x]) {
             rand_path_up = world[map_y - 1][map_x]->down_exit;
         } else {
-            rand_path_up = (rand() % 77) + 1;
+            rand_path_up = (std::rand() % 77) + 1;
         }
         map->right_exit = rand_path_right;
         map->up_exit = rand_path_up;
@@ -261,19 +259,19 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
         map->arr[0][rand_path_up].terrainPiece = '#';
         map->arr[0][rand_path_up].elevation = 0;
 
-        Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[0][rand_path_up], map->arr[rand_path_right][X_BOUND - 1]);
+        Dijkstra(X_BOUND, Y_BOUND, map, map->arr[0][rand_path_up], map->arr[rand_path_right][X_BOUND - 1]);
 
     } else if (map_x == 0 && map_y == 0) {
         // Upper left
         if (world[map_y][map_x + 1]) {
             rand_path_right = world[map_y][map_x + 1]->left_exit;
         } else {
-            rand_path_right = (rand() % 18) + 1;
+            rand_path_right = (std::rand() % 18) + 1;
         }
         if (world[map_y + 1][map_x]) {
             rand_path_down = world[map_y + 1][map_x]->up_exit;
         } else {
-            rand_path_down = (rand() % 77) + 1;
+            rand_path_down = (std::rand() % 77) + 1;
         }
         map->right_exit = rand_path_right;
         map->down_exit = rand_path_down;
@@ -282,22 +280,22 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
         map->arr[rand_path_right][X_BOUND - 1].elevation = 0;
         map->arr[Y_BOUND - 1][rand_path_down].terrainPiece = '#';
         map->arr[Y_BOUND - 1][rand_path_down].elevation = 0;
-        Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[Y_BOUND - 1][rand_path_down], map->arr[rand_path_right][X_BOUND - 1]);
+        Dijkstra(X_BOUND, Y_BOUND, map, map->arr[Y_BOUND - 1][rand_path_down], map->arr[rand_path_right][X_BOUND - 1]);
     } else if (map_x == 400) {
         if (world[map_y][map_x - 1]) {
             rand_path_left = world[map_y][map_x - 1]->right_exit;
         } else {
-            rand_path_left = (rand() % 18) + 1;
+            rand_path_left = (std::rand() % 18) + 1;
         }
         if (world[map_y - 1][map_x]) {
             rand_path_up = world[map_y - 1][map_x]->down_exit;
         } else {
-            rand_path_up = (rand() % 77) + 1;
+            rand_path_up = (std::rand() % 77) + 1;
         }
         if (world[map_y + 1][map_x]) {
             rand_path_down = world[map_y + 1][map_x]->up_exit;
         } else {
-            rand_path_down = (rand() % 77) + 1;
+            rand_path_down = (std::rand() % 77) + 1;
         }
         map->left_exit = rand_path_left;
         map->up_exit = rand_path_up;
@@ -309,12 +307,12 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
         map->arr[0][rand_path_up].elevation = 0;
         map->arr[Y_BOUND - 1][rand_path_down].terrainPiece = '#';
         map->arr[Y_BOUND - 1][rand_path_down].elevation = 0;
-        Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[0][rand_path_up], map->arr[Y_BOUND - 1][rand_path_down]);
+        Dijkstra(X_BOUND, Y_BOUND, map, map->arr[0][rand_path_up], map->arr[Y_BOUND - 1][rand_path_down]);
 
-        rand_offset = (rand() % 18) + 1;
+        rand_offset = (std::rand() % 18) + 1;
         for (i = 0; i < X_BOUND; i++) {
             if (map->arr[rand_offset][i].terrainPiece == '#') {
-                Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[rand_path_left][0], map->arr[rand_offset][i]);
+                Dijkstra(X_BOUND, Y_BOUND, map, map->arr[rand_path_left][0], map->arr[rand_offset][i]);
                 break;
             }
         }
@@ -322,17 +320,17 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
         if (world[map_y][map_x + 1]) {
             rand_path_right = world[map_y][map_x + 1]->left_exit;
         } else {
-            rand_path_right = (rand() % 18) + 1;
+            rand_path_right = (std::rand() % 18) + 1;
         }
         if (world[map_y - 1][map_x]) {
             rand_path_up = world[map_y - 1][map_x]->down_exit;
         } else {
-            rand_path_up = (rand() % 77) + 1;
+            rand_path_up = (std::rand() % 77) + 1;
         }
         if (world[map_y + 1][map_x]) {
             rand_path_down = world[map_y + 1][map_x]->up_exit;
         } else {
-            rand_path_down = (rand() % 77) + 1;
+            rand_path_down = (std::rand() % 77) + 1;
         }
         map->right_exit = rand_path_right;
         map->up_exit = rand_path_up;
@@ -344,12 +342,12 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
         map->arr[0][rand_path_up].elevation = 0;
         map->arr[Y_BOUND - 1][rand_path_down].terrainPiece = '#';
         map->arr[Y_BOUND - 1][rand_path_down].elevation = 0;
-        Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[0][rand_path_up], map->arr[Y_BOUND - 1][rand_path_down]);
+        Dijkstra(X_BOUND, Y_BOUND, map, map->arr[0][rand_path_up], map->arr[Y_BOUND - 1][rand_path_down]);
 
-        rand_offset = (rand() % 18) + 1;
+        rand_offset = (std::rand() % 18) + 1;
         for (i = 0; i < X_BOUND; i++) {
             if (map->arr[rand_offset][i].terrainPiece == '#') {
-                Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[rand_path_right][X_BOUND - 1], map->arr[rand_offset][i]);
+                Dijkstra(X_BOUND, Y_BOUND, map, map->arr[rand_path_right][X_BOUND - 1], map->arr[rand_offset][i]);
                 break;
             }
         }
@@ -358,17 +356,17 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
         if (world[map_y][map_x + 1]) {
             rand_path_right = world[map_y][map_x + 1]->left_exit;
         } else {
-            rand_path_right = (rand() % 18) + 1;
+            rand_path_right = (std::rand() % 18) + 1;
         }
         if (world[map_y][map_x - 1]) {
             rand_path_left = world[map_y][map_x - 1]->right_exit;
         } else {
-            rand_path_left = (rand() % 18) + 1;
+            rand_path_left = (std::rand() % 18) + 1;
         }
         if (world[map_y - 1][map_x]) {
             rand_path_up = world[map_y - 1][map_x]->down_exit;
         } else {
-            rand_path_up = (rand() % 77) + 1;
+            rand_path_up = (std::rand() % 77) + 1;
         }
         map->left_exit = rand_path_left;
         map->right_exit = rand_path_right;
@@ -380,12 +378,12 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
         map->arr[rand_path_right][X_BOUND - 1].elevation = 0;
         map->arr[0][rand_path_up].terrainPiece = '#';
         map->arr[0][rand_path_up].elevation = 0;
-        Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[rand_path_left][0], map->arr[rand_path_right][X_BOUND - 1]);
+        Dijkstra(X_BOUND, Y_BOUND, map, map->arr[rand_path_left][0], map->arr[rand_path_right][X_BOUND - 1]);
 
-        rand_offset = (rand() % 77) + 1;
+        rand_offset = (std::rand() % 77) + 1;
         for (i = 0; i < Y_BOUND; i++) {
             if (map->arr[i][rand_offset].terrainPiece == '#') {
-                Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[0][rand_path_up], map->arr[i][rand_offset]);
+                Dijkstra(X_BOUND, Y_BOUND, map, map->arr[0][rand_path_up], map->arr[i][rand_offset]);
                 break;
             }
         }
@@ -393,17 +391,17 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
         if (world[map_y][map_x + 1]) {
             rand_path_right = world[map_y][map_x + 1]->left_exit;
         } else {
-            rand_path_right = (rand() % 18) + 1;
+            rand_path_right = (std::rand() % 18) + 1;
         }
         if (world[map_y][map_x - 1]) {
             rand_path_left = world[map_y][map_x - 1]->right_exit;
         } else {
-            rand_path_left = (rand() % 18) + 1;
+            rand_path_left = (std::rand() % 18) + 1;
         }
         if (world[map_y + 1][map_x]) {
             rand_path_down = world[map_y + 1][map_x]->up_exit;
         } else {
-            rand_path_down = (rand() % 77) + 1;
+            rand_path_down = (std::rand() % 77) + 1;
         }
         map->left_exit = rand_path_left;
         map->right_exit = rand_path_right;
@@ -415,12 +413,12 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
         map->arr[rand_path_right][X_BOUND - 1].elevation = 0;
         map->arr[Y_BOUND - 1][rand_path_down].terrainPiece = '#';
         map->arr[Y_BOUND - 1][rand_path_down].elevation = 0;
-        Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[rand_path_left][0], map->arr[rand_path_right][X_BOUND - 1]);
+        Dijkstra(X_BOUND, Y_BOUND, map, map->arr[rand_path_left][0], map->arr[rand_path_right][X_BOUND - 1]);
 
-        rand_offset = (rand() % 77) + 1;
+        rand_offset = (std::rand() % 77) + 1;
         for (i = 0; i < Y_BOUND; i++) {
             if (map->arr[i][rand_offset].terrainPiece == '#') {
-                Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[Y_BOUND - 1][rand_path_down], map->arr[i][rand_offset]);
+                Dijkstra(X_BOUND, Y_BOUND, map, map->arr[Y_BOUND - 1][rand_path_down], map->arr[i][rand_offset]);
                 break;
             }
         }
@@ -428,22 +426,22 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
         if (world[map_y][map_x + 1]) {
             rand_path_right = world[map_y][map_x + 1]->left_exit;
         } else {
-            rand_path_right = (rand() % 18) + 1;
+            rand_path_right = (std::rand() % 18) + 1;
         }
         if (world[map_y][map_x - 1]) {
             rand_path_left = world[map_y][map_x - 1]->right_exit;
         } else {
-            rand_path_left = (rand() % 18) + 1;
+            rand_path_left = (std::rand() % 18) + 1;
         }
         if (world[map_y + 1][map_x]) {
             rand_path_down = world[map_y + 1][map_x]->up_exit;
         } else {
-            rand_path_down = (rand() % 77) + 1;
+            rand_path_down = (std::rand() % 77) + 1;
         }
         if (world[map_y - 1][map_x]) {
             rand_path_up = world[map_y - 1][map_x]->down_exit;
         } else {
-            rand_path_up = (rand() % 77) + 1;
+            rand_path_up = (std::rand() % 77) + 1;
         }
 
         map->left_exit = rand_path_left;
@@ -463,18 +461,18 @@ PokeMap* generateMap(PokeMap *map, PokeMap* world[401][401], int map_x, int map_
         map->arr[Y_BOUND - 1][rand_path_down].terrainPiece = '#';
         map->arr[Y_BOUND - 1][rand_path_down].elevation = 0;
 
-        Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[rand_path_left][0], map->arr[rand_path_right][X_BOUND - 1]);
-        Dijkstra(X_BOUND, Y_BOUND, map->arr, map->arr[0][rand_path_up], map->arr[Y_BOUND - 1][rand_path_down]);
+        Dijkstra(X_BOUND, Y_BOUND, map, map->arr[rand_path_left][0], map->arr[rand_path_right][X_BOUND - 1]);
+        Dijkstra(X_BOUND, Y_BOUND, map, map->arr[0][rand_path_up], map->arr[Y_BOUND - 1][rand_path_down]);
     }
     buildPokeStuffFancy(X_BOUND, Y_BOUND, map);
 
     map->is_created = 1;
     world[map_y][map_x] = map;
 
-    free(randomCells);
-    free(currentCell);
-    free(seeding_queue->array);
-    free(seeding_queue);
+    delete[] randomCells;
+    delete currentCell;
+    delete[] seeding_queue->array;
+    delete seeding_queue;
 
     return world[map_y][map_x];
 }

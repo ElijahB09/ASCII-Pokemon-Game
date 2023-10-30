@@ -1,12 +1,18 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-#include "structs.h"
+#include "classes.h"
 
-Queue* createQueue(unsigned capacity);
-int isFull(Queue* queue);
-int isEmpty(Queue* queue);
-void enqueue(Queue* queue, terrainCell item);
-terrainCell dequeue(Queue* queue);
+class Queue {
+public:
+    Queue(unsigned capacity);
+    bool isFull() const;
+    bool isEmpty() const;
+    void enqueue(const terrainCell& item);
+    terrainCell dequeue();
+    int front, rear, size;
+    int capacity;
+    terrainCell *array;
+};
 
 #endif

@@ -1,36 +1,34 @@
 #include "handleTurns.h"
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <limits.h>
+#include <cstdlib>
+#include <cstdio>
+#include <climits>
+#include <iostream>
 
-#define X_BOUND 80
-#define Y_BOUND 21
-
-TurnOrder *buildPriority(unsigned capacity)
+TurnOrder* buildPriority(int capacity)
 {
-    TurnOrder *heap = (TurnOrder *)malloc(sizeof(TurnOrder));
+    TurnOrder* heap = new TurnOrder;
 
-    if (heap == NULL)
+    if (heap == nullptr)
     {
-        printf("Uh oh, computer broke");
-        return NULL;
+        std::cerr << "Uh oh, computer broke" << std::endl;
+        return nullptr;
     }
 
     heap->size = 0;
     heap->capacity = capacity;
 
-    heap->arr = (Turn *)malloc(capacity * sizeof(Turn));
-    if (heap->arr == NULL)
+    heap->arr = new Turn[capacity];
+    if (heap->arr == nullptr)
     {
-        printf("Uh oh, computer broke");
-        return NULL;
+        std::cerr << "Uh oh, computer broke" << std::endl;
+        return nullptr;
     }
 
     return heap;
 }
 
-void insertHelperTurns(TurnOrder *heap, int index)
+void insertHelperTurns(TurnOrder* heap, int index)
 {
     int parent = (index - 1) / 2;
 
@@ -44,7 +42,7 @@ void insertHelperTurns(TurnOrder *heap, int index)
     }
 }
 
-void insertTurns(TurnOrder *heap, Turn *element)
+void insertTurns(TurnOrder* heap, Turn* element)
 {
     if (heap->size < heap->capacity)
     {
@@ -54,7 +52,7 @@ void insertTurns(TurnOrder *heap, Turn *element)
     }
 }
 
-void minHeapifyTurns(TurnOrder *heap, int index)
+void minHeapifyTurns(TurnOrder* heap, int index)
 {
     int left = index * 2 + 1;
     int right = index * 2 + 2;
@@ -80,14 +78,14 @@ void minHeapifyTurns(TurnOrder *heap, int index)
     }
 }
 
-Turn extractMinTurn(TurnOrder *heap)
+Turn extractMinTurn(TurnOrder* heap)
 {
     Turn deleteItem;
     deleteItem.characterSymbol = '\0';
 
     if (heap->size == 0)
     {
-        printf("\nHeap id empty.");
+        std::cerr << "\nHeap is empty." << std::endl;
         return deleteItem;
     }
 
@@ -99,16 +97,13 @@ Turn extractMinTurn(TurnOrder *heap)
     return deleteItem;
 }
 
-TurnOrder *createTurnPriority(int num_npcs, NPC *npcs[], PlayerCharacter *player, PokeMap *map)
+TurnOrder* createTurnPriority(int num_npcs, NPC *npcs[], PlayerCharacter* player, PokeMap* map)
 {
-    int i;
-    Turn t;
-    TurnOrder *turnOrder;
+    TurnOrder* turnOrder = buildPriority(num_npcs + 1);
 
-    // +1 for the player
-    turnOrder = buildPriority(num_npcs + 1);
-    for (i = 0; i < num_npcs; i++)
+    for (int i = 0; i < num_npcs; i++)
     {
+        Turn t;
         t.priority = 0;
         t.characterSymbol = npcs[i]->symbol;
         t.x_coord = npcs[i]->x_coord;
@@ -116,6 +111,8 @@ TurnOrder *createTurnPriority(int num_npcs, NPC *npcs[], PlayerCharacter *player
         t.spawnedInTerrain = map->arr[t.y_coord][t.x_coord].terrainPiece;
         insertTurns(turnOrder, &t);
     }
+
+    Turn t;
     t.priority = 0;
     t.y_coord = player->y_coord;
     t.x_coord = player->x_coord;
@@ -126,77 +123,66 @@ TurnOrder *createTurnPriority(int num_npcs, NPC *npcs[], PlayerCharacter *player
     return turnOrder;
 }
 
-char decideNewDirection8(char currDirection)
-{
+char decideNewDirection8(char currDirection) {
     char direction;
-    int val, coinflip;
-    val = 0;
-
-    while (val == 0)
-    {
-        coinflip = rand() % 8;
-        switch (coinflip)
-        {
-        case 0:
-            if (currDirection != 'l')
-            {
-                direction = 'l';
-                val = 1;
-            }
-            break;
-        case 1:
-            if (currDirection != 'u')
-            {
-                direction = 'u';
-                val = 1;
-            }
-            break;
-        case 2:
-            if (currDirection != 'w')
-            {
-                direction = 'w';
-                val = 1;
-            }
-            break;
-        case 3:
-            if (currDirection != 'z')
-            {
-                direction = 'z';
-                val = 1;
-            }
-            break;
-        case 4:
-            if (currDirection != 'r')
-            {
-                direction = 'r';
-                val = 1;
-            }
-            break;
-        case 5:
-            if (currDirection != 'd')
-            {
-                direction = 'd';
-                val = 1;
-            }
-            break;
-        case 6:
-            if (currDirection != 'x')
-            {
-                direction = 'x';
-                val = 1;
-            }
-            break;
-        case 7:
-            if (currDirection != 'e')
-            {
-                direction = 'e';
-                val = 1;
-            }
-            break;
+    int val = 0;
+    
+    while (val == 0) {
+        int coinflip = std::rand() % 8;
+        switch (coinflip) {
+            case 0:
+                if (currDirection != 'l') {
+                    direction = 'l';
+                    val = 1;
+                }
+                break;
+            case 1:
+                if (currDirection != 'u') {
+                    direction = 'u';
+                    val = 1;
+                }
+                break;
+            case 2:
+                if (currDirection != 'w') {
+                    direction = 'w';
+                    val = 1;
+                }
+                break;
+            case 3:
+                if (currDirection != 'z') {
+                    direction = 'z';
+                    val = 1;
+                }
+                break;
+            case 4:
+                if (currDirection != 'r') {
+                    direction = 'r';
+                    val = 1;
+                }
+                break;
+            case 5:
+                if (currDirection != 'd') {
+                    direction = 'd';
+                    val = 1;
+                }
+                break;
+            case 6:
+                if (currDirection != 'x') {
+                    direction = 'x';
+                    val = 1;
+                }
+                break;
+            case 7:
+                if (currDirection != 'e') {
+                    direction = 'e';
+                    val = 1;
+                }
+                break;
         }
     }
     return direction;
 }
+
 
 int handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NPC *npcs[])
 {
@@ -319,171 +305,175 @@ int handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NPC
         }
         break;
     case '>':
-        int inMartOrCenter;
-        int input = 0;
-        if (map->arr[t->y_coord][t->x_coord].terrainPiece == 'M' || map->arr[t->y_coord][t->x_coord].terrainPiece == 'C')
         {
-            inMartOrCenter = 1;
-            clear();
-            printw("Entered Mart or Center, press < to leave");
-            refresh();
-            while (inMartOrCenter == 1)
+            int inMartOrCenter;
+            int input = 0;
+            if (map->arr[t->y_coord][t->x_coord].terrainPiece == 'M' || map->arr[t->y_coord][t->x_coord].terrainPiece == 'C')
             {
-                input = getch();
-                if (input == '<')
+                inMartOrCenter = 1;
+                clear();
+                printw("Entered Mart or Center, press < to leave");
+                refresh();
+                while (inMartOrCenter == 1)
                 {
-                    inMartOrCenter = 0;
+                    input = getch();
+                    if (input == '<')
+                    {
+                        inMartOrCenter = 0;
+                    }
                 }
             }
-        }
-        else
-        {
-            printw("Must be on a Pokemart or a Pokecenter");
-            refresh();
+            else
+            {
+                printw("Must be on a Pokemart or a Pokecenter");
+                refresh();
+            }
         }
         break;
     case 't':
-        int k, userinput, distance_x, distance_y, top_displayed, bottom_displayed, first_npc;
-        userinput = 0;
-        first_npc = top_displayed = bottom_displayed = 0;
-
-        clear();
-        printw("Trainer List");
-        move(1, 0);
-        for (k = 0; k < num_npcs && k < 22; k++)
         {
-            top_displayed = 1;
-            if (k == num_npcs - 1)
-            {
-                bottom_displayed = 1;
-            }
-            printw("%c ", npcs[k]->symbol);
-            distance_x = t->x_coord - npcs[k]->x_coord;
-            distance_y = t->y_coord - npcs[k]->y_coord;
-            if (distance_x < 0)
-            {
-                distance_x *= -1;
-                printw("%d east ", distance_x);
-            }
-            else
-            {
-                printw("%d west ", distance_x);
-            }
+            int k, userinput, distance_x, distance_y, top_displayed, bottom_displayed, first_npc;
+            userinput = 0;
+            first_npc = top_displayed = bottom_displayed = 0;
 
-            if (distance_y < 0)
+            clear();
+            printw("Trainer List");
+            move(1, 0);
+            for (k = 0; k < num_npcs && k < 22; k++)
             {
-                distance_y *= -1;
-                printw("and %d south\n", distance_y);
-            }
-            else
-            {
-                printw("and %d north\n", distance_y);
-            }
-        }
-        refresh();
-        while (userinput != 27)
-        {
-            userinput = getch();
-
-            if (num_npcs > 21)
-            {
-                if (userinput == KEY_UP && top_displayed == 0)
+                top_displayed = 1;
+                if (k == num_npcs - 1)
                 {
-                    first_npc--;
-                    clear();
-                    printw("Trainer List");
-                    move(1, 0);
-                    for (k = first_npc; k < num_npcs && k < (22 + first_npc); k++)
-                    {
-                        if (first_npc == 0)
-                        {
-                            top_displayed = 1;
-                        }
-                        else
-                        {
-                            top_displayed = 0;
-                        }
-                        if (k == num_npcs - 1)
-                        {
-                            bottom_displayed = 1;
-                        }
-                        else
-                        {
-                            bottom_displayed = 0;
-                        }
-                        printw("%c ", npcs[k]->symbol);
-                        distance_x = t->x_coord - npcs[k]->x_coord;
-                        distance_y = t->y_coord - npcs[k]->y_coord;
-                        if (distance_x < 0)
-                        {
-                            distance_x *= -1;
-                            printw("%d east ", distance_x);
-                        }
-                        else
-                        {
-                            printw("%d west ", distance_x);
-                        }
-
-                        if (distance_y < 0)
-                        {
-                            distance_y *= -1;
-                            printw("and %d south\n", distance_y);
-                        }
-                        else
-                        {
-                            printw("and %d north\n", distance_y);
-                        }
-                    }
-                    refresh();
+                    bottom_displayed = 1;
                 }
-                else if (userinput == KEY_DOWN && bottom_displayed == 0)
+                printw("%c ", npcs[k]->symbol);
+                distance_x = t->x_coord - npcs[k]->x_coord;
+                distance_y = t->y_coord - npcs[k]->y_coord;
+                if (distance_x < 0)
                 {
-                    first_npc++;
-                    clear();
-                    printw("Trainer List");
-                    move(1, 0);
-                    for (k = first_npc; k < num_npcs && k < (22 + first_npc); k++)
-                    {
-                        if (first_npc == 0)
-                        {
-                            top_displayed = 1;
-                        }
-                        else
-                        {
-                            top_displayed = 0;
-                        }
-                        if (k == num_npcs - 1)
-                        {
-                            bottom_displayed = 1;
-                        }
-                        else
-                        {
-                            bottom_displayed = 0;
-                        }
-                        printw("%c ", npcs[k]->symbol);
-                        distance_x = t->x_coord - npcs[k]->x_coord;
-                        distance_y = t->y_coord - npcs[k]->y_coord;
-                        if (distance_x < 0)
-                        {
-                            distance_x *= -1;
-                            printw("%d east ", distance_x);
-                        }
-                        else
-                        {
-                            printw("%d west ", distance_x);
-                        }
+                    distance_x *= -1;
+                    printw("%d east ", distance_x);
+                }
+                else
+                {
+                    printw("%d west ", distance_x);
+                }
 
-                        if (distance_y < 0)
+                if (distance_y < 0)
+                {
+                    distance_y *= -1;
+                    printw("and %d south\n", distance_y);
+                }
+                else
+                {
+                    printw("and %d north\n", distance_y);
+                }
+            }
+            refresh();
+            while (userinput != 27)
+            {
+                userinput = getch();
+
+                if (num_npcs > 21)
+                {
+                    if (userinput == KEY_UP && top_displayed == 0)
+                    {
+                        first_npc--;
+                        clear();
+                        printw("Trainer List");
+                        move(1, 0);
+                        for (k = first_npc; k < num_npcs && k < (22 + first_npc); k++)
                         {
-                            distance_y *= -1;
-                            printw("and %d south\n", distance_y);
+                            if (first_npc == 0)
+                            {
+                                top_displayed = 1;
+                            }
+                            else
+                            {
+                                top_displayed = 0;
+                            }
+                            if (k == num_npcs - 1)
+                            {
+                                bottom_displayed = 1;
+                            }
+                            else
+                            {
+                                bottom_displayed = 0;
+                            }
+                            printw("%c ", npcs[k]->symbol);
+                            distance_x = t->x_coord - npcs[k]->x_coord;
+                            distance_y = t->y_coord - npcs[k]->y_coord;
+                            if (distance_x < 0)
+                            {
+                                distance_x *= -1;
+                                printw("%d east ", distance_x);
+                            }
+                            else
+                            {
+                                printw("%d west ", distance_x);
+                            }
+
+                            if (distance_y < 0)
+                            {
+                                distance_y *= -1;
+                                printw("and %d south\n", distance_y);
+                            }
+                            else
+                            {
+                                printw("and %d north\n", distance_y);
+                            }
                         }
-                        else
-                        {
-                            printw("and %d north\n", distance_y);
-                        }
+                        refresh();
                     }
-                    refresh();
+                    else if (userinput == KEY_DOWN && bottom_displayed == 0)
+                    {
+                        first_npc++;
+                        clear();
+                        printw("Trainer List");
+                        move(1, 0);
+                        for (k = first_npc; k < num_npcs && k < (22 + first_npc); k++)
+                        {
+                            if (first_npc == 0)
+                            {
+                                top_displayed = 1;
+                            }
+                            else
+                            {
+                                top_displayed = 0;
+                            }
+                            if (k == num_npcs - 1)
+                            {
+                                bottom_displayed = 1;
+                            }
+                            else
+                            {
+                                bottom_displayed = 0;
+                            }
+                            printw("%c ", npcs[k]->symbol);
+                            distance_x = t->x_coord - npcs[k]->x_coord;
+                            distance_y = t->y_coord - npcs[k]->y_coord;
+                            if (distance_x < 0)
+                            {
+                                distance_x *= -1;
+                                printw("%d east ", distance_x);
+                            }
+                            else
+                            {
+                                printw("%d west ", distance_x);
+                            }
+
+                            if (distance_y < 0)
+                            {
+                                distance_y *= -1;
+                                printw("and %d south\n", distance_y);
+                            }
+                            else
+                            {
+                                printw("and %d north\n", distance_y);
+                            }
+                        }
+                        refresh();
+                    }
                 }
             }
         }
@@ -500,18 +490,18 @@ int handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NPC
     }
     if (t->x_coord != oldX || t->y_coord != oldY)
     {
-        if (map->arr[t->y_coord][t->x_coord].npc != NULL && map->arr[t->y_coord][t->x_coord].npc->defeated == 0)
+        if (map->arr[t->y_coord][t->x_coord].npc != nullptr && map->arr[t->y_coord][t->x_coord].npc->defeated == 0)
         {
             map->arr[t->y_coord][t->x_coord].npc->defeated = battle(map, map->arr[t->y_coord][t->x_coord].npc);
             t->y_coord = oldY;
             t->x_coord = oldX;
         }
-        else if (map->arr[t->y_coord][t->x_coord].npc == NULL)
+        else if (map->arr[t->y_coord][t->x_coord].npc == nullptr)
         {
             map->arr[oldY][oldX].character_present = 0;
             map->arr[t->y_coord][t->x_coord].character_present = 1;
             map->arr[t->y_coord][t->x_coord].player = map->arr[oldY][oldX].player;
-            map->arr[oldY][oldX].player = NULL;
+            map->arr[oldY][oldX].player = nullptr;
         }
         else
         {
@@ -522,7 +512,7 @@ int handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NPC
     else if (returnVal == 'L' || returnVal == 'R' || returnVal == 'U' || returnVal == 'D' || returnVal == 'f')
     {
         map->arr[oldY][oldX].character_present = 0;
-        map->arr[oldY][oldX].player = NULL;
+        map->arr[oldY][oldX].player = nullptr;
     }
     else
     {
@@ -530,7 +520,7 @@ int handlePlayerMovement(PokeMap *map, int userInput, Turn *t, int num_npcs, NPC
         t->y_coord = oldY;
     }
 
-    DijkstraTrainers(80, 21, map->arr, map->arr[t->y_coord][t->x_coord]);
+    DijkstraTrainers(80, 21, map, map->arr[t->y_coord][t->x_coord]);
     return returnVal;
 }
 
@@ -544,13 +534,13 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
 
     if (t.characterSymbol == 'r' || t.characterSymbol == 'h')
     {
-        numNeighbors = getNeighbors8Directions(X_BOUND, Y_BOUND, map->arr, map->arr[t.y_coord][t.x_coord], neighbors);
+        numNeighbors = getNeighbors8Directions(X_BOUND, Y_BOUND, map, map->arr[t.y_coord][t.x_coord], neighbors);
         minDistance = minX = minY = INT_MAX;
         for (i = 0; i < numNeighbors; i++)
         {
             if (t.characterSymbol == 'r')
             {
-                if (minDistance > neighbors[i].rival_total_distance && map->arr[neighbors[i].y_coord][neighbors[i].x_coord].npc == NULL)
+                if (minDistance > neighbors[i].rival_total_distance && map->arr[neighbors[i].y_coord][neighbors[i].x_coord].npc == nullptr)
                 {
                     minDistance = neighbors[i].rival_total_distance;
                     minY = neighbors[i].y_coord;
@@ -564,7 +554,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
             }
             else
             {
-                if (minDistance > neighbors[i].hiker_total_distance && map->arr[neighbors[i].y_coord][neighbors[i].x_coord].npc == NULL)
+                if (minDistance > neighbors[i].hiker_total_distance && map->arr[neighbors[i].y_coord][neighbors[i].x_coord].npc == nullptr)
                 {
                     minDistance = neighbors[i].hiker_total_distance;
                     minY = neighbors[i].y_coord;
@@ -586,7 +576,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
             map->arr[minY][minX].npc = map->arr[t.y_coord][t.x_coord].npc;
             map->arr[minY][minX].npc->y_coord = minY;
             map->arr[minY][minX].npc->x_coord = minX;
-            map->arr[t.y_coord][t.x_coord].npc = NULL;
+            map->arr[t.y_coord][t.x_coord].npc = nullptr;
             map->arr[minY][minX].character_present = 1;
 
             if (t.characterSymbol == 'r')
@@ -632,7 +622,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
                 {
                     t.x_coord--;
                 }
-                else if (map->arr[t.y_coord][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord][t.x_coord - 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
+                else if (map->arr[t.y_coord][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord][t.x_coord - 1].npc == nullptr && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
                 {
                     map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                 }
@@ -646,7 +636,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
                 {
                     t.x_coord++;
                 }
-                else if (map->arr[t.y_coord][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord][t.x_coord + 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
+                else if (map->arr[t.y_coord][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord][t.x_coord + 1].npc == nullptr && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
                 {
                     map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                 }
@@ -660,7 +650,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
                 {
                     t.y_coord--;
                 }
-                else if (map->arr[t.y_coord - 1][t.x_coord].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
+                else if (map->arr[t.y_coord - 1][t.x_coord].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord].npc == nullptr && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
                 {
                     map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                 }
@@ -674,7 +664,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
                 {
                     t.y_coord++;
                 }
-                else if (map->arr[t.y_coord + 1][t.x_coord].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
+                else if (map->arr[t.y_coord + 1][t.x_coord].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord].npc == nullptr && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
                 {
                     map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                 }
@@ -689,7 +679,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
                     t.y_coord--;
                     t.x_coord--;
                 }
-                else if (map->arr[t.y_coord - 1][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord - 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
+                else if (map->arr[t.y_coord - 1][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord - 1].npc == nullptr && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
                 {
                     map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                 }
@@ -704,7 +694,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
                     t.y_coord--;
                     t.x_coord++;
                 }
-                else if (map->arr[t.y_coord + 1][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord + 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
+                else if (map->arr[t.y_coord + 1][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord + 1].npc == nullptr && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
                 {
                     map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                 }
@@ -719,7 +709,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
                     t.y_coord++;
                     t.x_coord--;
                 }
-                else if (map->arr[t.y_coord + 1][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord - 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
+                else if (map->arr[t.y_coord + 1][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord - 1].npc == nullptr && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
                 {
                     map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                 }
@@ -734,7 +724,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
                     t.y_coord--;
                     t.x_coord++;
                 }
-                else if (map->arr[t.y_coord - 1][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord + 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
+                else if (map->arr[t.y_coord - 1][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord + 1].npc == nullptr && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
                 {
                     map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                 }
@@ -751,7 +741,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
 
                 // Move character to new cell
                 map->arr[t.y_coord][t.x_coord].npc = map->arr[oldNPCY][oldNPCX].npc;
-                map->arr[oldNPCY][oldNPCX].npc = NULL;
+                map->arr[oldNPCY][oldNPCX].npc = nullptr;
                 map->arr[t.y_coord][t.x_coord].character_present = 1;
 
                 map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
@@ -784,7 +774,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
                 {
                     t.x_coord--;
                 }
-                else if (map->arr[t.y_coord][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord][t.x_coord - 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
+                else if (map->arr[t.y_coord][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord][t.x_coord - 1].npc == nullptr && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
                 {
                     map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                 }
@@ -800,7 +790,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
                 {
                     t.x_coord++;
                 }
-                else if (map->arr[t.y_coord][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord][t.x_coord + 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
+                else if (map->arr[t.y_coord][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord][t.x_coord + 1].npc == nullptr && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
                 {
                     map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                 }
@@ -816,7 +806,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
                 {
                     t.y_coord--;
                 }
-                else if (map->arr[t.y_coord - 1][t.x_coord].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
+                else if (map->arr[t.y_coord - 1][t.x_coord].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord].npc == nullptr && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
                 {
                     map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                 }
@@ -832,7 +822,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
                 {
                     t.y_coord++;
                 }
-                else if (map->arr[t.y_coord + 1][t.x_coord].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
+                else if (map->arr[t.y_coord + 1][t.x_coord].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord].npc == nullptr && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
                 {
                     map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                 }
@@ -849,7 +839,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
                     t.y_coord--;
                     t.x_coord--;
                 }
-                else if (map->arr[t.y_coord - 1][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord - 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
+                else if (map->arr[t.y_coord - 1][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord - 1].npc == nullptr && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
                 {
                     map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                 }
@@ -866,7 +856,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
                     t.y_coord++;
                     t.x_coord++;
                 }
-                else if (map->arr[t.y_coord + 1][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord + 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
+                else if (map->arr[t.y_coord + 1][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord + 1].npc == nullptr && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
                 {
                     map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                 }
@@ -883,7 +873,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
                     t.y_coord++;
                     t.x_coord--;
                 }
-                else if (map->arr[t.y_coord + 1][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord - 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
+                else if (map->arr[t.y_coord + 1][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord - 1].npc == nullptr && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
                 {
                     map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                 }
@@ -900,7 +890,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
                     t.y_coord--;
                     t.x_coord++;
                 }
-                else if (map->arr[t.y_coord - 1][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord + 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
+                else if (map->arr[t.y_coord - 1][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord + 1].npc == nullptr && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
                 {
                     map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                 }
@@ -917,7 +907,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
 
                 // Move character to new cell
                 map->arr[t.y_coord][t.x_coord].npc = map->arr[oldNPCY][oldNPCX].npc;
-                map->arr[oldNPCY][oldNPCX].npc = NULL;
+                map->arr[oldNPCY][oldNPCX].npc = nullptr;
                 map->arr[t.y_coord][t.x_coord].character_present = 1;
 
                 map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
@@ -948,7 +938,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
                 {
                     t.x_coord--;
                 }
-                else if (map->arr[t.y_coord][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord][t.x_coord - 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
+                else if (map->arr[t.y_coord][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord][t.x_coord - 1].npc == nullptr && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
                 {
                     map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                 }
@@ -963,7 +953,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
                 {
                     t.x_coord++;
                 }
-                else if (map->arr[t.y_coord][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord][t.x_coord + 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
+                else if (map->arr[t.y_coord][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord][t.x_coord + 1].npc == nullptr && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
                 {
                     map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                 }
@@ -978,7 +968,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
                 {
                     t.y_coord--;
                 }
-                else if (map->arr[t.y_coord - 1][t.x_coord].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
+                else if (map->arr[t.y_coord - 1][t.x_coord].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord].npc == nullptr && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
                 {
                     map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                 }
@@ -993,7 +983,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
                 {
                     t.y_coord++;
                 }
-                else if (map->arr[t.y_coord + 1][t.x_coord].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
+                else if (map->arr[t.y_coord + 1][t.x_coord].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord].npc == nullptr && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
                 {
                     map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                 }
@@ -1009,7 +999,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
                     t.y_coord--;
                     t.x_coord--;
                 }
-                else if (map->arr[t.y_coord - 1][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord - 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
+                else if (map->arr[t.y_coord - 1][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord - 1].npc == nullptr && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
                 {
                     map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                 }
@@ -1025,7 +1015,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
                     t.y_coord++;
                     t.x_coord++;
                 }
-                else if (map->arr[t.y_coord + 1][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord + 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
+                else if (map->arr[t.y_coord + 1][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord + 1].npc == nullptr && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
                 {
                     map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                 }
@@ -1041,7 +1031,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
                     t.y_coord++;
                     t.x_coord--;
                 }
-                else if (map->arr[t.y_coord + 1][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord - 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
+                else if (map->arr[t.y_coord + 1][t.x_coord - 1].character_present == 1 && map->arr[t.y_coord + 1][t.x_coord - 1].npc == nullptr && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
                 {
                     map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                 }
@@ -1057,7 +1047,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
                     t.y_coord--;
                     t.x_coord++;
                 }
-                else if (map->arr[t.y_coord - 1][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord + 1].npc == NULL && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
+                else if (map->arr[t.y_coord - 1][t.x_coord + 1].character_present == 1 && map->arr[t.y_coord - 1][t.x_coord + 1].npc == nullptr && map->arr[t.y_coord][t.x_coord].npc->defeated == 0)
                 {
                     map->arr[t.y_coord][t.x_coord].npc->defeated = battle(map, map->arr[t.y_coord][t.x_coord].npc);
                 }
@@ -1074,7 +1064,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
 
                 // Move character to new cell
                 map->arr[t.y_coord][t.x_coord].npc = map->arr[oldNPCY][oldNPCX].npc;
-                map->arr[oldNPCY][oldNPCX].npc = NULL;
+                map->arr[oldNPCY][oldNPCX].npc = nullptr;
                 map->arr[t.y_coord][t.x_coord].character_present = 1;
 
                 map->arr[t.y_coord][t.x_coord].npc->y_coord = t.y_coord;
@@ -1109,7 +1099,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
             {
                 if (map->arr[i][j].character_present == 1)
                 {
-                    charToPrint = map->arr[i][j].npc != NULL ? map->arr[i][j].npc->symbol : map->arr[i][j].player->symbol;
+                    charToPrint = map->arr[i][j].npc != nullptr ? map->arr[i][j].npc->symbol : map->arr[i][j].player->symbol;
                     mvaddch(i + 1, j, charToPrint);
                 }
                 else
@@ -1145,7 +1135,7 @@ int takeTurn(TurnOrder *heap, PokeMap *map, int num_npcs, NPC *npcs[])
             {
                 if (map->arr[i][j].character_present == 1)
                 {
-                    charToPrint = map->arr[i][j].npc != NULL ? map->arr[i][j].npc->symbol : map->arr[i][j].player->symbol;
+                    charToPrint = map->arr[i][j].npc != nullptr ? map->arr[i][j].npc->symbol : map->arr[i][j].player->symbol;
                     mvaddch(i + 1, j, charToPrint);
                 }
                 else
