@@ -96,3 +96,13 @@ SOME KNOWN BUGS
 -npcs will not attack the player (I was not able to get this done in time)
 -immediate seg fault (This occurs rarely, I'm guessing it occurs in a rare case where an npc tries to move but cannot. I have not been able
 to pinpoint the cause of the error yet.)
+
+## Assignment 1.06
+
+This assignment saw a lot of refactors in certain ways that I handle npcs, movement, and map moving from the previous assignment 1.02. My process was to finish the functionality portion of the assignment in C and then update everything to C++ after.
+
+Bug fixes: (1) The immediate seg fault from 1.05 has been resolved as it was an error with how npcs were being placed which would sometimes cause rivals to be placed in such a way that they could never reach the player.
+
+Known bugs: (1) The current iteration seems unstable as I am testing it, so far it has segfaulted once out of about 10 times.
+
+New Functionality: The fly command should be executed as such: 1st press f, this will open a menu with some descriptive text. 2nd enter in the desired x coordinate of the new map on the overall 401 x 401 world, hit enter. 3rd repeat step 2, but for the desired y coordinate.
