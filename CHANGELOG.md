@@ -1,3 +1,63 @@
+commit b94a81e9d9343875cee5356e5c2e6da090d44931
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Oct 29 22:03:41 2023 -0500
+
+    README changes
+
+commit 09b5e84505b1fe41bb416e256d1f620e4cc404ce
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Oct 29 21:51:19 2023 -0500
+
+    Refactor to npc handling, this was a pain, segfaults sometimes
+
+commit e8d6a4d56d7f58fd771f5e2c19666dda6e7497bb
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Oct 29 17:52:40 2023 -0500
+
+    Fly works, however I need to fix this bug with the rivals sometimes spawning in unreachable zones, causes seg faults a lot more than desired
+
+commit 59d84d2c2b3aa36519048a9f8d147e9ec37a8832
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Oct 29 14:01:42 2023 -0500
+
+    Added in fly mechanic, it still bugs a little with new map, but input is correctly read
+
+commit 981eb9a54a150fe4e2d6fc424120226dede747d0
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Thu Oct 26 22:26:00 2023 -0500
+
+    Got moving between maps to basically work, some more testing needs to be done
+
+commit eda8a66a60beacd1172441e452c3edab5ab08a60
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Thu Oct 26 17:42:37 2023 -0500
+
+    Added in the beginning logic for moving between maps
+
+commit f3ad79523f5ab654fc265f1a4fa85ede8ec69838
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Thu Oct 26 16:12:33 2023 -0500
+
+    Refactor initial placement of player to happen at game start
+
+commit 0a37b725c81c62453205fc12631e2c5d3b934623
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Thu Oct 26 15:16:27 2023 -0500
+
+    Had a bit of an issue with battle handling, fixed now
+
+commit 5e9f3f099f9586dee7e514f9ac2b920c1ab4c636
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Tue Oct 24 11:58:11 2023 -0500
+
+    Big refactors to player movement, made it so that rivals and hikers will attack the player
+
+commit e5fa4a46b0a9031365befee48ce9328e06b25327
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Tue Oct 24 10:27:15 2023 -0500
+
+    Move some things around, add turn orders to each map
+
 commit 7d4bf101dbdaee6362ebe98f94fd18a93712c2cc
 Author: Elijah Brady <bradyeli09@gmail.com>
 Date:   Mon Oct 23 01:27:12 2023 -0500

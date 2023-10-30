@@ -66,13 +66,21 @@ void initNPCS(PokeMap *map, int num_npcs, NPC* npcs[]) {
         test_y = (rand() % 18) + 1;
 
         if (npcs[i]->symbol == 'r' || npcs[i]->symbol == 'p' || npcs[i]->symbol == 'w' || npcs[i]->symbol == 'e' || npcs[i]->symbol == 's') {
-            while (map->arr[test_y][test_x].character_present == 1 || map->arr[test_y][test_x].rival_distance == INT_MAX) {
-                test_x = (rand() % 77) + 1;
-                test_y = (rand() % 18) + 1;
+            if (npcs[i]->symbol == 'r') {
+                while (map->arr[test_y][test_x].character_present == 1 || map->arr[test_y][test_x].rival_distance == INT_MAX || map->arr[test_y][test_x].rival_total_distance >= INT_MAX) {
+                    test_x = (rand() % 77) + 1;
+                    test_y = (rand() % 18) + 1;
+                }
+            }
+            else {
+                while (map->arr[test_y][test_x].character_present == 1 || map->arr[test_y][test_x].rival_distance == INT_MAX) {
+                    test_x = (rand() % 77) + 1;
+                    test_y = (rand() % 18) + 1;
+                }
             }
         }
         else if (npcs[i]->symbol == 'h') {
-            while (map->arr[test_y][test_x].character_present == 1 || map->arr[test_y][test_x].hiker_distance == INT_MAX) {
+            while (map->arr[test_y][test_x].character_present == 1 || map->arr[test_y][test_x].hiker_distance == INT_MAX || map->arr[test_y][test_x].hiker_total_distance >= INT_MAX) {
                 test_x = (rand() % 77) + 1;
                 test_y = (rand() % 18) + 1;
             }
