@@ -1,3 +1,9 @@
+commit 903b07c0e881c22509f9931a7ae10c1b60961804
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Mon Oct 30 01:59:03 2023 -0500
+
+    Update to README
+
 commit f21a6206ef0949a899ce32b3cad2e670f587eb74
 Author: Elijah Brady <bradyeli09@gmail.com>
 Date:   Mon Oct 30 01:53:58 2023 -0500
