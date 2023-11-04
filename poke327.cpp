@@ -9,6 +9,8 @@
 #include <cassert>
 #include <unistd.h>
 #include <fstream>
+#include <iostream>
+#include <vector>
 
 #include "heap.h"
 #include "poke327.h"
@@ -1135,8 +1137,8 @@ void game_loop()
   }
 }
 
-void getCSVFile(char *csvFile) {
-  printf("Filename: %s", csvFile);
+void getCSVFile(char *csvFile, int switchFile) {
+  char *fileTry2;
 
   const char* extension = ".csv";
   size_t csvFileLength = strlen(csvFile);
@@ -1145,54 +1147,104 @@ void getCSVFile(char *csvFile) {
   strcpy(fullFile, csvFile);
   strcat(fullFile, extension);
 
-  const char *dbpath = "pokedex/pokedex/data/csv";
+  const char *dbpath = "/pokedex/pokedex/data/csv/";
+
+  const char *universalPath = "/share/cs327";
   char *home = getenv("HOME"); //takes env variable 
   char *filename =  fullFile;
-  int len = strlen(home) + strlen(dbpath) + strlen(filename) + 1;
+  int len = strlen(universalPath) + strlen(dbpath) + strlen(filename) + 1;
 
   char *file = malloc(len+1);
-  strcpy(file, home);
+  strcpy(file, universalPath);
   strcat(file, dbpath);
   strcat(file, filename);
 
-  std::ifstream f(file); //c++
-
   std::ifstream i(file);
-  i.peek();
-  get();
-  getline();
-  std::istream::getline();
-  i.getLine(char *s, int size);
-  std::getLine(isstream &, std::string &); //second one is going to read your line into a string probably want to use this one
-  operator>>(); //skips leading whitespace then reads until the next whitespace. 
-  stringstream; //allow to use << to build strings 
+  if (!i) {
+    i.close();
+    std::cout << "Could not find file in /share/cs327/..." << std::endl;
+    len = strlen(home) + strlen(dbpath) + strlen(filename) + 1;
+    fileTry2 = malloc(len+1);
+    strcpy(fileTry2, home);
+    strcat(fileTry2, dbpath);
+    strcat(fileTry2, filename);
 
-  switch (csvFile) {
-    case "pokemon":
+    std::ifstream i(fileTry2);
+    if (!i) {
+      std::cout << "universalFile: " << fileTry2 << std::endl;
+      std::cerr << "No valid file locations" << std::endl;
+    }
+  }
+  std::string line;
+  while (std::getline(i, line)) {
+    // Process the line of text here
+    std::cout << line << std::endl;
+  }
+  i.close();
+  // operator>>(); //skips leading whitespace then reads until the next whitespace. 
+  // stringstream; //allow to use << to build strings 
+
+  switch (switchFile) {
+    case 0:
+    {
+      //std::vector<Stats> stats;
+    }
       break;
-    case "pokemon_moves":
+    case 1:
+    {
+      std::cout << "Filename: " << filename << std::endl;
+      std::vector<Pokemon> pokemon;
+    }
       break;
-    case "pokemon_stats":
+    case 2:
+    {
+      //std::vector<Pokemon_Moves> pokemon_moves;
+    }
       break;
-    case "pokemon_species":
+    case 3:
+    {
+      //std::vector<Pokemon_Species> pokemon_species;
+    } 
       break;
-    case "pokemon_types":
+    case 4:
+    {
+      //std::vector<Pokemon_Stats> pokemon_stats;
+    }  
       break;
-    case "moves":
+    case 5:
+    {
+      //std::vector<Pokemon_Types> pokemon_types;
+    }  
       break;
-    case "experience":
+    case 6:
+    {
+      //std::vector<Moves> moves;
+    }  
       break;
-    case "type_names":
+    case 7:
+    {
+      //std::vector<Experience> experience;
+    }  
       break;
-    case "stats":
+    case 8:
+    {
+      //std::vector<Type_Names> type_names;
+    }  
       break;
     default:
       delete[] fullFile;
+      free(file);
+      if (fileTry2) {
+        free(fileTry2);
+      }
       exit(0);
       break;
   }
   delete[] fullFile;  
-
+  free(file);
+  if (fileTry2) {
+    free(fileTry2);
+  }
 }
 
 void usage(char *s)
@@ -1224,7 +1276,7 @@ int main(int argc, char *argv[])
         switch (argv[i][1]) {
         case 's':
           if (!strcmp(argv[i], "-stats")) {
-            getCSVFile(argv[i] + 1);
+            getCSVFile(argv[i] + 1, 0);
           } else if ((!long_arg && argv[i][2]) ||
               (long_arg && strcmp(argv[i], "-seed")) ||
               argc < ++i + 1 /* No more arguments */ ||
@@ -1235,30 +1287,30 @@ int main(int argc, char *argv[])
           break;
         case 'p':
           if (!strcmp(argv[i], "-pokemon")) {
-            getCSVFile(argv[i] + 1);
+            getCSVFile(argv[i] + 1, 1);
           } else if (!strcmp(argv[i], "-pokemon_moves")) {
-            getCSVFile(argv[i] + 1);
+            getCSVFile(argv[i] + 1, 2);
           } else if (!strcmp(argv[i], "-pokemon_species")) {
-            getCSVFile(argv[i] + 1);
+            getCSVFile(argv[i] + 1, 3);
           } else if (!strcmp(argv[i], "-pokemon_stats")) {
-            getCSVFile(argv[i] + 1);
+            getCSVFile(argv[i] + 1, 4);
           } else if (!strcmp(argv[i], "-pokemon_types")) {
-            getCSVFile(argv[i] + 1);
+            getCSVFile(argv[i] + 1, 5);
           }
           break;
         case 'm':
           if (!strcmp(argv[i], "-moves")) {
-            getCSVFile(argv[i] + 1);
+            getCSVFile(argv[i] + 1, 6);
           }
           break;
         case 'e':
           if (!strcmp(argv[i], "-experience")) {
-            getCSVFile(argv[i] + 1);
+            getCSVFile(argv[i] + 1, 7);
           }
           break;
         case 't':
           if (!strcmp(argv[i], "-type_names")) {
-            getCSVFile(argv[i] + 1);
+            getCSVFile(argv[i] + 1, 8);
           }
           break;
         default:
