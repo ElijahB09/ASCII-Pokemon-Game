@@ -114,3 +114,25 @@ Also note that since moving around can be pretty annoying with ten other trainer
 ./PokeGame --numtrainers=2
 ```
 This will only spawn two trainers, a hiker and a rival.
+
+## Assignment 1.07
+
+For this assignment I finally switched over to using Shaeffer's code, I had a scare with 1.06 and I don't want to deal with it again. I added a switch for this assignment as described in the document, I wanted to stick with how Shaeffer did his --seed switch so I've coded them as follows.
+```
+./poke327 --pokemon
+```
+This will open, parse, and print out the pokemon.csv file with the format of header: value. I could not find a specification for printing out the parsed file so I went with this format. In addition, if a field is empty, I denote it with INT_MAX in the code, but I print out an empty string. I couldn't find anything concrete in the pdf which said to not print out such values, all I found was to not print out INT_MAX itself. As for the file paths going between the one with /share/cs327/... and $HOME/.poke327/... I check /share/cs327/... first and can verify that it works well. $HOME/.poke327/... should work, but I cannot verify it 100% as I did not make a copy of the database. Although I maintain that it should work since I used Shaeffer's code from class to accomplish it. I'll list the commands to print out every file below.
+
+NOTE: pokemon_moves takes about 1-2 minutes to full print out
+```
+./poke327 --pokemon
+./poke327 --pokemon_moves
+./poke327 --pokemon_species
+./poke327 --pokemon_stats
+./poke327 --pokemon_types
+./poke327 --moves
+./poke327 --experience
+./poke327 --type_names
+./poke327 --stats
+```
+Note: each of these should be entered in individually.
