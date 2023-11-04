@@ -1,16 +1,14 @@
 #include <cstdio>
 #include <cstdint>
 #include <cstdlib>
-#include <cstring>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <climits>
 #include <sys/time.h>
 #include <cassert>
 #include <unistd.h>
+#include <sstream>
 #include <fstream>
-#include <iostream>
-#include <vector>
+#include <cctype>
 
 #include "heap.h"
 #include "poke327.h"
@@ -1137,7 +1135,20 @@ void game_loop()
   }
 }
 
+bool isInteger(const std::string& s) {
+    if (s.empty()) {
+        return false;
+    }
+    for (char c : s) {
+        if (!isdigit(c)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void getCSVFile(char *csvFile, int switchFile) {
+  std::vector<CSV*> v;
   char *fileTry2;
 
   const char* extension = ".csv";
@@ -1173,74 +1184,127 @@ void getCSVFile(char *csvFile, int switchFile) {
     if (!i) {
       std::cout << "universalFile: " << fileTry2 << std::endl;
       std::cerr << "No valid file locations" << std::endl;
+      exit(1);
     }
   }
-  std::string line;
-  while (std::getline(i, line)) {
-    // Process the line of text here
-    std::cout << line << std::endl;
-  }
-  i.close();
-  // operator>>(); //skips leading whitespace then reads until the next whitespace. 
-  // stringstream; //allow to use << to build strings 
 
-  switch (switchFile) {
-    case 0:
-    {
-      //std::vector<Stats> stats;
-    }
-      break;
-    case 1:
-    {
-      std::cout << "Filename: " << filename << std::endl;
-      std::vector<Pokemon> pokemon;
-    }
-      break;
-    case 2:
-    {
-      //std::vector<Pokemon_Moves> pokemon_moves;
-    }
-      break;
-    case 3:
-    {
-      //std::vector<Pokemon_Species> pokemon_species;
-    } 
-      break;
-    case 4:
-    {
-      //std::vector<Pokemon_Stats> pokemon_stats;
-    }  
-      break;
-    case 5:
-    {
-      //std::vector<Pokemon_Types> pokemon_types;
-    }  
-      break;
-    case 6:
-    {
-      //std::vector<Moves> moves;
-    }  
-      break;
-    case 7:
-    {
-      //std::vector<Experience> experience;
-    }  
-      break;
-    case 8:
-    {
-      //std::vector<Type_Names> type_names;
-    }  
-      break;
-    default:
-      delete[] fullFile;
-      free(file);
-      if (fileTry2) {
-        free(fileTry2);
+  std::string line;
+  std::getline(i, line);
+  std::string word;
+
+  while (std::getline(i, line)) {
+    std::vector<std::string> values;
+    std::istringstream lineStream(line);
+    while (std::getline(lineStream, word, ',')) {
+      if (word == "") {
+        std::string newWord = "2147483647";
+        values.push_back(newWord);
+      } else {
+        values.push_back(word);
       }
-      exit(0);
-      break;
+    }
+    CSV* item = nullptr;
+    switch (switchFile) {
+      case 0:
+      {
+        if (values.size() < 5) {
+          std::string fixEnd = "2147483647";
+          values.push_back(fixEnd);
+        }
+        item = new Stat(std::stoi(values[0]), std::stoi(values[1]), std::stoi(values[3]), std::stoi(values[4]), values[2]);
+        v.push_back(item);
+      }
+        break;
+      case 1:
+      {
+        if (values.size() < 8) {
+          std::string fixEnd = "2147483647";
+          values.push_back(fixEnd);
+        }
+        item = new Pokemon(std::stoi(values[0]), std::stoi(values[2]), std::stoi(values[3]), std::stoi(values[4]), std::stoi(values[5]), std::stoi(values[6]), std::stoi(values[7]), values[1]);
+        v.push_back(item);
+      }
+        break;
+      case 2:
+      {
+        if (values.size() < 6) {
+          std::string fixEnd = "2147483647";
+          values.push_back(fixEnd);
+        }
+        item = new Pokemon_Move(std::stoi(values[0]), std::stoi(values[1]), std::stoi(values[2]), std::stoi(values[3]), std::stoi(values[4]), std::stoi(values[5]));
+        v.push_back(item);
+      }
+        break;
+      case 3:
+      {
+        if (values.size() < 20) {
+          std::string fixEnd = "2147483647";
+          values.push_back(fixEnd);
+        }
+        item = new Pokemon_Species(std::stoi(values[0]), std::stoi(values[2]), std::stoi(values[3]), std::stoi(values[4]), std::stoi(values[5]), std::stoi(values[6]), std::stoi(values[7]), std::stoi(values[8]), std::stoi(values[9]), std::stoi(values[10]), std::stoi(values[11]), std::stoi(values[12]), std::stoi(values[13]), std::stoi(values[14]), std::stoi(values[15]), std::stoi(values[16]), std::stoi(values[17]), std::stoi(values[18]), std::stoi(values[19]), values[1]);
+        v.push_back(item);
+      } 
+        break;
+      case 4:
+      {
+        if (values.size() < 4) {
+          std::string fixEnd = "2147483647";
+          values.push_back(fixEnd);
+        }
+        item = new Pokemon_Stats(std::stoi(values[0]), std::stoi(values[1]), std::stoi(values[2]), std::stoi(values[3]));
+        v.push_back(item);
+      }  
+        break;
+      case 5:
+      {
+        if (values.size() < 3) {
+          std::string fixEnd = "2147483647";
+          values.push_back(fixEnd);
+        }
+        item = new Pokemon_Type(std::stoi(values[0]), std::stoi(values[1]), std::stoi(values[2]));
+        v.push_back(item);
+      }  
+        break;
+      case 6:
+      {
+        if (values.size() < 15) {
+          std::string fixEnd = "2147483647";
+          values.push_back(fixEnd);
+        }
+        item = new Move(std::stoi(values[0]), std::stoi(values[2]), std::stoi(values[3]), std::stoi(values[4]), std::stoi(values[5]), std::stoi(values[6]), std::stoi(values[7]), std::stoi(values[8]), std::stoi(values[9]), std::stoi(values[10]), std::stoi(values[11]), std::stoi(values[12]), std::stoi(values[13]), std::stoi(values[14]), values[1]);
+        v.push_back(item);
+      }  
+        break;
+      case 7:
+      {
+        if (values.size() < 3) {
+          std::string fixEnd = "2147483647";
+          values.push_back(fixEnd);
+        }
+        item = new Experience(std::stoi(values[0]), std::stoi(values[1]), std::stoi(values[2]));
+        v.push_back(item);
+      }  
+        break;
+      case 8:
+      {
+        if (values.size() < 3) {
+          std::string fixEnd = "";
+          values.push_back(fixEnd);
+        }
+        item = new Type_Name(std::stoi(values[0]), std::stoi(values[1]), values[2]);
+        v.push_back(item);
+      }
+    }
   }
-  delete[] fullFile;  
+  std::cout << "Array size: " << v.size() << std::endl;
+  v[0]->print();
+
+  i.close();
+  delete[] fullFile;
+  for (CSV* ptr : v) {
+    delete ptr;
+  }
+  v.clear();
   free(file);
   if (fileTry2) {
     free(fileTry2);
