@@ -1162,13 +1162,43 @@ int main(int argc, char *argv[])
         }
         switch (argv[i][1]) {
         case 's':
-          if ((!long_arg && argv[i][2]) ||
+          if (!strcmp(argv[i], "-stats")) {
+            printf("Stats block with arg: %s", argv[i]);
+          } else if ((!long_arg && argv[i][2]) ||
               (long_arg && strcmp(argv[i], "-seed")) ||
               argc < ++i + 1 /* No more arguments */ ||
               !sscanf(argv[i], "%u", &seed) /* Argument is not an integer */) {
             usage(argv[0]);
           }
           do_seed = 0;
+          break;
+        case 'p':
+          if (!strcmp(argv[i], "-pokemon")) {
+            printf("Pokemon block with arg: %s", argv[i]);
+          } else if (!strcmp(argv[i], "-pokemon_moves")) {
+            printf("Pokemon moves block with arg: %s", argv[i]);
+          } else if (!strcmp(argv[i], "-pokemon_species")) {
+            printf("Pokemon species block with arg: %s", argv[i]);
+          } else if (!strcmp(argv[i], "-pokemon_stats")) {
+            printf("Pokemon stats block with arg: %s", argv[i]);
+          } else if (!strcmp(argv[i], "-pokemon_types")) {
+            printf("Pokemon types block with arg: %s", argv[i]);
+          }
+          break;
+        case 'm':
+          if (!strcmp(argv[i], "-moves")) {
+            printf("Moves block with arg: %s", argv[i]);
+          }
+          break;
+        case 'e':
+          if (!strcmp(argv[i], "-experience")) {
+            printf("Experience block with arg: %s", argv[i]);
+          }
+          break;
+        case 't':
+          if (!strcmp(argv[i], "-type_names")) {
+            printf("Type names block with arg: %s", argv[i]);
+          }
           break;
         default:
           usage(argv[0]);
@@ -1178,6 +1208,9 @@ int main(int argc, char *argv[])
       }
     }
   }
+
+  // code execution should end here, parsing should be above
+  exit(0);
 
   if (do_seed) {
     /* Allows me to start the game more than once *
