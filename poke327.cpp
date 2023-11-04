@@ -1296,8 +1296,13 @@ void getCSVFile(char *csvFile, int switchFile) {
       }
     }
   }
+
   std::cout << "Array size: " << v.size() << std::endl;
-  v[0]->print();
+
+  for (CSV* thing: v) {
+    thing->print();
+    std::cout << std::endl;
+  }
 
   i.close();
   delete[] fullFile;
