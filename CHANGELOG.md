@@ -1,3 +1,45 @@
+commit c651c2b53448fd6f5859d0ef0e1968ac6bb0175d
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Nov 4 18:51:40 2023 -0500
+
+    Update README
+
+commit 1a319f3e4392f7ae9b323792dda903d6aa1f32b3
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Nov 4 18:19:21 2023 -0500
+
+    Now print out the whole array
+
+commit 4a3f4cb7bee472145dedef5fbac437c32eb7f16e
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Nov 4 18:07:03 2023 -0500
+
+    Finished all the types and parsing, just need to print the whole thing out now
+
+commit 95246a72ab1ac22fc50656b384ddcb0749cf7098
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Nov 4 12:35:55 2023 -0500
+
+    Figured out opening a file
+
+commit aabcd12c73c4c7a7d95dae5a9121c72bcfa824c4
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Fri Nov 3 23:12:45 2023 -0500
+
+    Finishing up for tonight, still incorrect, going to learn about ifstream
+
+commit dc8ac31cdc14f613999802fa3279d1bb3fae4d5d
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Fri Nov 3 22:25:44 2023 -0500
+
+    Verified validity of new switch, its not super good but itll do
+
+commit 35229a2c6f633330bd3e22cd2f8e068f8bc29c94
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Fri Nov 3 09:00:38 2023 -0500
+
+    Transfer to Shaeffer's code, I am tired of the instabilities between pyrite and my code
+
 commit 903b07c0e881c22509f9931a7ae10c1b60961804
 Author: Elijah Brady <bradyeli09@gmail.com>
 Date:   Mon Oct 30 01:59:03 2023 -0500
