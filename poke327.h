@@ -82,6 +82,12 @@ typedef enum __attribute__ ((__packed__)) terrain_type {
 
 extern int32_t move_cost[num_character_types][num_terrain_types];
 
+class Pokemon {
+  public:
+    int32_t id, species_id, height, weight, base_experience, order, is_default;
+    char * identifier;
+};
+
 class map {
  public:
   terrain_type_t map[MAP_Y][MAP_X];

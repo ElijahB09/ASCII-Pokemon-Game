@@ -8,6 +8,7 @@
 #include <sys/time.h>
 #include <cassert>
 #include <unistd.h>
+#include <fstream>
 
 #include "heap.h"
 #include "poke327.h"
@@ -1134,6 +1135,66 @@ void game_loop()
   }
 }
 
+void getCSVFile(char *csvFile) {
+  printf("Filename: %s", csvFile);
+
+  const char* extension = ".csv";
+  size_t csvFileLength = strlen(csvFile);
+  size_t extensionLength = strlen(extension);
+  char* fullFile = new char[csvFileLength + extensionLength + 1];
+  strcpy(fullFile, csvFile);
+  strcat(fullFile, extension);
+
+  const char *dbpath = "pokedex/pokedex/data/csv";
+  char *home = getenv("HOME"); //takes env variable 
+  char *filename =  fullFile;
+  int len = strlen(home) + strlen(dbpath) + strlen(filename) + 1;
+
+  char *file = malloc(len+1);
+  strcpy(file, home);
+  strcat(file, dbpath);
+  strcat(file, filename);
+
+  std::ifstream f(file); //c++
+
+  std::ifstream i(file);
+  i.peek();
+  get();
+  getline();
+  std::istream::getline();
+  i.getLine(char *s, int size);
+  std::getLine(isstream &, std::string &); //second one is going to read your line into a string probably want to use this one
+  operator>>(); //skips leading whitespace then reads until the next whitespace. 
+  stringstream; //allow to use << to build strings 
+
+  switch (csvFile) {
+    case "pokemon":
+      break;
+    case "pokemon_moves":
+      break;
+    case "pokemon_stats":
+      break;
+    case "pokemon_species":
+      break;
+    case "pokemon_types":
+      break;
+    case "moves":
+      break;
+    case "experience":
+      break;
+    case "type_names":
+      break;
+    case "stats":
+      break;
+    default:
+      delete[] fullFile;
+      exit(0);
+      break;
+  }
+  delete[] fullFile;  
+
+}
+
 void usage(char *s)
 {
   fprintf(stderr, "Usage: %s [-s|--seed <seed>]\n", s);
@@ -1163,7 +1224,7 @@ int main(int argc, char *argv[])
         switch (argv[i][1]) {
         case 's':
           if (!strcmp(argv[i], "-stats")) {
-            printf("Stats block with arg: %s", argv[i]);
+            getCSVFile(argv[i] + 1);
           } else if ((!long_arg && argv[i][2]) ||
               (long_arg && strcmp(argv[i], "-seed")) ||
               argc < ++i + 1 /* No more arguments */ ||
@@ -1174,30 +1235,30 @@ int main(int argc, char *argv[])
           break;
         case 'p':
           if (!strcmp(argv[i], "-pokemon")) {
-            printf("Pokemon block with arg: %s", argv[i]);
+            getCSVFile(argv[i] + 1);
           } else if (!strcmp(argv[i], "-pokemon_moves")) {
-            printf("Pokemon moves block with arg: %s", argv[i]);
+            getCSVFile(argv[i] + 1);
           } else if (!strcmp(argv[i], "-pokemon_species")) {
-            printf("Pokemon species block with arg: %s", argv[i]);
+            getCSVFile(argv[i] + 1);
           } else if (!strcmp(argv[i], "-pokemon_stats")) {
-            printf("Pokemon stats block with arg: %s", argv[i]);
+            getCSVFile(argv[i] + 1);
           } else if (!strcmp(argv[i], "-pokemon_types")) {
-            printf("Pokemon types block with arg: %s", argv[i]);
+            getCSVFile(argv[i] + 1);
           }
           break;
         case 'm':
           if (!strcmp(argv[i], "-moves")) {
-            printf("Moves block with arg: %s", argv[i]);
+            getCSVFile(argv[i] + 1);
           }
           break;
         case 'e':
           if (!strcmp(argv[i], "-experience")) {
-            printf("Experience block with arg: %s", argv[i]);
+            getCSVFile(argv[i] + 1);
           }
           break;
         case 't':
           if (!strcmp(argv[i], "-type_names")) {
-            printf("Type names block with arg: %s", argv[i]);
+            getCSVFile(argv[i] + 1);
           }
           break;
         default:
