@@ -1147,15 +1147,15 @@ bool isInteger(const std::string& s) {
     return true;
 }
 
-void getCSVFile(char *csvFile, int switchFile) {
+std::vector<CSV*> getCSVFile(std::string csvFile, int switchFile) {
   std::vector<CSV*> v;
   char *fileTry2;
 
   const char* extension = ".csv";
-  size_t csvFileLength = strlen(csvFile);
+  size_t csvFileLength = csvFile.length();
   size_t extensionLength = strlen(extension);
   char* fullFile = new char[csvFileLength + extensionLength + 1];
-  strcpy(fullFile, csvFile);
+  strcpy(fullFile, csvFile.c_str());
   strcat(fullFile, extension);
 
   const char *dbpath = "/pokedex/pokedex/data/csv/";
@@ -1297,23 +1297,11 @@ void getCSVFile(char *csvFile, int switchFile) {
     }
   }
 
-  std::cout << "Array size: " << v.size() << std::endl;
-
-  for (CSV* thing: v) {
-    thing->print();
-    std::cout << std::endl;
-  }
-
   i.close();
   delete[] fullFile;
-  for (CSV* ptr : v) {
-    delete ptr;
-  }
-  v.clear();
   free(file);
-  if (fileTry2) {
-    free(fileTry2);
-  }
+
+  return v;
 }
 
 void usage(char *s)
@@ -1332,6 +1320,7 @@ int main(int argc, char *argv[])
   //  char c;
   //  int x, y;
   int i;
+  std::vector<CSV*> pokemon, pokemon_moves, pokemon_species, pokemon_stats, pokemon_types, stats, moves, experience, type_names;
 
   do_seed = 1;
   
@@ -1344,43 +1333,13 @@ int main(int argc, char *argv[])
         }
         switch (argv[i][1]) {
         case 's':
-          if (!strcmp(argv[i], "-stats")) {
-            getCSVFile(argv[i] + 1, 0);
-          } else if ((!long_arg && argv[i][2]) ||
+          if ((!long_arg && argv[i][2]) ||
               (long_arg && strcmp(argv[i], "-seed")) ||
               argc < ++i + 1 /* No more arguments */ ||
               !sscanf(argv[i], "%u", &seed) /* Argument is not an integer */) {
             usage(argv[0]);
           }
           do_seed = 0;
-          break;
-        case 'p':
-          if (!strcmp(argv[i], "-pokemon")) {
-            getCSVFile(argv[i] + 1, 1);
-          } else if (!strcmp(argv[i], "-pokemon_moves")) {
-            getCSVFile(argv[i] + 1, 2);
-          } else if (!strcmp(argv[i], "-pokemon_species")) {
-            getCSVFile(argv[i] + 1, 3);
-          } else if (!strcmp(argv[i], "-pokemon_stats")) {
-            getCSVFile(argv[i] + 1, 4);
-          } else if (!strcmp(argv[i], "-pokemon_types")) {
-            getCSVFile(argv[i] + 1, 5);
-          }
-          break;
-        case 'm':
-          if (!strcmp(argv[i], "-moves")) {
-            getCSVFile(argv[i] + 1, 6);
-          }
-          break;
-        case 'e':
-          if (!strcmp(argv[i], "-experience")) {
-            getCSVFile(argv[i] + 1, 7);
-          }
-          break;
-        case 't':
-          if (!strcmp(argv[i], "-type_names")) {
-            getCSVFile(argv[i] + 1, 8);
-          }
           break;
         default:
           usage(argv[0]);
@@ -1391,7 +1350,18 @@ int main(int argc, char *argv[])
     }
   }
 
-  // code execution should end here, parsing should be above
+  // Grab all csv files
+  stats = getCSVFile("stats", 0);
+  pokemon = getCSVFile("pokemon", 1);
+  pokemon_moves = getCSVFile("pokemon_moves", 2);
+  pokemon_species = getCSVFile("pokemon_species", 3);
+  pokemon_stats = getCSVFile("pokemon_stats", 4);
+  pokemon_types = getCSVFile("pokemon_types", 5);
+  moves = getCSVFile("moves", 6);
+  experience = getCSVFile("experience", 7);
+  type_names = getCSVFile("type_names", 8);
+  std::cout << "Got past csv parsing" << std::endl;
+  // Works here, csv stuff is stored in these arrays now
   exit(0);
 
   if (do_seed) {
@@ -1476,6 +1446,44 @@ int main(int argc, char *argv[])
   delete_world();
 
   io_reset_terminal();
+
+  // For each csv file
+  for (CSV* ptr : stats) {
+    delete ptr;
+  }
+  stats.clear();
+  for (CSV* ptr : pokemon) {
+    delete ptr;
+  }
+  pokemon.clear();
+  for (CSV* ptr : pokemon_moves) {
+    delete ptr;
+  }
+  pokemon_moves.clear();
+  for (CSV* ptr : pokemon_species) {
+    delete ptr;
+  }
+  pokemon_species.clear();
+  for (CSV* ptr : pokemon_stats) {
+    delete ptr;
+  }
+  pokemon_stats.clear();
+  for (CSV* ptr : pokemon_types) {
+    delete ptr;
+  }
+  pokemon_types.clear();
+  for (CSV* ptr : moves) {
+    delete ptr;
+  }
+  moves.clear();
+  for (CSV* ptr : experience) {
+    delete ptr;
+  }
+  experience.clear();
+  for (CSV* ptr : type_names) {
+    delete ptr;
+  }
+  type_names.clear();
   
   return 0;
 }
