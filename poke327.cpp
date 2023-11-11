@@ -890,7 +890,7 @@ void generate_pokemon_IVs(Pokemon* pokemon) {
 
   for (i = 0; i < 6; i++) {
     // Should give a random stat distribution from [0, 15]
-    pokemon->stat_ivs.push_back(rand() % 16);
+    pokemon->stat_ivs.push_back(std::rand() % 16);
   }
 }
 
@@ -910,9 +910,11 @@ void set_pokemon_stats(Pokemon* pokemon) {
       }
       pokemon->stats.push_back(stat_val);
       pokemon->stat_efforts.push_back(temp_stat->effort);
+      count++;
     }
-    count++;
   }
+
+  pokemon->is_shiny = (rand() % 8192 == 0);
 }
 
 std::string get_pokemon_move_name(Pokemon_Move* poke_move) {
@@ -948,6 +950,45 @@ std::vector<Pokemon_Move*> get_valid_pokemon_moves(Pokemon* pokemon) {
   return valid_moves;
 }
 
+Pokemon* create_pokemon(int random) {
+  int rand_pokemon_id, poke_level, distance, min_level, max_level, move_limit, i, index;
+  Pokemon* rand_pokemon;
+  std::vector<Pokemon_Move*> valid_moves;
+
+  rand_pokemon_id = (std::rand() % pokemon.size()) + 1;
+  
+  rand_pokemon = new Pokemon(*dynamic_cast<Pokemon*>(pokemon[rand_pokemon_id]));
+  // generate level
+  distance = (abs(world.cur_idx[dim_x] - (WORLD_SIZE / 2)) + abs(world.cur_idx[dim_y] - (WORLD_SIZE / 2)));
+  min_level = distance > 200 ? ((distance - 200)/2) : 1;
+  max_level = distance > 200 ? 100 : (distance/2) + 1;
+
+  poke_level = (std::rand() % ((max_level - min_level) + 1)) + min_level;
+  rand_pokemon->pokemon_level = poke_level - 1;
+  // generate moves
+  move_limit = random == 1 ? 2 : 4;
+  // Ensure there are moves for the pokemon
+  do {
+    rand_pokemon->pokemon_level++;
+    valid_moves = get_valid_pokemon_moves(rand_pokemon);
+  } while (valid_moves.size() == 0);
+
+  for (i = 0; i < move_limit; i++) {
+    if (valid_moves.size() >= 1) {
+      index = (std::rand() % valid_moves.size());
+      rand_pokemon->moves.push_back(valid_moves[index]);
+      // Remove the move to prevent rand giving the same move back
+      valid_moves.erase(valid_moves.begin() + index);
+    }
+  }
+  // Generate stats
+  set_pokemon_stats(rand_pokemon);
+  // Generate gender
+  rand_pokemon->gender = std::rand() & 2;
+
+  return rand_pokemon;
+}
+
 void init_pc()
 {
   int x, y;
@@ -967,6 +1008,7 @@ void init_pc()
   if (starter_pokemon) {
     std::vector<Pokemon_Move*> valid_moves;
     world.pc.pokemon.push_back(starter_pokemon);
+
     // Sets pokemon level
     world.pc.pokemon[0]->pokemon_level = 1;
     // Sets pokemon moves
@@ -978,16 +1020,8 @@ void init_pc()
     }
     // Sets pokemon stats
     set_pokemon_stats(world.pc.pokemon[0]);
-
-    io_reset_terminal();
-
-    for (long unsigned int x = 0; x < world.pc.pokemon[0]->stats.size(); x++) {
-      std::cout << "Stat Val: " << world.pc.pokemon[0]->stats[x] << std::endl;
-      std::cout << "Stat Effort: " << world.pc.pokemon[0]->stat_efforts[x] << std::endl;
-      std::cout << "Stat IV: " << world.pc.pokemon[0]->stat_ivs[x] << std::endl;
-    }
-
-    exit(0);
+    // Set pokemon gender
+    world.pc.pokemon[0]->gender = std::rand() % 2;
   } else {
     io_reset_terminal();
     std::cerr << "Somehow the starter pokemon was not chosen" << std::endl;

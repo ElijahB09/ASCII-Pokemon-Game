@@ -130,5 +130,7 @@ typedef struct path {
 
 int new_map(int teleport);
 void pathfind(map *m);
+Pokemon* create_pokemon(int random);
+std::string get_pokemon_move_name(Pokemon_Move* poke_move);
 
 #endif
