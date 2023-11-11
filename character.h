@@ -55,11 +55,31 @@ class Pokemon_Move : public CSV {
     }
 };
 
+class Stat : public CSV {
+  public:
+    int id, damage_class_id, is_battle_only, game_index, value;
+    std::string identifier;
+
+    Stat(int id, int damage_class_id, int is_battle_only, int game_index, std::string identifier) : id(id), damage_class_id(damage_class_id), is_battle_only(is_battle_only), game_index(game_index), identifier(identifier) {}
+
+    void print() override {
+      std::cout << "ID: " << (this->id == INT_MAX ? " " : std::to_string(this->id)) << std::endl;
+      std::cout << "Damage_class_id: " << (this->damage_class_id == INT_MAX ? " " : std::to_string(this->damage_class_id)) << std::endl;
+      std::cout << "Identifier: " << this->identifier << std::endl;
+      std::cout << "Is_battle_only: " << (this->is_battle_only == INT_MAX ? " " : std::to_string(this->is_battle_only)) << std::endl;
+      std::cout << "Game_index: " << (this->game_index == INT_MAX ? " " : std::to_string(this->game_index)) << std::endl;
+    }
+};
+
 class Pokemon : public CSV {
   public:
     int id, species_id, height, weight, base_experience, order, is_default, pokemon_level;
     std::string identifier;
     std::vector<Pokemon_Move*> moves;
+    // In order: hp, attack, defence, special-attack, special-defence, speed
+    std::vector<int> stats;
+    std::vector<int> stat_efforts;
+    std::vector<int> stat_ivs;
 
     Pokemon(int id, int species_id, int height, int weight, int base_experience, int order, int is_default, std::string identifier) : id(id), species_id(species_id), height(height), weight(weight), base_experience(base_experience), order(order), is_default(is_default), identifier(identifier) {}
     Pokemon(Pokemon &p) {
@@ -82,22 +102,6 @@ class Pokemon : public CSV {
       std::cout << "Base_experience: " << (this->base_experience == INT_MAX ? " " : std::to_string(this->base_experience)) << std::endl;
       std::cout << "Order: " << (this->order == INT_MAX ? " " : std::to_string(this->order)) << std::endl;
       std::cout << "Is_default: " << (this->is_default == INT_MAX ? " " : std::to_string(this->is_default)) << std::endl;
-    }
-};
-
-class Stat : public CSV {
-  public:
-    int id, damage_class_id, is_battle_only, game_index;
-    std::string identifier;
-
-    Stat(int id, int damage_class_id, int is_battle_only, int game_index, std::string identifier) : id(id), damage_class_id(damage_class_id), is_battle_only(is_battle_only), game_index(game_index), identifier(identifier) {}
-
-    void print() override {
-      std::cout << "ID: " << (this->id == INT_MAX ? " " : std::to_string(this->id)) << std::endl;
-      std::cout << "Damage_class_id: " << (this->damage_class_id == INT_MAX ? " " : std::to_string(this->damage_class_id)) << std::endl;
-      std::cout << "Identifier: " << this->identifier << std::endl;
-      std::cout << "Is_battle_only: " << (this->is_battle_only == INT_MAX ? " " : std::to_string(this->is_battle_only)) << std::endl;
-      std::cout << "Game_index: " << (this->game_index == INT_MAX ? " " : std::to_string(this->game_index)) << std::endl;
     }
 };
 

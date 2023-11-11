@@ -885,6 +885,36 @@ void place_characters()
            ((rand() % 100) < ADD_TRAINER_PROB));
 }
 
+void generate_pokemon_IVs(Pokemon* pokemon) {
+  int i;
+
+  for (i = 0; i < 6; i++) {
+    // Should give a random stat distribution from [0, 15]
+    pokemon->stat_ivs.push_back(rand() % 16);
+  }
+}
+
+void set_pokemon_stats(Pokemon* pokemon) {
+  int count;
+  int stat_val;
+
+  generate_pokemon_IVs(pokemon);
+  count = 0;
+  for (CSV* pokemon_stat : pokemon_stats) {
+    Pokemon_Stats* temp_stat = dynamic_cast<Pokemon_Stats*>(pokemon_stat);
+    if (temp_stat->pokemon_id == pokemon->id) {
+      if (count == 0) {
+        stat_val = ((((temp_stat->base_stat + pokemon->stat_ivs[count]) * 2) * pokemon->pokemon_level) / 100) + pokemon->pokemon_level + 10;
+      } else {
+        stat_val = ((((temp_stat->base_stat + pokemon->stat_ivs[count]) * 2) * pokemon->pokemon_level) / 100) + 5;
+      }
+      pokemon->stats.push_back(stat_val);
+      pokemon->stat_efforts.push_back(temp_stat->effort);
+    }
+    count++;
+  }
+}
+
 std::string get_pokemon_move_name(Pokemon_Move* poke_move) {
   std::string move_name = "";
   for (CSV* item : moves) {
@@ -937,14 +967,24 @@ void init_pc()
   if (starter_pokemon) {
     std::vector<Pokemon_Move*> valid_moves;
     world.pc.pokemon.push_back(starter_pokemon);
+    // Sets pokemon level
     world.pc.pokemon[0]->pokemon_level = 1;
+    // Sets pokemon moves
     valid_moves = get_valid_pokemon_moves(world.pc.pokemon[0]);
+    for (Pokemon_Move* valid_move : valid_moves) {
+      if (world.pc.pokemon[0]->moves.size() < 4) {
+        world.pc.pokemon[0]->moves.push_back(valid_move);
+      }
+    }
+    // Sets pokemon stats
+    set_pokemon_stats(world.pc.pokemon[0]);
 
     io_reset_terminal();
 
-    for (Pokemon_Move* valid_move : valid_moves) {
-      world.pc.pokemon[0]->moves.push_back(valid_move);
-      std::cout << "Pokemon Move Name: " << get_pokemon_move_name(valid_move) << std::endl;
+    for (long unsigned int x = 0; x < world.pc.pokemon[0]->stats.size(); x++) {
+      std::cout << "Stat Val: " << world.pc.pokemon[0]->stats[x] << std::endl;
+      std::cout << "Stat Effort: " << world.pc.pokemon[0]->stat_efforts[x] << std::endl;
+      std::cout << "Stat IV: " << world.pc.pokemon[0]->stat_ivs[x] << std::endl;
     }
 
     exit(0);
