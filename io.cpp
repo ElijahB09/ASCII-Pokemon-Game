@@ -420,14 +420,22 @@ void io_battle(character *aggressor, character *defender)
   int cycle, input, break_loop;
   long unsigned int i;
 
-  cycle = 0;
-  clear();
-  printw("Use the keys 4 and 6 on a num pad to cycle through the pokemon a trainer has. Hit q to exit\n");
-  printw("This trainer has %d pokemon", n->pokemon.size());
-  refresh();
   break_loop = 0;
   cycle = 0;
   do {
+    clear();
+    printw("Use the keys 4 and 6 on a num pad to cycle through the pokemon a trainer has. Hit q to exit\n");
+    printw("This trainer has %d pokemon\n", n->pokemon.size());
+    printw("Pokemon: %s\n", (n->pokemon[cycle]->identifier).c_str());
+    printw("Pokemon level: %d\n", n->pokemon[cycle]->pokemon_level);
+    printw("Health: %d, Attack: %d, Defence: %d, Special-Attack: %d, Special-Defence: %d, Speed: %d\n", n->pokemon[cycle]->stats[0], n->pokemon[cycle]->stats[1], n->pokemon[cycle]->stats[2], n->pokemon[cycle]->stats[3], n->pokemon[cycle]->stats[4], n->pokemon[cycle]->stats[5]);
+    for (i = 0; i < n->pokemon[cycle]->moves.size(); i++) {
+      printw("Move %d: %s\n", i + 1, get_pokemon_move_name(n->pokemon[cycle]->moves[i]).c_str());
+    }
+    printw("Gender: %s\n", n->pokemon[cycle]->gender == 1 ? "Female" : "Male");
+    printw("Shiny: %s\n", n->pokemon[cycle]->is_shiny == 1 ? "Yes" : "No");
+    printw("Press q to exit\n");
+    refresh();
     switch (input = getch()) {
       case '4':
         cycle = cycle == 0 ? n->pokemon.size() - 1 : (cycle - 1) % n->pokemon.size();
@@ -440,19 +448,6 @@ void io_battle(character *aggressor, character *defender)
         break;
       default:
         break;
-    }
-    if (input != 'q') {
-      clear();
-      printw("Pokemon: %s\n", (n->pokemon[cycle]->identifier).c_str());
-      printw("Pokemon level: %d\n", n->pokemon[cycle]->pokemon_level);
-      printw("Health: %d, Attack: %d, Defence: %d, Special-Attack: %d, Special-Defence: %d, Speed: %d\n", n->pokemon[cycle]->stats[0], n->pokemon[cycle]->stats[1], n->pokemon[cycle]->stats[2], n->pokemon[cycle]->stats[3], n->pokemon[cycle]->stats[4], n->pokemon[cycle]->stats[5]);
-      for (i = 0; i < n->pokemon[cycle]->moves.size(); i++) {
-        printw("Move %d: %s\n", i + 1, get_pokemon_move_name(n->pokemon[cycle]->moves[i]).c_str());
-      }
-      printw("Gender: %s\n", n->pokemon[cycle]->gender == 1 ? "Female" : "Male");
-      printw("Shiny: %s\n", n->pokemon[cycle]->is_shiny == 1 ? "Yes" : "No");
-      printw("Press q to exit\n");
-      refresh();
     }
   } while (!break_loop);
 
@@ -612,6 +607,43 @@ void io_teleport_world(pair_t dest)
   io_teleport_pc(dest);
 }
 
+void io_open_bag() {
+  int cycle, break_loop, input;
+  long unsigned int i;
+
+  break_loop = 0;
+  cycle = 0;
+  do {
+    clear();
+    printw("Your Pokemon, use 4 and 6 to scroll between them\n");
+    printw("Pokemon: %s\n", (world.pc.pokemon[cycle]->identifier).c_str());
+    printw("Pokemon level: %d\n", world.pc.pokemon[cycle]->pokemon_level);
+    printw("Health: %d, Attack: %d, Defence: %d, Special-Attack: %d, Special-Defence: %d, Speed: %d\n", world.pc.pokemon[cycle]->stats[0], world.pc.pokemon[cycle]->stats[1], world.pc.pokemon[cycle]->stats[2], world.pc.pokemon[cycle]->stats[3], world.pc.pokemon[cycle]->stats[4], world.pc.pokemon[cycle]->stats[5]);
+    for (i = 0; i < world.pc.pokemon[cycle]->moves.size(); i++) {
+      printw("Move %d: %s\n", i + 1, get_pokemon_move_name(world.pc.pokemon[cycle]->moves[i]).c_str());
+    }
+    printw("Gender: %s\n", world.pc.pokemon[cycle]->gender == 1 ? "Female" : "Male");
+    printw("Shiny: %s\n", world.pc.pokemon[cycle]->is_shiny == 1 ? "Yes" : "No");
+    printw("Press q to exit\n");
+    refresh();
+    switch (input = getch()) {
+      case '4':
+        cycle = cycle == 0 ? world.pc.pokemon.size() - 1 : (cycle - 1) % world.pc.pokemon.size();
+        break;
+      case '6':
+        cycle = (cycle + 1) % world.pc.pokemon.size();
+        break;
+      case 'q':
+        break_loop = 1;
+        break;
+      default:
+        break;
+    }
+  } while (!break_loop);
+  io_display();
+  getch();
+}
+
 void io_handle_input(pair_t dest)
 {
   uint32_t turn_not_consumed;
@@ -714,6 +746,10 @@ void io_handle_input(pair_t dest)
 
       dest[dim_y] = world.pc.pos[dim_y];
       dest[dim_x] = world.pc.pos[dim_x];
+      turn_not_consumed = 0;
+      break;
+    case 'B':
+      io_open_bag();
       turn_not_consumed = 0;
       break;
     default:
