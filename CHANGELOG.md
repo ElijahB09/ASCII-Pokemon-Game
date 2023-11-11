@@ -1,3 +1,45 @@
+commit 721476372a5196e98ff0f67e1bbe1ab5b47505c7
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Nov 11 12:00:37 2023 -0600
+
+    Fixed a silly bug and added a bag key to open the pcs bag
+
+commit 5ee47442304b564bef15ab3ada6a579bc1319489
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Nov 11 02:24:59 2023 -0600
+
+    Finishing touches, I'll write the markdown tomorrow
+
+commit bb769091ef207037055a7929a2160a619d1de769
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Fri Nov 10 23:38:52 2023 -0600
+
+    Got pokemon battling to work, although it is just a menu for printing stats
+
+commit 4ba8b4d8ae55f5a6073499702181a2be0fd25994
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Fri Nov 10 19:57:23 2023 -0600
+
+    Added pokemon stats with iv calculations
+
+commit 04819e171e8019b1738c3aeba0ae6de2ab758f7b
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Fri Nov 10 19:15:08 2023 -0600
+
+    Got the starter pokemon working and its level function. stats to be added
+
+commit 37baa67fd688d377a4adb5669d11a6a892bb2a65
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Tue Nov 7 19:01:03 2023 -0600
+
+    Got the csv file info into global arrays rather than just printing them
+
+commit 845c06ff75f671961972016e13781745655c8203
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Nov 4 18:52:21 2023 -0500
+
+    Update CHANGELOG
+
 commit c651c2b53448fd6f5859d0ef0e1968ac6bb0175d
 Author: Elijah Brady <bradyeli09@gmail.com>
 Date:   Sat Nov 4 18:51:40 2023 -0500
