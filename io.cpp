@@ -417,6 +417,44 @@ void io_pokemon_center()
 void io_battle(character *aggressor, character *defender)
 {
   npc *n = (npc *) ((aggressor == &world.pc) ? defender : aggressor);
+  int cycle, input, break_loop;
+  long unsigned int i;
+
+  cycle = 0;
+  clear();
+  printw("Use the keys 4 and 6 on a num pad to cycle through the pokemon a trainer has. Hit q to exit\n");
+  printw("This trainer has %d pokemon", n->pokemon.size());
+  refresh();
+  break_loop = 0;
+  cycle = 0;
+  do {
+    switch (input = getch()) {
+      case '4':
+        cycle = cycle == 0 ? n->pokemon.size() - 1 : (cycle - 1) % n->pokemon.size();
+        break;
+      case '6':
+        cycle = (cycle + 1) % n->pokemon.size();
+        break;
+      case 'q':
+        break_loop = 1;
+        break;
+      default:
+        break;
+    }
+    if (input != 'q') {
+      clear();
+      printw("Pokemon: %s\n", (n->pokemon[cycle]->identifier).c_str());
+      printw("Pokemon level: %d\n", n->pokemon[cycle]->pokemon_level);
+      printw("Health: %d, Attack: %d, Defence: %d, Special-Attack: %d, Special-Defence: %d, Speed: %d\n", n->pokemon[cycle]->stats[0], n->pokemon[cycle]->stats[1], n->pokemon[cycle]->stats[2], n->pokemon[cycle]->stats[3], n->pokemon[cycle]->stats[4], n->pokemon[cycle]->stats[5]);
+      for (i = 0; i < n->pokemon[cycle]->moves.size(); i++) {
+        printw("Move %d: %s\n", i + 1, get_pokemon_move_name(n->pokemon[cycle]->moves[i]).c_str());
+      }
+      printw("Gender: %s\n", n->pokemon[cycle]->gender == 1 ? "Female" : "Male");
+      printw("Shiny: %s\n", n->pokemon[cycle]->is_shiny == 1 ? "Yes" : "No");
+      printw("Press q to exit\n");
+      refresh();
+    }
+  } while (!break_loop);
 
   io_display();
   mvprintw(0, 0, "Aww, how'd you get so strong?  You and your pokemon must share a special bond!");
@@ -440,6 +478,8 @@ void io_pokemon_battle(Pokemon *random_pokemon) {
   } else if (random_pokemon->moves.size() == 2) {
     printw("Move 1: %s, Move 2: %s\n", get_pokemon_move_name(random_pokemon->moves[0]).c_str(), get_pokemon_move_name(random_pokemon->moves[1]).c_str());
   }
+  printw("Gender: %s\n", random_pokemon->gender == 1 ? "Female" : "Male");
+  printw("Shiny: %s\n", random_pokemon->is_shiny == 1 ? "Yes" : "No");
   printw("Press any key to exit\n");
   refresh();
   getch();

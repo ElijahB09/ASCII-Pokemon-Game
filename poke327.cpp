@@ -758,6 +758,11 @@ void new_hiker()
   c->symbol = HIKER_SYMBOL;
   c->next_turn = 0;
   c->seq_num = world.char_seq_num++;
+
+  do {
+    c->pokemon.push_back(create_pokemon(0));
+  } while (c->pokemon.size() < 7 && ((std::rand() % 10) > 3));
+
   heap_insert(&world.cur_map->turn, c);
 }
 
@@ -785,6 +790,11 @@ void new_rival()
   c->symbol = RIVAL_SYMBOL;
   c->next_turn = 0;
   c->seq_num = world.char_seq_num++;
+
+  do {
+    c->pokemon.push_back(create_pokemon(0));
+  } while (c->pokemon.size() < 7 && ((std::rand() % 10) > 3));
+
   heap_insert(&world.cur_map->turn, c);
 }
 
@@ -808,6 +818,11 @@ void new_swimmer()
   c->symbol = SWIMMER_SYMBOL;
   c->next_turn = 0;
   c->seq_num = world.char_seq_num++;
+
+  do {
+    c->pokemon.push_back(create_pokemon(0));
+  } while (c->pokemon.size() < 7 && ((std::rand() % 10) > 3));
+
   heap_insert(&world.cur_map->turn, c);
 }
 
@@ -850,6 +865,11 @@ void new_char_other()
   c->defeated = 0;
   c->next_turn = 0;
   c->seq_num = world.char_seq_num++;
+
+  do {
+    c->pokemon.push_back(create_pokemon(0));
+  } while (c->pokemon.size() < 7 && ((std::rand() % 10) > 3));
+
   heap_insert(&world.cur_map->turn, c);
 }
 
@@ -984,7 +1004,7 @@ Pokemon* create_pokemon(int random) {
   // Generate stats
   set_pokemon_stats(rand_pokemon);
   // Generate gender
-  rand_pokemon->gender = std::rand() & 2;
+  rand_pokemon->gender = std::rand() % 2;
 
   return rand_pokemon;
 }
