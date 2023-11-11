@@ -35,6 +35,10 @@ pair_t all_dirs[8] = {
   {  1,  1 },
 };
 
+Pokemon* starter_pokemon;
+std::vector<CSV*> pokemon, pokemon_moves, pokemon_species, pokemon_stats, pokemon_types, stats, moves, experience, type_names;
+
+
 static int32_t path_cmp(const void *key, const void *with) {
   return ((path_t *) key)->cost - ((path_t *) with)->cost;
 }
@@ -881,6 +885,39 @@ void place_characters()
            ((rand() % 100) < ADD_TRAINER_PROB));
 }
 
+std::string get_pokemon_move_name(Pokemon_Move* poke_move) {
+  std::string move_name = "";
+  for (CSV* item : moves) {
+    Move* temp_move = dynamic_cast<Move*>(item);
+    if (temp_move->id == poke_move->move_id) {
+      move_name = temp_move->identifier;
+    }
+  }
+  return move_name;
+}
+
+std::vector<Pokemon_Move*> get_valid_pokemon_moves(Pokemon* pokemon) {
+  // This grabs valid pokemon moves
+  std::vector<Pokemon_Move*> valid_moves;
+  int already_added = 0;
+  for (CSV* pocket_monster_move : pokemon_moves) {
+    Pokemon_Move* temp_poke_move = dynamic_cast<Pokemon_Move*>(pocket_monster_move);
+    if (pokemon->species_id == temp_poke_move->pokemon_id && temp_poke_move->pokemon_move_method_id == 1 && temp_poke_move->level <= pokemon->pokemon_level) {
+      for (Pokemon_Move* valid_move : valid_moves) {
+        if (valid_move->move_id == temp_poke_move->move_id) {
+          already_added = 1;
+        }
+      }
+      if (!already_added) {
+        valid_moves.push_back(temp_poke_move);
+      }
+      already_added = 0;
+    }
+  }
+
+  return valid_moves;
+}
+
 void init_pc()
 {
   int x, y;
@@ -896,6 +933,26 @@ void init_pc()
 
   world.cur_map->cmap[y][x] = &world.pc;
   world.pc.next_turn = 0;
+
+  if (starter_pokemon) {
+    std::vector<Pokemon_Move*> valid_moves;
+    world.pc.pokemon.push_back(starter_pokemon);
+    world.pc.pokemon[0]->pokemon_level = 1;
+    valid_moves = get_valid_pokemon_moves(world.pc.pokemon[0]);
+
+    io_reset_terminal();
+
+    for (Pokemon_Move* valid_move : valid_moves) {
+      world.pc.pokemon[0]->moves.push_back(valid_move);
+      std::cout << "Pokemon Move Name: " << get_pokemon_move_name(valid_move) << std::endl;
+    }
+
+    exit(0);
+  } else {
+    io_reset_terminal();
+    std::cerr << "Somehow the starter pokemon was not chosen" << std::endl;
+    exit(1);
+  }
 
   world.pc.seq_num = world.char_seq_num++;
 
@@ -1096,6 +1153,29 @@ void leave_map(pair_t d)
     world.cur_idx[dim_y]++;
   }
   new_map(0);
+}
+
+void choose_starter(std::vector<CSV*> pokemon) {
+  int starter;
+  CSV* choice;
+
+  //Appearance in global array Bulbasaur = 1, charmandar = 4, squirtle = 7
+  switch (starter = io_starter_screen()) {
+    case '1':
+      choice = pokemon[6];
+      starter_pokemon = new Pokemon(*dynamic_cast<Pokemon*>(choice));
+      break;
+    case '2':
+      choice = pokemon[0];
+      starter_pokemon = new Pokemon(*dynamic_cast<Pokemon*>(choice));
+      break;
+    case '3':
+      choice = pokemon[3];
+      starter_pokemon = new Pokemon(*dynamic_cast<Pokemon*>(choice));
+      break;
+    default:
+      break;
+  }
 }
 
 void game_loop()
@@ -1320,7 +1400,6 @@ int main(int argc, char *argv[])
   //  char c;
   //  int x, y;
   int i;
-  std::vector<CSV*> pokemon, pokemon_moves, pokemon_species, pokemon_stats, pokemon_types, stats, moves, experience, type_names;
 
   do_seed = 1;
   
@@ -1360,9 +1439,6 @@ int main(int argc, char *argv[])
   moves = getCSVFile("moves", 6);
   experience = getCSVFile("experience", 7);
   type_names = getCSVFile("type_names", 8);
-  std::cout << "Got past csv parsing" << std::endl;
-  // Works here, csv stuff is stored in these arrays now
-  exit(0);
 
   if (do_seed) {
     /* Allows me to start the game more than once *
@@ -1375,6 +1451,8 @@ int main(int argc, char *argv[])
   srand(seed);
 
   io_init_terminal();
+
+  choose_starter(pokemon);
   
   init_world();
 

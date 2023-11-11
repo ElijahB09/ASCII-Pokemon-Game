@@ -46,6 +46,39 @@ void io_reset_terminal(void)
   io_tail = NULL;
 }
 
+int io_starter_screen(void) {
+  int input, validInput;
+
+  clear();
+  
+  do {
+    mvprintw(5, 25, "Choose your starter Pokemon");
+    mvprintw(6, 31, "Input 1, 2, or 3");
+    mvprintw(7, 20, "Squirtle  |  Bulbasaur  |  Charmander");
+    mvprintw(8, 20, "  [1]           [2]           [3]    ");
+    refresh();
+    switch(input = getch()) {
+      case '1':
+        validInput = 1;
+        break;
+      case '2':
+        validInput = 1;
+        break;
+      case '3':
+        validInput = 1;
+        break;
+      default:
+        mvprintw(11, 7, "Invalid input, please input: 1, 2, or 3 for the respective starter! ");
+        refresh();
+        validInput = 0;
+        break;
+    }
+  } while(!validInput);
+
+  return input;
+  clear();
+}
+
 void io_queue_message(const char *format, ...)
 {
   io_message_t *tmp;
