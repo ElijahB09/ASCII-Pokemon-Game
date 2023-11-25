@@ -402,7 +402,10 @@ static void io_list_trainers()
 
 void io_pokemart()
 {
-  mvprintw(0, 0, "Welcome to the Pokemart.  Could I interest you in some Pokeballs?");
+  world.pc.potions = world.pc.potions < 5 ? 5 : world.pc.potions;
+  world.pc.revives = world.pc.revives < 3 ? 3 : world.pc.revives;
+  world.pc.pokeballs = world.pc.pokeballs < 10 ? 10 : world.pc.pokeballs;
+  mvprintw(0, 0, "Welcome to the Pokemart. Your items have been replenished");
   refresh();
   getch();
 }
@@ -621,8 +624,6 @@ void io_open_bag() {
 
   break_loop = 0;
   cycle = 0;
-  world.pc.pokemon[0]->knocked_out = 1;
-  world.pc.pokemon[0]->stats[0] = 0;
   do {
     clear();
     printw("Your Pokemon, use 4 and 6 to scroll between them\n");
