@@ -236,6 +236,8 @@ class npc : public character {
 };
 
 class pc : public character {
+  public:
+    int potions, revives, pokeballs;
 };
 
 /* character is defined in poke327.h to allow an instance of character

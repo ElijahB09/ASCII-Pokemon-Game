@@ -621,20 +621,50 @@ void io_open_bag() {
 
   break_loop = 0;
   cycle = 0;
+  world.pc.pokemon[0]->knocked_out = 1;
+  world.pc.pokemon[0]->stats[0] = 0;
   do {
     clear();
     printw("Your Pokemon, use 4 and 6 to scroll between them\n");
     printw("Pokemon: %s\n", (world.pc.pokemon[cycle]->identifier).c_str());
     printw("Pokemon level: %d\n", world.pc.pokemon[cycle]->pokemon_level);
-    printw("Health: %d, Attack: %d, Defence: %d, Special-Attack: %d, Special-Defence: %d, Speed: %d\n", world.pc.pokemon[cycle]->stats[0], world.pc.pokemon[cycle]->stats[1], world.pc.pokemon[cycle]->stats[2], world.pc.pokemon[cycle]->stats[3], world.pc.pokemon[cycle]->stats[4], world.pc.pokemon[cycle]->stats[5]);
+    printw("Health: %d/%d, Attack: %d, Defence: %d, Special-Attack: %d, Special-Defence: %d, Speed: %d\n", world.pc.pokemon[cycle]->stats[0], world.pc.pokemon[cycle]->max_health, world.pc.pokemon[cycle]->stats[1], world.pc.pokemon[cycle]->stats[2], world.pc.pokemon[cycle]->stats[3], world.pc.pokemon[cycle]->stats[4], world.pc.pokemon[cycle]->stats[5]);
     for (i = 0; i < world.pc.pokemon[cycle]->moves.size(); i++) {
       printw("Move %d: %s\n", i + 1, get_pokemon_move_name(world.pc.pokemon[cycle]->moves[i]).c_str());
     }
     printw("Gender: %s\n", world.pc.pokemon[cycle]->gender == 1 ? "Female" : "Male");
     printw("Shiny: %s\n", world.pc.pokemon[cycle]->is_shiny == 1 ? "Yes" : "No");
-    printw("Press q to exit\n");
+    printw("Knocked out: %s\n", world.pc.pokemon[cycle]->knocked_out == 1 ? "Yes" : "No");
+    printw("Your items\n");
+    printw("Potions: %d\n", world.pc.potions);
+    printw("Revives: %d\n", world.pc.revives);
+    printw("Pokeballs: %d\n", world.pc.pokeballs);
+    printw("Press h to heal the selected pokemon, press r to revive the selected pokemon, press q to exit\n");
     refresh();
     switch (input = getch()) {
+      case 'h':
+        if (world.pc.pokemon[cycle]->stats[0] < world.pc.pokemon[cycle]->max_health && world.pc.pokemon[cycle]->max_health != 0 && world.pc.pokemon[cycle]->knocked_out == 0 && world.pc.potions > 0) {
+          world.pc.pokemon[cycle]->stats[0] = ((world.pc.pokemon[cycle]->stats[0] + 20) > world.pc.pokemon[cycle]->max_health) ? world.pc.pokemon[cycle]->max_health : world.pc.pokemon[cycle]->stats[0] += 20;
+          world.pc.potions--;
+        } else {
+          clear();
+          printw("Your pokemon is %s\n", world.pc.pokemon[cycle]->knocked_out == 1 ? "knocked out, you can't revive it with a potion." : "already at max health!");
+          refresh();
+          getch();
+        }
+        break;
+      case 'r':
+        if (world.pc.pokemon[cycle]->stats[0] == 0 && world.pc.pokemon[cycle]->knocked_out == 1 && world.pc.revives > 0) {
+          world.pc.pokemon[cycle]->knocked_out = 0;
+          world.pc.pokemon[cycle]->stats[0] = world.pc.pokemon[cycle]->max_health / 2;
+          world.pc.revives--;
+        } else {
+          clear();
+          printw("Your pokemon is not knocked out!\n");
+          refresh();
+          getch();
+        }
+        break;
       case '4':
         cycle = cycle == 0 ? world.pc.pokemon.size() - 1 : (cycle - 1) % world.pc.pokemon.size();
         break;

@@ -1104,6 +1104,9 @@ void init_pc()
     std::cerr << "Somehow the starter pokemon was not chosen" << std::endl;
     exit(1);
   }
+  world.pc.potions = 5;
+  world.pc.revives = 3;
+  world.pc.pokeballs = 10;
   world.pc.all_knocked_out = 1;
   world.pc.seq_num = world.char_seq_num++;
 
