@@ -412,16 +412,45 @@ void io_pokemart()
 
 void io_pokemon_center()
 {
-  long unsigned int i;
+  long unsigned int i, j;
 
   for (i = 0 ; i < world.pc.pokemon.size(); i++) {
     world.pc.pokemon[i]->stats[0] = world.pc.pokemon[i]->max_health;
+    for (j = 0; j < world.pc.pokemon[i]->current_pps.size(); j++) {
+      world.pc.pokemon[i]->current_pps[j] = world.pc.pokemon[i]->max_pps[j];
+    }
     world.pc.pokemon[i]->knocked_out = 0;
   }
 
   mvprintw(0, 0, "Welcome to the Pokemon Center. Your pokemon have been healed");
   refresh();
   getch();
+}
+
+void io_battle_options(int curr_pokemon_index) {
+  int input;
+  int unsigned long i;
+
+  printw("Fight (f)\nBag (b)\nRun (r)\nPokemon (p)\n");
+  refresh();
+  input = getch();
+  switch (input) {
+    case 'f':
+      clear();
+      for (i = 0; i < world.pc.pokemon[curr_pokemon_index]->moves.size(); i++) {
+        printw("%s  %d\n", get_pokemon_move_name(world.pc.pokemon[curr_pokemon_index]->moves[i]).c_str(), world.pc.pokemon[curr_pokemon_index]->current_pps[i]);
+      }
+      getch();
+      break;
+    case 'b':
+      break;
+    case 'r':
+      break;
+    case 'p':
+      break;
+    default:
+      break;
+  }
 }
 
 void io_battle(character *aggressor, character *defender)
@@ -473,23 +502,37 @@ void io_battle(character *aggressor, character *defender)
 }
 
 void io_pokemon_battle(Pokemon *random_pokemon) {
-  clear();
-  printw("Encountered Pokemon\n");
-  printw("Pokemon: %s\n", (random_pokemon->identifier).c_str());
-  printw("Pokemon level: %d\n", random_pokemon->pokemon_level);
-  printw("Health: %d, Attack: %d, Defence: %d, Special-Attack: %d, Special-Defence: %d, Speed: %d\n", random_pokemon->stats[0], random_pokemon->stats[1], random_pokemon->stats[2], random_pokemon->stats[3], random_pokemon->stats[4], random_pokemon->stats[5]);
-  if (random_pokemon->moves.size() == 1) {
-    printw("Move 1: %s\n", get_pokemon_move_name(random_pokemon->moves[0]).c_str());
-  } else if (random_pokemon->moves.size() == 2) {
-    printw("Move 1: %s, Move 2: %s\n", get_pokemon_move_name(random_pokemon->moves[0]).c_str(), get_pokemon_move_name(random_pokemon->moves[1]).c_str());
+  // clear();
+  // printw("Encountered Pokemon\n");
+  // printw("Pokemon: %s\n", (random_pokemon->identifier).c_str());
+  // printw("Pokemon level: %d\n", random_pokemon->pokemon_level);
+  // printw("Health: %d, Attack: %d, Defence: %d, Special-Attack: %d, Special-Defence: %d, Speed: %d\n", random_pokemon->stats[0], random_pokemon->stats[1], random_pokemon->stats[2], random_pokemon->stats[3], random_pokemon->stats[4], random_pokemon->stats[5]);
+  // if (random_pokemon->moves.size() == 1) {
+  //   printw("Move 1: %s\n", get_pokemon_move_name(random_pokemon->moves[0]).c_str());
+  // } else if (random_pokemon->moves.size() == 2) {
+  //   printw("Move 1: %s, Move 2: %s\n", get_pokemon_move_name(random_pokemon->moves[0]).c_str(), get_pokemon_move_name(random_pokemon->moves[1]).c_str());
+  // }
+  // printw("Gender: %s\n", random_pokemon->gender == 1 ? "Female" : "Male");
+  // printw("Shiny: %s\n", random_pokemon->is_shiny == 1 ? "Yes" : "No");
+  // printw("Press any key to exit\n");
+  // refresh();
+  // getch();
+  // io_display();
+  // refresh();
+
+  int curr_pokemon_index;
+  int unsigned long i;
+
+  for (i = 0; i < world.pc.pokemon.size(); i++) {
+    if (world.pc.pokemon[i]->knocked_out == 0) {
+      curr_pokemon_index = i;
+      break;
+    }
   }
-  printw("Gender: %s\n", random_pokemon->gender == 1 ? "Female" : "Male");
-  printw("Shiny: %s\n", random_pokemon->is_shiny == 1 ? "Yes" : "No");
-  printw("Press any key to exit\n");
-  refresh();
-  getch();
-  io_display();
-  refresh();
+  clear();
+  printw("Encountered a wild %s\n\n", (random_pokemon->identifier).c_str());
+  io_battle_options(curr_pokemon_index);
+
 }
 
 uint32_t move_pc_dir(uint32_t input, pair_t dest)

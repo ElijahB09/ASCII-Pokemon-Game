@@ -76,6 +76,8 @@ class Pokemon : public CSV {
     int id, species_id, height, weight, base_experience, order, is_default, pokemon_level, is_shiny, gender, knocked_out, max_health;
     std::string identifier;
     std::vector<Pokemon_Move*> moves;
+    std::vector<int> current_pps;
+    std::vector<int> max_pps;
     // In order: hp, attack, defence, special-attack, special-defence, speed
     std::vector<int> stats;
     std::vector<int> stat_efforts;

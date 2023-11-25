@@ -1053,6 +1053,8 @@ Pokemon* create_pokemon(int random) {
     if (valid_moves.size() >= 1) {
       index = (std::rand() % valid_moves.size());
       rand_pokemon->moves.push_back(valid_moves[index]);
+      rand_pokemon->max_pps.push_back(get_pokemon_move_pp(valid_moves[index]));
+      rand_pokemon->current_pps.push_back(get_pokemon_move_pp(valid_moves[index]));
       // Remove the move to prevent rand giving the same move back
       valid_moves.erase(valid_moves.begin() + index);
     }
@@ -1092,6 +1094,8 @@ void init_pc()
     for (Pokemon_Move* valid_move : valid_moves) {
       if (world.pc.pokemon[0]->moves.size() < 4) {
         world.pc.pokemon[0]->moves.push_back(valid_move);
+        world.pc.pokemon[0]->max_pps.push_back(get_pokemon_move_pp(valid_move));
+        world.pc.pokemon[0]->current_pps.push_back(get_pokemon_move_pp(valid_move));
       }
     }
     // Sets pokemon stats
