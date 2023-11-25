@@ -413,6 +413,7 @@ void io_pokemon_center()
 
   for (i = 0 ; i < world.pc.pokemon.size(); i++) {
     world.pc.pokemon[i]->stats[0] = world.pc.pokemon[i]->max_health;
+    world.pc.pokemon[i]->knocked_out = 0;
   }
 
   mvprintw(0, 0, "Welcome to the Pokemon Center. Your pokemon have been healed");
