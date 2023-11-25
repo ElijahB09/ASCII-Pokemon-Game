@@ -948,6 +948,61 @@ std::string get_pokemon_move_name(Pokemon_Move* poke_move) {
   return move_name;
 }
 
+int get_pokemon_move_power(Pokemon_Move* poke_move) {
+  int move_power;
+  for (CSV* item : moves) {
+    Move* temp_move = dynamic_cast<Move*>(item);
+    if (temp_move->id == poke_move->move_id) {
+      move_power = temp_move->power;
+    }
+  }
+  return move_power;
+}
+
+int get_pokemon_move_type_id(Pokemon_Move* poke_move) {
+  int type_id;
+  for (CSV* item : moves) {
+    Move* temp_move = dynamic_cast<Move*>(item);
+    if (temp_move->id == poke_move->move_id) {
+      type_id = temp_move->type_id;
+    }
+  }
+  return type_id;
+}
+
+int get_pokemon_move_accuracy(Pokemon_Move* poke_move) {
+  int move_accuracy;
+  for (CSV* item : moves) {
+    Move* temp_move = dynamic_cast<Move*>(item);
+    if (temp_move->id == poke_move->move_id) {
+      move_accuracy = temp_move->accuracy;
+    }
+  }
+  return move_accuracy;
+}
+
+int get_pokemon_move_pp(Pokemon_Move* poke_move) {
+  int move_pp;
+  for (CSV* item : moves) {
+    Move* temp_move = dynamic_cast<Move*>(item);
+    if (temp_move->id == poke_move->move_id) {
+      move_pp = temp_move->pp;
+    }
+  }
+  return move_pp;
+}
+
+int get_pokemon_move_priority(Pokemon_Move* poke_move) {
+  int move_priority;
+  for (CSV* item : moves) {
+    Move* temp_move = dynamic_cast<Move*>(item);
+    if (temp_move->id == poke_move->move_id) {
+      move_priority = temp_move->priority;
+    }
+  }
+  return move_priority;
+}
+
 std::vector<Pokemon_Move*> get_valid_pokemon_moves(Pokemon* pokemon) {
   // This grabs valid pokemon moves
   std::vector<Pokemon_Move*> valid_moves;
@@ -1042,12 +1097,13 @@ void init_pc()
     set_pokemon_stats(world.pc.pokemon[0]);
     // Set pokemon gender
     world.pc.pokemon[0]->gender = std::rand() % 2;
+    world.pc.pokemon[0]->knocked_out = 0;
   } else {
     io_reset_terminal();
     std::cerr << "Somehow the starter pokemon was not chosen" << std::endl;
     exit(1);
   }
-
+  world.pc.all_knocked_out = 1;
   world.pc.seq_num = world.char_seq_num++;
 
   heap_insert(&world.cur_map->turn, &world.pc);
@@ -1187,9 +1243,35 @@ void init_world()
   new_map(0);
 }
 
+void delete_pokemon() {
+  int x, y, i, j;
+  long unsigned int z;
+  character *n;
+
+  for (y = 0; y < WORLD_SIZE; y++) {
+    for (x = 0; x < WORLD_SIZE; x++) {
+      if (world.world[y][x]) {
+        for (i = 0; i < MAP_Y; i++) {
+          for (j = 0; j < MAP_X; j++) {
+            // if Character exists
+            if (dynamic_cast<character *> (world.cur_map->cmap[i][j])) {
+              n = (character *) (world.cur_map->cmap[i][j]);
+              for (z = 0; z < n->pokemon.size(); z++) {
+                delete (n->pokemon[z]);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 void delete_world()
 {
   int x, y;
+
+  delete_pokemon();
 
   for (y = 0; y < WORLD_SIZE; y++) {
     for (x = 0; x < WORLD_SIZE; x++) {
@@ -1200,6 +1282,7 @@ void delete_world()
       }
     }
   }
+
 }
 
 void print_hiker_dist()

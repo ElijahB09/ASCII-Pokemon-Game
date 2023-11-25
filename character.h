@@ -73,7 +73,7 @@ class Stat : public CSV {
 
 class Pokemon : public CSV {
   public:
-    int id, species_id, height, weight, base_experience, order, is_default, pokemon_level, is_shiny, gender;
+    int id, species_id, height, weight, base_experience, order, is_default, pokemon_level, is_shiny, gender, knocked_out;
     std::string identifier;
     std::vector<Pokemon_Move*> moves;
     // In order: hp, attack, defence, special-attack, special-defence, speed
@@ -224,6 +224,7 @@ class character {
   int next_turn;
   int seq_num;
   std::vector<Pokemon*> pokemon;
+  int all_knocked_out;
 };
 
 class npc : public character {

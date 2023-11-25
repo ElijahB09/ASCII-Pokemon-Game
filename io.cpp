@@ -535,9 +535,10 @@ uint32_t move_pc_dir(uint32_t input, pair_t dest)
         ((npc *) world.cur_map->cmap[dest[dim_y]][dest[dim_x]])->defeated) {
       // Some kind of greeting here would be nice
       return 1;
-    } else if ((dynamic_cast<npc *>
-                (world.cur_map->cmap[dest[dim_y]][dest[dim_x]]))) {
-      io_battle(&world.pc, world.cur_map->cmap[dest[dim_y]][dest[dim_x]]);
+    } else if ((dynamic_cast<npc *> (world.cur_map->cmap[dest[dim_y]][dest[dim_x]]))) {
+      if (world.pc.all_knocked_out == 0) {
+        io_battle(&world.pc, world.cur_map->cmap[dest[dim_y]][dest[dim_x]]);
+      }
       // Not actually moving, so set dest back to PC position
       dest[dim_x] = world.pc.pos[dim_x];
       dest[dim_y] = world.pc.pos[dim_y];

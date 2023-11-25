@@ -132,5 +132,10 @@ int new_map(int teleport);
 void pathfind(map *m);
 Pokemon* create_pokemon(int random);
 std::string get_pokemon_move_name(Pokemon_Move* poke_move);
+int get_pokemon_move_power(Pokemon_Move* poke_move);
+int get_pokemon_move_type_id(Pokemon_Move* poke_move);
+int get_pokemon_move_accuracy(Pokemon_Move* poke_move);
+int get_pokemon_move_pp(Pokemon_Move* poke_move);
+int get_pokemon_move_priority(Pokemon_Move* poke_move);
 
 #endif
