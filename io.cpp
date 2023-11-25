@@ -642,7 +642,6 @@ void io_open_bag() {
     }
   } while (!break_loop);
   io_display();
-  getch();
 }
 
 void io_handle_input(pair_t dest)
@@ -751,7 +750,7 @@ void io_handle_input(pair_t dest)
       break;
     case 'B':
       io_open_bag();
-      turn_not_consumed = 0;
+      turn_not_consumed = 1;
       break;
     default:
       /* Also not in the spec.  It's not always easy to figure out what *
