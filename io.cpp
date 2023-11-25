@@ -409,7 +409,13 @@ void io_pokemart()
 
 void io_pokemon_center()
 {
-  mvprintw(0, 0, "Welcome to the Pokemon Center.  How can Nurse Joy assist you?");
+  long unsigned int i;
+
+  for (i = 0 ; i < world.pc.pokemon.size(); i++) {
+    world.pc.pokemon[i]->stats[0] = world.pc.pokemon[i]->max_health;
+  }
+
+  mvprintw(0, 0, "Welcome to the Pokemon Center. Your pokemon have been healed");
   refresh();
   getch();
 }

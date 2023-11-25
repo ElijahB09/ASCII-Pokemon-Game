@@ -925,6 +925,7 @@ void set_pokemon_stats(Pokemon* pokemon) {
     if (temp_stat->pokemon_id == pokemon->id) {
       if (count == 0) {
         stat_val = ((((temp_stat->base_stat + pokemon->stat_ivs[count]) * 2) * pokemon->pokemon_level) / 100) + pokemon->pokemon_level + 10;
+        pokemon->max_health = stat_val;
       } else {
         stat_val = ((((temp_stat->base_stat + pokemon->stat_ivs[count]) * 2) * pokemon->pokemon_level) / 100) + 5;
       }
