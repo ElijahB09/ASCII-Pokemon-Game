@@ -938,6 +938,15 @@ void set_pokemon_stats(Pokemon* pokemon) {
   pokemon->is_shiny = (rand() % 8192 == 0);
 }
 
+void set_pokemon_types(Pokemon *pokemon) {
+  for (CSV* pokemon_type : pokemon_types) {
+    Pokemon_Type* temp_type = dynamic_cast<Pokemon_Type*>(pokemon_type);
+    if (temp_type->pokemon_id == pokemon->id) {
+      pokemon->type_ids.push_back(temp_type->type_id);
+    }
+  }
+}
+
 std::string get_pokemon_move_name(Pokemon_Move* poke_move) {
   std::string move_name = "";
   for (CSV* item : moves) {
@@ -1063,7 +1072,8 @@ Pokemon* create_pokemon(int random) {
   set_pokemon_stats(rand_pokemon);
   // Generate gender
   rand_pokemon->gender = std::rand() % 2;
-
+  // Generate types
+  set_pokemon_types(rand_pokemon);
   return rand_pokemon;
 }
 
@@ -1103,6 +1113,8 @@ void init_pc()
     // Set pokemon gender
     world.pc.pokemon[0]->gender = std::rand() % 2;
     world.pc.pokemon[0]->knocked_out = 0;
+    // Set pokemon types
+    set_pokemon_types(world.pc.pokemon[0]);
   } else {
     io_reset_terminal();
     std::cerr << "Somehow the starter pokemon was not chosen" << std::endl;

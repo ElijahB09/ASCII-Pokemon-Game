@@ -427,30 +427,83 @@ void io_pokemon_center()
   getch();
 }
 
-void io_battle_options(int curr_pokemon_index) {
-  int input;
-  int unsigned long i;
+void io_battle_options(int curr_pokemon_index, Pokemon *random_pokemon) {
+  int input, move_input, move_index, move_damage, power;
+  int unsigned long i, j, num_moves;
+  double critical, stab, random;
 
-  printw("Fight (f)\nBag (b)\nRun (r)\nPokemon (p)\n");
-  refresh();
-  input = getch();
-  switch (input) {
-    case 'f':
-      clear();
-      for (i = 0; i < world.pc.pokemon[curr_pokemon_index]->moves.size(); i++) {
-        printw("%s  %d\n", get_pokemon_move_name(world.pc.pokemon[curr_pokemon_index]->moves[i]).c_str(), world.pc.pokemon[curr_pokemon_index]->current_pps[i]);
+  do {
+    num_moves = world.pc.pokemon[curr_pokemon_index]->moves.size();
+    clear();
+    printw("Encountered a wild %s\n", (random_pokemon->identifier).c_str());
+    printw("%s: %d/%d    %s: %d/%d\n\n", (world.pc.pokemon[curr_pokemon_index]->identifier).c_str(), world.pc.pokemon[curr_pokemon_index]->stats[0], world.pc.pokemon[curr_pokemon_index]->max_health, (random_pokemon->identifier).c_str(), random_pokemon->stats[0], random_pokemon->max_health);
+    printw("Fight (f)\nBag (b)\nRun (r)\nPokemon (p)\n");
+    refresh();
+    do {
+      input = getch();
+      switch (input) {
+        case 'f':
+          clear();
+          printw("%s\n", (world.pc.pokemon[curr_pokemon_index]->identifier).c_str());
+          for (i = 0; i < num_moves; i++) {
+            printw("%s  %d  (%d)\n", get_pokemon_move_name(world.pc.pokemon[curr_pokemon_index]->moves[i]).c_str(), world.pc.pokemon[curr_pokemon_index]->current_pps[i], i + 1);
+          }
+          refresh();
+          do {
+            move_input = getch();
+            switch (move_input) {
+              case '1':
+                move_index = 0;
+                break;
+              case '2':
+                move_index = 1;
+                break;
+              case '3':
+                move_index = 2;
+                break;
+              case '4':
+                move_index = 3;
+                break;
+              default:
+                break;
+            }
+          } while (!((move_input == '1' && num_moves >= 1) || (move_input == '2' && num_moves >= 2) || (move_input == '3' && num_moves >= 3) || (move_input == '4' && num_moves >= 4)));
+          // Move damage stuff here
+          critical = std::rand() % 10 < 4 ? 1.5 : 1.0;
+          stab = 1.0;
+          for (i = 0; i < world.pc.pokemon[curr_pokemon_index]->type_ids.size(); i++) {
+            for (j = 0; j < random_pokemon->type_ids.size(); j++) {
+              if (world.pc.pokemon[curr_pokemon_index]->type_ids[i] == random_pokemon->type_ids[j]) {
+                stab = 1.5;
+              }
+            }
+          }
+          random = ((double) (std::rand() % 15 + 85)) / 100;
+          power = (get_pokemon_move_power(world.pc.pokemon[curr_pokemon_index]->moves[move_index]) == 2147483647 ? 0 : get_pokemon_move_power(world.pc.pokemon[curr_pokemon_index]->moves[move_index]));
+          move_damage = ((((((2 * world.pc.pokemon[curr_pokemon_index]->pokemon_level) / 5) + 2) * power * (world.pc.pokemon[curr_pokemon_index]->stats[1] / random_pokemon->stats[2])) / 50) + 2) * critical * random * stab;
+          // So that stuff like growl doesn't deal damage
+          move_damage = power == 0 ? 0 : move_damage;
+          random_pokemon->stats[0] = random_pokemon->stats[0] - move_damage < 0 ? 0 : random_pokemon->stats[0] - move_damage;
+          random_pokemon->knocked_out = random_pokemon->stats[0] == 0 ? 1 : 0;
+          clear();
+          printw("knocked: %d, health: %d, damage dealt: %d\n", random_pokemon->knocked_out, random_pokemon->stats[0], move_damage);
+          printw("Level: %d, Power: %d, Attack: %d, Defence: %d\n", world.pc.pokemon[curr_pokemon_index]->pokemon_level, power, world.pc.pokemon[curr_pokemon_index]->stats[1], random_pokemon->stats[2]);
+          printw("STAB: %f, critical: %f, random: %f", stab, critical, random);
+          refresh();
+          getch();
+          break;
+        case 'b':
+          break;
+        case 'r':
+          random_pokemon->knocked_out = 1;
+          break;
+        case 'p':
+          break;
+        default:
+          break;
       }
-      getch();
-      break;
-    case 'b':
-      break;
-    case 'r':
-      break;
-    case 'p':
-      break;
-    default:
-      break;
-  }
+    } while (input != 'f' && input != 'b' && input != 'r' && input != 'p');
+  } while (random_pokemon->knocked_out == 0 && world.pc.pokemon[curr_pokemon_index]->knocked_out == 0);
 }
 
 void io_battle(character *aggressor, character *defender)
@@ -522,6 +575,7 @@ void io_pokemon_battle(Pokemon *random_pokemon) {
 
   int curr_pokemon_index;
   int unsigned long i;
+  curr_pokemon_index = -1;
 
   for (i = 0; i < world.pc.pokemon.size(); i++) {
     if (world.pc.pokemon[i]->knocked_out == 0) {
@@ -529,10 +583,9 @@ void io_pokemon_battle(Pokemon *random_pokemon) {
       break;
     }
   }
-  clear();
-  printw("Encountered a wild %s\n\n", (random_pokemon->identifier).c_str());
-  io_battle_options(curr_pokemon_index);
-
+  if (curr_pokemon_index != -1) {
+    io_battle_options(curr_pokemon_index, random_pokemon);
+  }
 }
 
 uint32_t move_pc_dir(uint32_t input, pair_t dest)
@@ -607,6 +660,8 @@ uint32_t move_pc_dir(uint32_t input, pair_t dest)
       Pokemon* random_pokemon;
       random_pokemon = create_pokemon(1);
       io_pokemon_battle(random_pokemon);
+      // No need to keep a random pokemon around, unless they are caught, I'll do that later
+      delete (random_pokemon);
     }
   }
   

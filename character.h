@@ -71,11 +71,25 @@ class Stat : public CSV {
     }
 };
 
+class Pokemon_Type : public CSV {
+  public:
+    int pokemon_id, type_id, slot;
+
+    Pokemon_Type(int pokemon_id, int type_id, int slot) : pokemon_id(pokemon_id), type_id(type_id), slot(slot) {}
+
+    void print() override {
+      std::cout << "Pokemon_id: " << (this->pokemon_id == INT_MAX ? " " : std::to_string(this->pokemon_id)) << std::endl;
+      std::cout << "Type_id: " << (this->type_id == INT_MAX ? " " : std::to_string(this->type_id)) << std::endl;
+      std::cout << "Slot: " << (this->slot == INT_MAX ? " " : std::to_string(this->slot)) << std::endl;
+    }
+};
+
 class Pokemon : public CSV {
   public:
     int id, species_id, height, weight, base_experience, order, is_default, pokemon_level, is_shiny, gender, knocked_out, max_health;
     std::string identifier;
     std::vector<Pokemon_Move*> moves;
+    std::vector<int> type_ids;
     std::vector<int> current_pps;
     std::vector<int> max_pps;
     // In order: hp, attack, defence, special-attack, special-defence, speed
@@ -149,19 +163,6 @@ class Pokemon_Stats : public CSV {
       std::cout << "Stat_id: " << (this->stat_id == INT_MAX ? " " : std::to_string(this->stat_id)) << std::endl;
       std::cout << "Base_stat: " << (this->base_stat == INT_MAX ? " " : std::to_string(this->base_stat)) << std::endl;
       std::cout << "Effort: " << (this->effort == INT_MAX ? " " : std::to_string(this->effort)) << std::endl;
-    }
-};
-
-class Pokemon_Type : public CSV {
-  public:
-    int pokemon_id, type_id, slot;
-
-    Pokemon_Type(int pokemon_id, int type_id, int slot) : pokemon_id(pokemon_id), type_id(type_id), slot(slot) {}
-
-    void print() override {
-      std::cout << "Pokemon_id: " << (this->pokemon_id == INT_MAX ? " " : std::to_string(this->pokemon_id)) << std::endl;
-      std::cout << "Type_id: " << (this->type_id == INT_MAX ? " " : std::to_string(this->type_id)) << std::endl;
-      std::cout << "Slot: " << (this->slot == INT_MAX ? " " : std::to_string(this->slot)) << std::endl;
     }
 };
 
