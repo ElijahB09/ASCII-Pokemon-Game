@@ -496,12 +496,13 @@ int io_open_bag(int one_move_only) {
   return return_val;
 }
 
-void io_battle_options(int curr_pokemon_index, Pokemon *random_pokemon) {
-  int input, move_input, move_index, move_damage, power, escaped;
+void io_battle_options(int curr_pokemon_index, Pokemon *random_pokemon, int wild) {
+  int input, move_input, move_index, move_damage, power, escaped, caught;
   int unsigned long i, j, num_moves;
   double critical, stab, random;
 
   escaped = 0;
+  caught = 0;
 
   do {
     num_moves = world.pc.pokemon[curr_pokemon_index]->moves.size();
@@ -509,7 +510,7 @@ void io_battle_options(int curr_pokemon_index, Pokemon *random_pokemon) {
       clear();
       printw("Encountered a wild %s\n", (random_pokemon->identifier).c_str());
       printw("%s: %d/%d    %s: %d/%d\n\n", (world.pc.pokemon[curr_pokemon_index]->identifier).c_str(), world.pc.pokemon[curr_pokemon_index]->stats[0], world.pc.pokemon[curr_pokemon_index]->max_health, (random_pokemon->identifier).c_str(), random_pokemon->stats[0], random_pokemon->max_health);
-      printw("Fight (f)\nBag (b)\nRun (r)\nPokemon (p)\n");
+      printw("Fight (f)\nBag (b)\nRun (r)\n%s\n", wild == 1 ? "Pokeball (p)" : "");
       refresh();
       input = getch();
       switch (input) {
@@ -559,7 +560,6 @@ void io_battle_options(int curr_pokemon_index, Pokemon *random_pokemon) {
           break;
         case 'b':
           int val;
-
           val = io_open_bag(1);
           input = val == 1 ? 'b' : 'U';
           break;
@@ -567,12 +567,25 @@ void io_battle_options(int curr_pokemon_index, Pokemon *random_pokemon) {
           escaped = std::rand() % 10 < 7 ? 1 : 0;
           break;
         case 'p':
+          if (wild == 1) {
+            if (world.pc.pokemon.size() < 6) {
+              world.pc.pokeballs--;
+              world.pc.pokemon.push_back(random_pokemon);
+              caught = 1;
+            } else {
+              // I know that the pokemon isnt technically caught, but I dont care, this works
+              world.pc.pokeballs--;
+              caught = 1;
+            }
+          } else {
+            input = 'P';
+          }
           break;
         default:
           break;
       }
     } while (input != 'f' && input != 'b' && input != 'r' && input != 'p');
-  } while (random_pokemon->knocked_out == 0 && world.pc.pokemon[curr_pokemon_index]->knocked_out == 0 && escaped == 0);
+  } while (random_pokemon->knocked_out == 0 && world.pc.pokemon[curr_pokemon_index]->knocked_out == 0 && escaped == 0 && caught == 0);
 }
 
 void io_battle(character *aggressor, character *defender)
@@ -653,7 +666,7 @@ void io_pokemon_battle(Pokemon *random_pokemon) {
     }
   }
   if (curr_pokemon_index != -1) {
-    io_battle_options(curr_pokemon_index, random_pokemon);
+    io_battle_options(curr_pokemon_index, random_pokemon, 1);
   }
 }
 
@@ -729,8 +742,9 @@ uint32_t move_pc_dir(uint32_t input, pair_t dest)
       Pokemon* random_pokemon;
       random_pokemon = create_pokemon(1);
       io_pokemon_battle(random_pokemon);
-      // No need to keep a random pokemon around, unless they are caught, I'll do that later
-      delete (random_pokemon);
+      if (!(world.pc.pokemon[world.pc.pokemon.size() - 1] == random_pokemon)) {
+        delete (random_pokemon);
+      }
     }
   }
   
