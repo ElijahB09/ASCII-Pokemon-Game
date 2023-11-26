@@ -86,7 +86,7 @@ class Pokemon_Type : public CSV {
 
 class Pokemon : public CSV {
   public:
-    int id, species_id, height, weight, base_experience, order, is_default, pokemon_level, is_shiny, gender, knocked_out, max_health;
+    int id, species_id, height, weight, base_experience, order, is_default, pokemon_level, is_shiny, gender, knocked_out, max_health, base_speed;
     std::string identifier;
     std::vector<Pokemon_Move*> moves;
     std::vector<int> type_ids;

@@ -427,7 +427,7 @@ void io_pokemon_center()
   getch();
 }
 
-int io_open_bag(int one_move_only) {
+int io_open_bag(int one_move_only, int wild) {
   int cycle, break_loop, input, return_val;
   long unsigned int i;
 
@@ -449,6 +449,7 @@ int io_open_bag(int one_move_only) {
     printw("Potions: %d\n", world.pc.potions);
     printw("Revives: %d\n", world.pc.revives);
     printw("Pokeballs: %d\n", world.pc.pokeballs);
+    printw("%s", wild == 1 ? "Press p to use a pokeball\n" : "");
     printw("Press h to heal the selected pokemon, press r to revive the selected pokemon%s\n", one_move_only == 0 ? ", press q to exit." : ", press q to go back.");
     refresh();
     switch (input = getch()) {
@@ -479,6 +480,21 @@ int io_open_bag(int one_move_only) {
           getch();
         }
         break;
+      case 'p':
+        if (wild == 1) {
+          if (world.pc.pokemon.size() < 6 && world.pc.pokeballs > 0) {
+            world.pc.pokeballs--;
+            break_loop = one_move_only == 0 ? 0 : 1;
+            return_val = 2;
+          } else {
+            world.pc.pokeballs--;
+            break_loop = one_move_only == 0 ? 0 : 1;
+            return_val = 1;
+          }
+        } else {
+          input = 'P';
+        }
+        break;
       case '4':
         cycle = cycle == 0 ? world.pc.pokemon.size() - 1 : (cycle - 1) % world.pc.pokemon.size();
         break;
@@ -497,7 +513,7 @@ int io_open_bag(int one_move_only) {
 }
 
 void io_battle_options(int curr_pokemon_index, Pokemon *random_pokemon, int wild) {
-  int input, move_input, move_index, move_damage, power, escaped, caught;
+  int input, move_input, move_index, other_move_index, move_damage, other_move_damage, power, escaped, caught;
   int unsigned long i, j, num_moves;
   double critical, stab, random;
 
@@ -510,7 +526,7 @@ void io_battle_options(int curr_pokemon_index, Pokemon *random_pokemon, int wild
       clear();
       printw("Encountered a wild %s\n", (random_pokemon->identifier).c_str());
       printw("%s: %d/%d    %s: %d/%d\n\n", (world.pc.pokemon[curr_pokemon_index]->identifier).c_str(), world.pc.pokemon[curr_pokemon_index]->stats[0], world.pc.pokemon[curr_pokemon_index]->max_health, (random_pokemon->identifier).c_str(), random_pokemon->stats[0], random_pokemon->max_health);
-      printw("Fight (f)\nBag (b)\nRun (r)\n%s\n", wild == 1 ? "Pokeball (p)" : "");
+      printw("Fight (f)\nBag (b)\nRun (r)\nPokemon (p)\n");
       refresh();
       input = getch();
       switch (input) {
@@ -540,8 +556,9 @@ void io_battle_options(int curr_pokemon_index, Pokemon *random_pokemon, int wild
                 break;
             }
           } while (!((move_input == '1' && num_moves >= 1) || (move_input == '2' && num_moves >= 2) || (move_input == '3' && num_moves >= 3) || (move_input == '4' && num_moves >= 4)));
-          // Move damage stuff here
-          critical = std::rand() % 10 < 4 ? 1.5 : 1.0;
+          // Move damage stuff here for player
+          critical = std::rand() % 256 < (world.pc.pokemon[curr_pokemon_index]->base_speed / 2) ? 1.5 : 1.0;
+          // STAB is a onetime calculation for the two
           stab = 1.0;
           for (i = 0; i < world.pc.pokemon[curr_pokemon_index]->type_ids.size(); i++) {
             for (j = 0; j < random_pokemon->type_ids.size(); j++) {
@@ -555,30 +572,203 @@ void io_battle_options(int curr_pokemon_index, Pokemon *random_pokemon, int wild
           move_damage = ((((((2 * world.pc.pokemon[curr_pokemon_index]->pokemon_level) / 5) + 2) * power * (world.pc.pokemon[curr_pokemon_index]->stats[1] / random_pokemon->stats[2])) / 50) + 2) * critical * random * stab;
           // So that stuff like growl doesn't deal damage
           move_damage = power == 0 ? 0 : move_damage;
-          random_pokemon->stats[0] = random_pokemon->stats[0] - move_damage < 0 ? 0 : random_pokemon->stats[0] - move_damage;
+
+          // Move damage stuff here for the other
+          other_move_index = std::rand() % random_pokemon->moves.size();
+          critical = std::rand() % 256 < (random_pokemon->base_speed / 2) ? 1.5 : 1.0;
+          random = ((double) (std::rand() % 15 + 85)) / 100;
+          power = (get_pokemon_move_power(random_pokemon->moves[other_move_index]) == 2147483647 ? 0 : get_pokemon_move_power(random_pokemon->moves[other_move_index]));
+          other_move_damage = ((((((2 * random_pokemon->pokemon_level) / 5) + 2) * power * (random_pokemon->stats[1] / world.pc.pokemon[curr_pokemon_index]->stats[2])) / 50) + 2) * critical * random * stab;
+          // So that stuff like growl doesn't deal damage
+          other_move_damage = power == 0 ? 0 : other_move_damage;
+
+          // other goes first
+          if (get_pokemon_move_priority(world.pc.pokemon[curr_pokemon_index]->moves[move_index]) < get_pokemon_move_priority(random_pokemon->moves[other_move_index])) {
+            world.pc.pokemon[curr_pokemon_index]->stats[0] = world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage < 0 ? 0 : world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage;
+            world.pc.pokemon[curr_pokemon_index]->knocked_out = world.pc.pokemon[curr_pokemon_index]->stats[0] == 0 ? 1 : 0;
+            if (world.pc.pokemon[curr_pokemon_index]->knocked_out == 0) {
+              random_pokemon->stats[0] = random_pokemon->stats[0] - move_damage < 0 ? 0 : random_pokemon->stats[0] - move_damage;
+              random_pokemon->knocked_out = random_pokemon->stats[0] == 0 ? 1 : 0;
+            }
+          // player goes first
+          } else if (get_pokemon_move_priority(world.pc.pokemon[curr_pokemon_index]->moves[move_index]) > get_pokemon_move_priority(random_pokemon->moves[other_move_index])) {
+            random_pokemon->stats[0] = random_pokemon->stats[0] - move_damage < 0 ? 0 : random_pokemon->stats[0] - move_damage;
+            random_pokemon->knocked_out = random_pokemon->stats[0] == 0 ? 1 : 0;
+            if (random_pokemon->knocked_out == 0) {
+              world.pc.pokemon[curr_pokemon_index]->stats[0] = world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage < 0 ? 0 : world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage;
+              world.pc.pokemon[curr_pokemon_index]->knocked_out = world.pc.pokemon[curr_pokemon_index]->stats[0] == 0 ? 1 : 0;
+            }
+          // speed calc
+          } else {
+            // other is faster
+            if (world.pc.pokemon[curr_pokemon_index]->stats[5] < random_pokemon->stats[5]) {
+              world.pc.pokemon[curr_pokemon_index]->stats[0] = world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage < 0 ? 0 : world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage;
+              world.pc.pokemon[curr_pokemon_index]->knocked_out = world.pc.pokemon[curr_pokemon_index]->stats[0] == 0 ? 1 : 0;
+              if (world.pc.pokemon[curr_pokemon_index]->knocked_out == 0) {
+                random_pokemon->stats[0] = random_pokemon->stats[0] - move_damage < 0 ? 0 : random_pokemon->stats[0] - move_damage;
+                random_pokemon->knocked_out = random_pokemon->stats[0] == 0 ? 1 : 0;
+              }
+            // player is faster
+            } else if (world.pc.pokemon[curr_pokemon_index]->stats[5] > random_pokemon->stats[5]) {
+              random_pokemon->stats[0] = random_pokemon->stats[0] - move_damage < 0 ? 0 : random_pokemon->stats[0] - move_damage;
+              random_pokemon->knocked_out = random_pokemon->stats[0] == 0 ? 1 : 0;
+              if (random_pokemon->knocked_out == 0) {
+                world.pc.pokemon[curr_pokemon_index]->stats[0] = world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage < 0 ? 0 : world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage;
+                world.pc.pokemon[curr_pokemon_index]->knocked_out = world.pc.pokemon[curr_pokemon_index]->stats[0] == 0 ? 1 : 0;
+              }
+            // same speeds
+            } else {
+              int turn_decide;
+              turn_decide = std::rand() % 2;
+              // other goes first
+              if (turn_decide == 0) {
+                world.pc.pokemon[curr_pokemon_index]->stats[0] = world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage < 0 ? 0 : world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage;
+                world.pc.pokemon[curr_pokemon_index]->knocked_out = world.pc.pokemon[curr_pokemon_index]->stats[0] == 0 ? 1 : 0;
+                if (world.pc.pokemon[curr_pokemon_index]->knocked_out == 0) {
+                  random_pokemon->stats[0] = random_pokemon->stats[0] - move_damage < 0 ? 0 : random_pokemon->stats[0] - move_damage;
+                  random_pokemon->knocked_out = random_pokemon->stats[0] == 0 ? 1 : 0;
+                }
+              // player goes first
+              } else {
+                random_pokemon->stats[0] = random_pokemon->stats[0] - move_damage < 0 ? 0 : random_pokemon->stats[0] - move_damage;
+                random_pokemon->knocked_out = random_pokemon->stats[0] == 0 ? 1 : 0;
+                if (random_pokemon->knocked_out == 0) {
+                  world.pc.pokemon[curr_pokemon_index]->stats[0] = world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage < 0 ? 0 : world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage;
+                  world.pc.pokemon[curr_pokemon_index]->knocked_out = world.pc.pokemon[curr_pokemon_index]->stats[0] == 0 ? 1 : 0;
+                }
+              }
+            }
+          }
+
           random_pokemon->knocked_out = random_pokemon->stats[0] == 0 ? 1 : 0;
+          world.pc.pokemon[curr_pokemon_index]->knocked_out = world.pc.pokemon[curr_pokemon_index]->stats[0] == 0 ? 1 : 0;
           break;
         case 'b':
           int val;
-          val = io_open_bag(1);
-          input = val == 1 ? 'b' : 'U';
+          val = io_open_bag(1, wild);
+          input = val == 1 || val == 2 ? 'b' : 'U';
+          if (val == 2) {
+            world.pc.pokemon.push_back(random_pokemon);
+            caught = 1;
+          }
+          if (caught != 1) {
+            // I know its messy to do it this way, but I aint got all day
+            stab = 1.0;
+            for (i = 0; i < world.pc.pokemon[curr_pokemon_index]->type_ids.size(); i++) {
+              for (j = 0; j < random_pokemon->type_ids.size(); j++) {
+                if (world.pc.pokemon[curr_pokemon_index]->type_ids[i] == random_pokemon->type_ids[j]) {
+                  stab = 1.5;
+                }
+              }
+            }
+            // Move damage stuff here for the other
+            move_index = std::rand() % random_pokemon->moves.size();
+            critical = std::rand() % 256 < (random_pokemon->base_speed / 2) ? 1.5 : 1.0;
+            random = ((double) (std::rand() % 15 + 85)) / 100;
+            power = (get_pokemon_move_power(random_pokemon->moves[move_index]) == 2147483647 ? 0 : get_pokemon_move_power(random_pokemon->moves[move_index]));
+            other_move_damage = ((((((2 * random_pokemon->pokemon_level) / 5) + 2) * power * (random_pokemon->stats[1] / world.pc.pokemon[curr_pokemon_index]->stats[2])) / 50) + 2) * critical * random * stab;
+            // So that stuff like growl doesn't deal damage
+            other_move_damage = power == 0 ? 0 : other_move_damage;
+            world.pc.pokemon[curr_pokemon_index]->stats[0] = world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage < 0 ? 0 : world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage;
+            
+            random_pokemon->knocked_out = random_pokemon->stats[0] == 0 ? 1 : 0;
+            world.pc.pokemon[curr_pokemon_index]->knocked_out = world.pc.pokemon[curr_pokemon_index]->stats[0] == 0 ? 1 : 0;
+          }
           break;
         case 'r':
           escaped = std::rand() % 10 < 7 ? 1 : 0;
+          // If escape fails, take some damage
+          if (escaped == 0) {
+            // I know its messy to do it this way, but I aint got all day
+            stab = 1.0;
+            for (i = 0; i < world.pc.pokemon[curr_pokemon_index]->type_ids.size(); i++) {
+              for (j = 0; j < random_pokemon->type_ids.size(); j++) {
+                if (world.pc.pokemon[curr_pokemon_index]->type_ids[i] == random_pokemon->type_ids[j]) {
+                  stab = 1.5;
+                }
+              }
+            }
+            // Move damage stuff here for the other
+            move_index = std::rand() % random_pokemon->moves.size();
+            critical = std::rand() % 10 < 4 ? 1.5 : 1.0;
+            random = ((double) (std::rand() % 15 + 85)) / 100;
+            power = (get_pokemon_move_power(random_pokemon->moves[move_index]) == 2147483647 ? 0 : get_pokemon_move_power(random_pokemon->moves[move_index]));
+            other_move_damage = ((((((2 * random_pokemon->pokemon_level) / 5) + 2) * power * (random_pokemon->stats[1] / world.pc.pokemon[curr_pokemon_index]->stats[2])) / 50) + 2) * critical * random * stab;
+            // So that stuff like growl doesn't deal damage
+            other_move_damage = power == 0 ? 0 : other_move_damage;
+            world.pc.pokemon[curr_pokemon_index]->stats[0] = world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage < 0 ? 0 : world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage;
+            
+            random_pokemon->knocked_out = random_pokemon->stats[0] == 0 ? 1 : 0;
+            world.pc.pokemon[curr_pokemon_index]->knocked_out = world.pc.pokemon[curr_pokemon_index]->stats[0] == 0 ? 1 : 0;
+          }
           break;
         case 'p':
-          if (wild == 1) {
-            if (world.pc.pokemon.size() < 6) {
-              world.pc.pokeballs--;
-              world.pc.pokemon.push_back(random_pokemon);
-              caught = 1;
-            } else {
-              // I know that the pokemon isnt technically caught, but I dont care, this works
-              world.pc.pokeballs--;
-              caught = 1;
+          // Pokemon swap here
+          int temp_index, poke_input, loop;
+          long unsigned int k;
+          temp_index = curr_pokemon_index;
+          loop = 1;
+          clear();
+          for (k = 0; k < world.pc.pokemon.size(); k++) {
+            printw("(%d) %s\n", k + 1, world.pc.pokemon[k]->identifier.c_str());
+          }
+          printw("Press q to go back");
+          refresh();
+          do {
+            poke_input = getch();
+            switch (poke_input) {
+              case '1':
+                curr_pokemon_index = world.pc.pokemon.size() >= 1 ? 0 : curr_pokemon_index;
+                loop = 0;
+                break;
+              case '2':
+                curr_pokemon_index = world.pc.pokemon.size() >= 2 ? 1 : curr_pokemon_index;
+                loop = 0;
+                break;
+              case '3':
+                curr_pokemon_index = world.pc.pokemon.size() >= 3 ? 2 : curr_pokemon_index;
+                loop = 0;
+                break;
+              case '4':
+                curr_pokemon_index = world.pc.pokemon.size() >= 4 ? 3 : curr_pokemon_index;
+                loop = 0;
+                break;
+              case '5':
+                curr_pokemon_index = world.pc.pokemon.size() >= 5 ? 4 : curr_pokemon_index;
+                loop = 0;
+                break;
+              case '6':
+                curr_pokemon_index = world.pc.pokemon.size() >= 6 ? 5 : curr_pokemon_index;
+                loop = 0;
+                break;
+              case 'q':
+                loop = 0;
+                break;
             }
-          } else {
-            input = 'P';
+          } while (loop);
+
+          if (temp_index != curr_pokemon_index) {
+            // I know its messy to do it this way, but I aint got all day
+            stab = 1.0;
+            for (i = 0; i < world.pc.pokemon[curr_pokemon_index]->type_ids.size(); i++) {
+              for (j = 0; j < random_pokemon->type_ids.size(); j++) {
+                if (world.pc.pokemon[curr_pokemon_index]->type_ids[i] == random_pokemon->type_ids[j]) {
+                  stab = 1.5;
+                }
+              }
+            }
+            // Move damage stuff here for the other
+            move_index = std::rand() % random_pokemon->moves.size();
+            critical = std::rand() % 10 < 4 ? 1.5 : 1.0;
+            random = ((double) (std::rand() % 15 + 85)) / 100;
+            power = (get_pokemon_move_power(random_pokemon->moves[move_index]) == 2147483647 ? 0 : get_pokemon_move_power(random_pokemon->moves[move_index]));
+            other_move_damage = ((((((2 * random_pokemon->pokemon_level) / 5) + 2) * power * (random_pokemon->stats[1] / world.pc.pokemon[curr_pokemon_index]->stats[2])) / 50) + 2) * critical * random * stab;
+            // So that stuff like growl doesn't deal damage
+            other_move_damage = power == 0 ? 0 : other_move_damage;
+            world.pc.pokemon[curr_pokemon_index]->stats[0] = world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage < 0 ? 0 : world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage;
+            
+            random_pokemon->knocked_out = random_pokemon->stats[0] == 0 ? 1 : 0;
+            world.pc.pokemon[curr_pokemon_index]->knocked_out = world.pc.pokemon[curr_pokemon_index]->stats[0] == 0 ? 1 : 0;
           }
           break;
         default:
@@ -636,37 +826,22 @@ void io_battle(character *aggressor, character *defender)
   }
 }
 
-void io_pokemon_battle(Pokemon *random_pokemon) {
-  // clear();
-  // printw("Encountered Pokemon\n");
-  // printw("Pokemon: %s\n", (random_pokemon->identifier).c_str());
-  // printw("Pokemon level: %d\n", random_pokemon->pokemon_level);
-  // printw("Health: %d, Attack: %d, Defence: %d, Special-Attack: %d, Special-Defence: %d, Speed: %d\n", random_pokemon->stats[0], random_pokemon->stats[1], random_pokemon->stats[2], random_pokemon->stats[3], random_pokemon->stats[4], random_pokemon->stats[5]);
-  // if (random_pokemon->moves.size() == 1) {
-  //   printw("Move 1: %s\n", get_pokemon_move_name(random_pokemon->moves[0]).c_str());
-  // } else if (random_pokemon->moves.size() == 2) {
-  //   printw("Move 1: %s, Move 2: %s\n", get_pokemon_move_name(random_pokemon->moves[0]).c_str(), get_pokemon_move_name(random_pokemon->moves[1]).c_str());
-  // }
-  // printw("Gender: %s\n", random_pokemon->gender == 1 ? "Female" : "Male");
-  // printw("Shiny: %s\n", random_pokemon->is_shiny == 1 ? "Yes" : "No");
-  // printw("Press any key to exit\n");
-  // refresh();
-  // getch();
-  // io_display();
-  // refresh();
-
-  int curr_pokemon_index;
+void io_pokemon_battle(Pokemon *random_pokemon) {int curr_pokemon_index;
+  long unsigned int pokemon, temp_pokemon;
   int unsigned long i;
+  
   curr_pokemon_index = -1;
 
   for (i = 0; i < world.pc.pokemon.size(); i++) {
     if (world.pc.pokemon[i]->knocked_out == 0) {
       curr_pokemon_index = i;
-      break;
+      pokemon = world.pc.pokemon.size();
+      io_battle_options(curr_pokemon_index, random_pokemon, 1);
+      temp_pokemon = world.pc.pokemon.size();
+      if (temp_pokemon > pokemon) {
+        break;
+      }
     }
-  }
-  if (curr_pokemon_index != -1) {
-    io_battle_options(curr_pokemon_index, random_pokemon, 1);
   }
 }
 
@@ -904,7 +1079,7 @@ void io_handle_input(pair_t dest)
       turn_not_consumed = 0;
       break;
     case 'B':
-      io_open_bag(0);
+      io_open_bag(0, 0);
       io_display();
       turn_not_consumed = 1;
       break;

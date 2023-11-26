@@ -929,6 +929,9 @@ void set_pokemon_stats(Pokemon* pokemon) {
       } else {
         stat_val = ((((temp_stat->base_stat + pokemon->stat_ivs[count]) * 2) * pokemon->pokemon_level) / 100) + 5;
       }
+      if (count == 5) {
+        pokemon->base_speed = temp_stat->base_stat;
+      }
       pokemon->stats.push_back(stat_val);
       pokemon->stat_efforts.push_back(temp_stat->effort);
       count++;
