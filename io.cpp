@@ -524,7 +524,11 @@ void io_battle_options(int curr_pokemon_index, Pokemon *random_pokemon, int wild
     num_moves = world.pc.pokemon[curr_pokemon_index]->moves.size();
     do {
       clear();
-      printw("Encountered a wild %s\n", (random_pokemon->identifier).c_str());
+      if (wild == 1) {
+        printw("Encountered a wild %s\n", (random_pokemon->identifier).c_str());
+      } else {
+        printw("Encountered a trainer's %s\n", (random_pokemon->identifier).c_str());
+      }
       printw("%s: %d/%d    %s: %d/%d\n\n", (world.pc.pokemon[curr_pokemon_index]->identifier).c_str(), world.pc.pokemon[curr_pokemon_index]->stats[0], world.pc.pokemon[curr_pokemon_index]->max_health, (random_pokemon->identifier).c_str(), random_pokemon->stats[0], random_pokemon->max_health);
       printw("Fight (f)\nBag (b)\nRun (r)\nPokemon (p)\n");
       refresh();
@@ -781,52 +785,73 @@ void io_battle_options(int curr_pokemon_index, Pokemon *random_pokemon, int wild
 void io_battle(character *aggressor, character *defender)
 {
   npc *n = (npc *) ((aggressor == &world.pc) ? defender : aggressor);
-  int cycle, input, break_loop;
+  int curr_pokemon_index, curr_npc_index, battle_over, player_lost;
   long unsigned int i;
 
-  break_loop = 0;
-  cycle = 0;
-  do {
-    clear();
-    printw("Use the keys 4 and 6 on a num pad to cycle through the pokemon a trainer has. Hit q to exit\n");
-    printw("This trainer has %d pokemon\n", n->pokemon.size());
-    printw("Pokemon: %s\n", (n->pokemon[cycle]->identifier).c_str());
-    printw("Pokemon level: %d\n", n->pokemon[cycle]->pokemon_level);
-    printw("Health: %d, Attack: %d, Defence: %d, Special-Attack: %d, Special-Defence: %d, Speed: %d\n", n->pokemon[cycle]->stats[0], n->pokemon[cycle]->stats[1], n->pokemon[cycle]->stats[2], n->pokemon[cycle]->stats[3], n->pokemon[cycle]->stats[4], n->pokemon[cycle]->stats[5]);
-    for (i = 0; i < n->pokemon[cycle]->moves.size(); i++) {
-      printw("Move %d: %s\n", i + 1, get_pokemon_move_name(n->pokemon[cycle]->moves[i]).c_str());
-    }
-    printw("Gender: %s\n", n->pokemon[cycle]->gender == 1 ? "Female" : "Male");
-    printw("Shiny: %s\n", n->pokemon[cycle]->is_shiny == 1 ? "Yes" : "No");
-    printw("Press q to exit\n");
-    refresh();
-    switch (input = getch()) {
-      case '4':
-        cycle = cycle == 0 ? n->pokemon.size() - 1 : (cycle - 1) % n->pokemon.size();
-        break;
-      case '6':
-        cycle = (cycle + 1) % n->pokemon.size();
-        break;
-      case 'q':
-        break_loop = 1;
-        break;
-      default:
-        break;
-    }
-  } while (!break_loop);
+  curr_pokemon_index = -1;
+  curr_npc_index = -1;
+  battle_over = 0;
+  player_lost = -1;
 
-  io_display();
-  mvprintw(0, 0, "Aww, how'd you get so strong?  You and your pokemon must share a special bond!");
-  refresh();
-  getch();
+  for (i = 0; i < world.pc.pokemon.size(); i++) {
+    if (world.pc.pokemon[i]->knocked_out == 0) {
+      curr_pokemon_index = i;
+      break;
+    }
+  }
 
-  n->defeated = 1;
-  if (n->ctype == char_hiker || n->ctype == char_rival) {
-    n->mtype = move_wander;
+  for (i = 0; i < n->pokemon.size(); i++) {
+    if (n->pokemon[i]->knocked_out == 0) {
+      curr_npc_index = i;
+      break;
+    }
+  }
+
+  if (curr_pokemon_index != -1 && curr_npc_index != -1) {
+    do {
+      io_battle_options(curr_pokemon_index, n->pokemon[curr_npc_index], 0);
+      if (world.pc.pokemon[curr_pokemon_index]->knocked_out == 1) {
+        // Player loss
+        if (curr_pokemon_index == (int) (world.pc.pokemon.size() - 1)) {
+          battle_over = 1;
+          player_lost = 1;
+        } else {
+          curr_pokemon_index++;
+        }
+      }
+
+      if (n->pokemon[curr_npc_index]->knocked_out == 1) {
+        // NPC loss
+        if (curr_npc_index == (int) (n->pokemon.size() - 1)) {
+          battle_over = 1;
+          player_lost = 0;
+        } else {
+          curr_npc_index++;
+        }
+      }
+    } while (!battle_over);
+
+    if (player_lost == 0) {
+      io_display();
+      mvprintw(0, 0, "Aww, how'd you get so strong?  You and your pokemon must share a special bond!");
+      refresh();
+      getch();
+
+      n->defeated = 1;
+      if (n->ctype == char_hiker || n->ctype == char_rival) {
+        n->mtype = move_wander;
+      }
+    } else {
+      io_display();
+      mvprintw(0, 0, "Try getting some better Pokemon loser!");
+      refresh();
+      getch();
+    }
   }
 }
 
-void io_pokemon_battle(Pokemon *random_pokemon) {int curr_pokemon_index;
+void io_pokemon_battle(Pokemon *random_pokemon) {
+  int curr_pokemon_index;
   long unsigned int pokemon, temp_pokemon;
   int unsigned long i;
   
