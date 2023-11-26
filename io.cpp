@@ -427,19 +427,90 @@ void io_pokemon_center()
   getch();
 }
 
+int io_open_bag(int one_move_only) {
+  int cycle, break_loop, input, return_val;
+  long unsigned int i;
+
+  break_loop = 0;
+  cycle = 0;
+  do {
+    clear();
+    printw("Your Pokemon, use 4 and 6 to scroll between them\n");
+    printw("Pokemon: %s\n", (world.pc.pokemon[cycle]->identifier).c_str());
+    printw("Pokemon level: %d\n", world.pc.pokemon[cycle]->pokemon_level);
+    printw("Health: %d/%d, Attack: %d, Defence: %d, Special-Attack: %d, Special-Defence: %d, Speed: %d\n", world.pc.pokemon[cycle]->stats[0], world.pc.pokemon[cycle]->max_health, world.pc.pokemon[cycle]->stats[1], world.pc.pokemon[cycle]->stats[2], world.pc.pokemon[cycle]->stats[3], world.pc.pokemon[cycle]->stats[4], world.pc.pokemon[cycle]->stats[5]);
+    for (i = 0; i < world.pc.pokemon[cycle]->moves.size(); i++) {
+      printw("Move %d: %s\n", i + 1, get_pokemon_move_name(world.pc.pokemon[cycle]->moves[i]).c_str());
+    }
+    printw("Gender: %s\n", world.pc.pokemon[cycle]->gender == 1 ? "Female" : "Male");
+    printw("Shiny: %s\n", world.pc.pokemon[cycle]->is_shiny == 1 ? "Yes" : "No");
+    printw("Knocked out: %s\n", world.pc.pokemon[cycle]->knocked_out == 1 ? "Yes" : "No");
+    printw("Your items\n");
+    printw("Potions: %d\n", world.pc.potions);
+    printw("Revives: %d\n", world.pc.revives);
+    printw("Pokeballs: %d\n", world.pc.pokeballs);
+    printw("Press h to heal the selected pokemon, press r to revive the selected pokemon%s\n", one_move_only == 0 ? ", press q to exit." : ", press q to go back.");
+    refresh();
+    switch (input = getch()) {
+      case 'h':
+        if (world.pc.pokemon[cycle]->stats[0] < world.pc.pokemon[cycle]->max_health && world.pc.pokemon[cycle]->max_health != 0 && world.pc.pokemon[cycle]->knocked_out == 0 && world.pc.potions > 0) {
+          world.pc.pokemon[cycle]->stats[0] = ((world.pc.pokemon[cycle]->stats[0] + 20) > world.pc.pokemon[cycle]->max_health) ? world.pc.pokemon[cycle]->max_health : world.pc.pokemon[cycle]->stats[0] += 20;
+          world.pc.potions--;
+          break_loop = one_move_only == 0 ? 0 : 1;
+          return_val = 1;
+        } else {
+          clear();
+          printw("Your pokemon is %s\n", world.pc.pokemon[cycle]->knocked_out == 1 ? "knocked out, you can't revive it with a potion." : "already at max health!");
+          refresh();
+          getch();
+        }
+        break;
+      case 'r':
+        if (world.pc.pokemon[cycle]->stats[0] == 0 && world.pc.pokemon[cycle]->knocked_out == 1 && world.pc.revives > 0) {
+          world.pc.pokemon[cycle]->knocked_out = 0;
+          world.pc.pokemon[cycle]->stats[0] = world.pc.pokemon[cycle]->max_health / 2;
+          world.pc.revives--;
+          break_loop = one_move_only == 0 ? 0 : 1;
+          return_val = 1;
+        } else {
+          clear();
+          printw("Your pokemon is not knocked out!\n");
+          refresh();
+          getch();
+        }
+        break;
+      case '4':
+        cycle = cycle == 0 ? world.pc.pokemon.size() - 1 : (cycle - 1) % world.pc.pokemon.size();
+        break;
+      case '6':
+        cycle = (cycle + 1) % world.pc.pokemon.size();
+        break;
+      case 'q':
+        break_loop = 1;
+        return_val = 0;
+        break;
+      default:
+        break;
+    }
+  } while (!break_loop);
+  return return_val;
+}
+
 void io_battle_options(int curr_pokemon_index, Pokemon *random_pokemon) {
-  int input, move_input, move_index, move_damage, power;
+  int input, move_input, move_index, move_damage, power, escaped;
   int unsigned long i, j, num_moves;
   double critical, stab, random;
 
+  escaped = 0;
+
   do {
     num_moves = world.pc.pokemon[curr_pokemon_index]->moves.size();
-    clear();
-    printw("Encountered a wild %s\n", (random_pokemon->identifier).c_str());
-    printw("%s: %d/%d    %s: %d/%d\n\n", (world.pc.pokemon[curr_pokemon_index]->identifier).c_str(), world.pc.pokemon[curr_pokemon_index]->stats[0], world.pc.pokemon[curr_pokemon_index]->max_health, (random_pokemon->identifier).c_str(), random_pokemon->stats[0], random_pokemon->max_health);
-    printw("Fight (f)\nBag (b)\nRun (r)\nPokemon (p)\n");
-    refresh();
     do {
+      clear();
+      printw("Encountered a wild %s\n", (random_pokemon->identifier).c_str());
+      printw("%s: %d/%d    %s: %d/%d\n\n", (world.pc.pokemon[curr_pokemon_index]->identifier).c_str(), world.pc.pokemon[curr_pokemon_index]->stats[0], world.pc.pokemon[curr_pokemon_index]->max_health, (random_pokemon->identifier).c_str(), random_pokemon->stats[0], random_pokemon->max_health);
+      printw("Fight (f)\nBag (b)\nRun (r)\nPokemon (p)\n");
+      refresh();
       input = getch();
       switch (input) {
         case 'f':
@@ -485,17 +556,15 @@ void io_battle_options(int curr_pokemon_index, Pokemon *random_pokemon) {
           move_damage = power == 0 ? 0 : move_damage;
           random_pokemon->stats[0] = random_pokemon->stats[0] - move_damage < 0 ? 0 : random_pokemon->stats[0] - move_damage;
           random_pokemon->knocked_out = random_pokemon->stats[0] == 0 ? 1 : 0;
-          clear();
-          printw("knocked: %d, health: %d, damage dealt: %d\n", random_pokemon->knocked_out, random_pokemon->stats[0], move_damage);
-          printw("Level: %d, Power: %d, Attack: %d, Defence: %d\n", world.pc.pokemon[curr_pokemon_index]->pokemon_level, power, world.pc.pokemon[curr_pokemon_index]->stats[1], random_pokemon->stats[2]);
-          printw("STAB: %f, critical: %f, random: %f", stab, critical, random);
-          refresh();
-          getch();
           break;
         case 'b':
+          int val;
+
+          val = io_open_bag(1);
+          input = val == 1 ? 'b' : 'U';
           break;
         case 'r':
-          random_pokemon->knocked_out = 1;
+          escaped = std::rand() % 10 < 7 ? 1 : 0;
           break;
         case 'p':
           break;
@@ -503,7 +572,7 @@ void io_battle_options(int curr_pokemon_index, Pokemon *random_pokemon) {
           break;
       }
     } while (input != 'f' && input != 'b' && input != 'r' && input != 'p');
-  } while (random_pokemon->knocked_out == 0 && world.pc.pokemon[curr_pokemon_index]->knocked_out == 0);
+  } while (random_pokemon->knocked_out == 0 && world.pc.pokemon[curr_pokemon_index]->knocked_out == 0 && escaped == 0);
 }
 
 void io_battle(character *aggressor, character *defender)
@@ -716,70 +785,6 @@ void io_teleport_world(pair_t dest)
   io_teleport_pc(dest);
 }
 
-void io_open_bag() {
-  int cycle, break_loop, input;
-  long unsigned int i;
-
-  break_loop = 0;
-  cycle = 0;
-  do {
-    clear();
-    printw("Your Pokemon, use 4 and 6 to scroll between them\n");
-    printw("Pokemon: %s\n", (world.pc.pokemon[cycle]->identifier).c_str());
-    printw("Pokemon level: %d\n", world.pc.pokemon[cycle]->pokemon_level);
-    printw("Health: %d/%d, Attack: %d, Defence: %d, Special-Attack: %d, Special-Defence: %d, Speed: %d\n", world.pc.pokemon[cycle]->stats[0], world.pc.pokemon[cycle]->max_health, world.pc.pokemon[cycle]->stats[1], world.pc.pokemon[cycle]->stats[2], world.pc.pokemon[cycle]->stats[3], world.pc.pokemon[cycle]->stats[4], world.pc.pokemon[cycle]->stats[5]);
-    for (i = 0; i < world.pc.pokemon[cycle]->moves.size(); i++) {
-      printw("Move %d: %s\n", i + 1, get_pokemon_move_name(world.pc.pokemon[cycle]->moves[i]).c_str());
-    }
-    printw("Gender: %s\n", world.pc.pokemon[cycle]->gender == 1 ? "Female" : "Male");
-    printw("Shiny: %s\n", world.pc.pokemon[cycle]->is_shiny == 1 ? "Yes" : "No");
-    printw("Knocked out: %s\n", world.pc.pokemon[cycle]->knocked_out == 1 ? "Yes" : "No");
-    printw("Your items\n");
-    printw("Potions: %d\n", world.pc.potions);
-    printw("Revives: %d\n", world.pc.revives);
-    printw("Pokeballs: %d\n", world.pc.pokeballs);
-    printw("Press h to heal the selected pokemon, press r to revive the selected pokemon, press q to exit\n");
-    refresh();
-    switch (input = getch()) {
-      case 'h':
-        if (world.pc.pokemon[cycle]->stats[0] < world.pc.pokemon[cycle]->max_health && world.pc.pokemon[cycle]->max_health != 0 && world.pc.pokemon[cycle]->knocked_out == 0 && world.pc.potions > 0) {
-          world.pc.pokemon[cycle]->stats[0] = ((world.pc.pokemon[cycle]->stats[0] + 20) > world.pc.pokemon[cycle]->max_health) ? world.pc.pokemon[cycle]->max_health : world.pc.pokemon[cycle]->stats[0] += 20;
-          world.pc.potions--;
-        } else {
-          clear();
-          printw("Your pokemon is %s\n", world.pc.pokemon[cycle]->knocked_out == 1 ? "knocked out, you can't revive it with a potion." : "already at max health!");
-          refresh();
-          getch();
-        }
-        break;
-      case 'r':
-        if (world.pc.pokemon[cycle]->stats[0] == 0 && world.pc.pokemon[cycle]->knocked_out == 1 && world.pc.revives > 0) {
-          world.pc.pokemon[cycle]->knocked_out = 0;
-          world.pc.pokemon[cycle]->stats[0] = world.pc.pokemon[cycle]->max_health / 2;
-          world.pc.revives--;
-        } else {
-          clear();
-          printw("Your pokemon is not knocked out!\n");
-          refresh();
-          getch();
-        }
-        break;
-      case '4':
-        cycle = cycle == 0 ? world.pc.pokemon.size() - 1 : (cycle - 1) % world.pc.pokemon.size();
-        break;
-      case '6':
-        cycle = (cycle + 1) % world.pc.pokemon.size();
-        break;
-      case 'q':
-        break_loop = 1;
-        break;
-      default:
-        break;
-    }
-  } while (!break_loop);
-  io_display();
-}
-
 void io_handle_input(pair_t dest)
 {
   uint32_t turn_not_consumed;
@@ -885,7 +890,8 @@ void io_handle_input(pair_t dest)
       turn_not_consumed = 0;
       break;
     case 'B':
-      io_open_bag();
+      io_open_bag(0);
+      io_display();
       turn_not_consumed = 1;
       break;
     default:
