@@ -1,3 +1,93 @@
+commit 53155638d4d4574408f899a485c3fb363e2207f5
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Nov 26 21:52:38 2023 -0600
+
+    Update README
+
+commit 161ec3f7c9cc35804fdef192d5a5ccdb5240a8fe
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Nov 26 21:50:19 2023 -0600
+
+    Fixed a bug where I wasnt setting knocked out for other pokemon
+
+commit 03761ccc4fd6c67771da4827e399d3489a6f13fd
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Nov 26 00:22:12 2023 -0600
+
+    Added in trainer battling, smooth sailing so far
+
+commit b0edafb7e27008857cb8c14e51c2d9053a0a768b
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Nov 25 23:16:28 2023 -0600
+
+    Fixed a lot of bugs with pokemon battling, think random encounters are done
+
+commit d11135fc78f23c781e01129d28237d3ff725c912
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Nov 25 21:30:45 2023 -0600
+
+    Added catching wild pokemon
+
+commit 8457b0cb644c6b3fab6a6cf4b36e3f694307fd2d
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Nov 25 21:08:56 2023 -0600
+
+    Added bag functionality to battles, more testing needed
+
+commit 271e2cee7f5ac339650e0b29d372ac5deb9bb5b3
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Nov 25 18:50:37 2023 -0600
+
+    Added one-sided battling for random encounters
+
+commit ee5a3ec04fea93a7bd9e4c6d7d243ed8ef815790
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Fri Nov 24 23:37:44 2023 -0600
+
+    Added in pps for moves and a basic battle screen
+
+commit 6b6b81cd215045804bbe2687789b3c0156373768
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Fri Nov 24 23:00:18 2023 -0600
+
+    Added pokemart funcitonality and removed some debugging code
+
+commit cf41a7dfa902177d2551c46bed6bf9a0291a9ccd
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Fri Nov 24 21:01:06 2023 -0600
+
+    Added bag feature
+
+commit fe1694f05425480042b7fd344ebee6337b29febe
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Fri Nov 24 19:29:09 2023 -0600
+
+    Added in pokemon reviving for centers
+
+commit 2b28cc75262f4f3af5a107a768050a219a8ab169
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Fri Nov 24 19:27:44 2023 -0600
+
+    Added pokemon healing in centers
+
+commit e45b932ec0c81f6063a0a88977c0e88bed24c455
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Fri Nov 24 19:10:38 2023 -0600
+
+    Fixed a small bug with the bag key that I added which caused the game to freeze
+
+commit 55c99dffae9a1fb4a4fa7fb421ebaf3448fef4cf
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Fri Nov 24 18:55:32 2023 -0600
+
+    Fixed my memory leaking and added some methods for setting up battle
+
+commit 8a11655e0f2f4459ff3d3206261f40d539978186
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sat Nov 11 13:24:04 2023 -0600
+
+    Updated README and CHANGELOG
+
 commit 721476372a5196e98ff0f67e1bbe1ab5b47505c7
 Author: Elijah Brady <bradyeli09@gmail.com>
 Date:   Sat Nov 11 12:00:37 2023 -0600
