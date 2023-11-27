@@ -227,7 +227,6 @@ class character {
   int next_turn;
   int seq_num;
   std::vector<Pokemon*> pokemon;
-  int all_knocked_out;
 };
 
 class npc : public character {

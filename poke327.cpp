@@ -1075,6 +1075,8 @@ Pokemon* create_pokemon(int random) {
   set_pokemon_stats(rand_pokemon);
   // Generate gender
   rand_pokemon->gender = std::rand() % 2;
+  // Set pokemon fightability?
+  rand_pokemon->knocked_out = 0;
   // Generate types
   set_pokemon_types(rand_pokemon);
   return rand_pokemon;
@@ -1115,6 +1117,7 @@ void init_pc()
     set_pokemon_stats(world.pc.pokemon[0]);
     // Set pokemon gender
     world.pc.pokemon[0]->gender = std::rand() % 2;
+    // Set pokemon fightability?
     world.pc.pokemon[0]->knocked_out = 0;
     // Set pokemon types
     set_pokemon_types(world.pc.pokemon[0]);
@@ -1126,7 +1129,6 @@ void init_pc()
   world.pc.potions = 5;
   world.pc.revives = 3;
   world.pc.pokeballs = 10;
-  world.pc.all_knocked_out = 1;
   world.pc.seq_num = world.char_seq_num++;
 
   heap_insert(&world.cur_map->turn, &world.pc);
