@@ -1,8 +1,11 @@
+#include "raylib.h"
+
 #include <unistd.h>
 #include <ncurses.h>
 #include <cctype>
 #include <cstdlib>
 #include <climits>
+#include <math.h>
 
 #include "io.h"
 #include "character.h"
@@ -48,6 +51,30 @@ void io_reset_terminal(void)
 
 void io_deliver_justice() {
   endwin();
+
+  // Initialization
+  InitAudioDevice(); // Initialize the audio device
+
+  // Load the MP3 file
+  Music music = LoadMusicStream("./vine-boom.mp3");
+
+  // Play the loaded music
+  PlayMusicStream(music);
+
+  // Wait for the music to finish playing (or any key press to stop)
+  while (!WindowShouldClose() && !IsKeyPressed(KEY_SPACE))
+  {
+      // Update the music stream
+      UpdateMusicStream(music);
+  }
+
+  // Stop the music and unload resources
+  StopMusicStream(music);
+  UnloadMusicStream(music);
+
+  // Close the audio device
+  CloseAudioDevice();
+
   const char* unicodeCharacters = "\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u287F\u283F\u281B\u281B\u281B\u281B\u283F\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\n"
                                   "\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u287F\u281B\u2809\u2801\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2809\u283B\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\n"
                                   "\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u285F\u2801\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2818\u28BF\u28FF\u28FF\u28FF\u28FF\n"
