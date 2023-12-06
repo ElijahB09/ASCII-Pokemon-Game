@@ -36,6 +36,7 @@ pair_t all_dirs[8] = {
 };
 
 Pokemon* starter_pokemon;
+int in_built_level;
 std::vector<CSV*> pokemon, pokemon_moves, pokemon_species, pokemon_stats, pokemon_types, stats, moves, experience, type_names;
 
 
@@ -912,13 +913,13 @@ void generate_pokemon_IVs(Pokemon* pokemon) {
     // Should give a random stat distribution from [0, 15]
     pokemon->stat_ivs.push_back(std::rand() % 16);
   }
+  pokemon->is_shiny = (rand() % 8192 == 0);
 }
 
 void set_pokemon_stats(Pokemon* pokemon) {
   int count;
   int stat_val;
 
-  generate_pokemon_IVs(pokemon);
   count = 0;
   for (CSV* pokemon_stat : pokemon_stats) {
     Pokemon_Stats* temp_stat = dynamic_cast<Pokemon_Stats*>(pokemon_stat);
@@ -937,8 +938,6 @@ void set_pokemon_stats(Pokemon* pokemon) {
       count++;
     }
   }
-
-  pokemon->is_shiny = (rand() % 8192 == 0);
 }
 
 void set_pokemon_types(Pokemon *pokemon) {
@@ -1072,6 +1071,7 @@ Pokemon* create_pokemon(int random) {
     }
   }
   // Generate stats
+  generate_pokemon_IVs(rand_pokemon);
   set_pokemon_stats(rand_pokemon);
   // Generate gender
   rand_pokemon->gender = std::rand() % 2;
@@ -1103,7 +1103,7 @@ void init_pc()
     world.pc.pokemon.push_back(starter_pokemon);
 
     // Sets pokemon level
-    world.pc.pokemon[0]->pokemon_level = 1;
+    world.pc.pokemon[0]->pokemon_level = in_built_level;
     // Sets pokemon moves
     valid_moves = get_valid_pokemon_moves(world.pc.pokemon[0]);
     for (Pokemon_Move* valid_move : valid_moves) {
@@ -1114,6 +1114,7 @@ void init_pc()
       }
     }
     // Sets pokemon stats
+    generate_pokemon_IVs(world.pc.pokemon[0]);
     set_pokemon_stats(world.pc.pokemon[0]);
     // Set pokemon gender
     world.pc.pokemon[0]->gender = std::rand() % 2;
@@ -1388,6 +1389,12 @@ void game_loop()
   pair_t d;
   
   while (!world.quit) {
+    if (world.reset == 1) {
+      world.reset = 0;
+      in_built_level++;
+      world.pc.pokemon[0]->pokemon_level = in_built_level;
+      set_pokemon_stats(world.pc.pokemon[0]);
+    }
     c = (character *) heap_remove_min(&world.cur_map->turn);
     n = dynamic_cast<npc *> (c);
     p = dynamic_cast<pc *> (c);
@@ -1653,78 +1660,12 @@ int main(int argc, char *argv[])
   srand(seed);
 
   io_init_terminal();
-
+  in_built_level = 1;
   choose_starter(pokemon);
-  
   init_world();
-
-  /* print_hiker_dist(); */
-  
-  /*
-  do {
-    print_map();  
-    printf("Current position is %d%cx%d%c (%d,%d).  "
-           "Enter command: ",
-           abs(world.cur_idx[dim_x] - (WORLD_SIZE / 2)),
-           world.cur_idx[dim_x] - (WORLD_SIZE / 2) >= 0 ? 'E' : 'W',
-           abs(world.cur_idx[dim_y] - (WORLD_SIZE / 2)),
-           world.cur_idx[dim_y] - (WORLD_SIZE / 2) <= 0 ? 'N' : 'S',
-           world.cur_idx[dim_x] - (WORLD_SIZE / 2),
-           world.cur_idx[dim_y] - (WORLD_SIZE / 2));
-    scanf(" %c", &c);
-    switch (c) {
-    case 'n':
-      if (world.cur_idx[dim_y]) {
-        world.cur_idx[dim_y]--;
-        new_map();
-      }
-      break;
-    case 's':
-      if (world.cur_idx[dim_y] < WORLD_SIZE - 1) {
-        world.cur_idx[dim_y]++;
-        new_map();
-      }
-      break;
-    case 'e':
-      if (world.cur_idx[dim_x] < WORLD_SIZE - 1) {
-        world.cur_idx[dim_x]++;
-        new_map();
-      }
-      break;
-    case 'w':
-      if (world.cur_idx[dim_x]) {
-        world.cur_idx[dim_x]--;
-        new_map();
-      }
-      break;
-     case 'q':
-      break;
-    case 'f':
-      scanf(" %d %d", &x, &y);
-      if (x >= -(WORLD_SIZE / 2) && x <= WORLD_SIZE / 2 &&
-          y >= -(WORLD_SIZE / 2) && y <= WORLD_SIZE / 2) {
-        world.cur_idx[dim_x] = x + (WORLD_SIZE / 2);
-        world.cur_idx[dim_y] = y + (WORLD_SIZE / 2);
-        new_map();
-      }
-      break;
-    case '?':
-    case 'h':
-      printf("Move with 'e'ast, 'w'est, 'n'orth, 's'outh or 'f'ly x y.\n"
-             "Quit with 'q'.  '?' and 'h' print this help message.\n");
-      break;
-    default:
-      fprintf(stderr, "%c: Invalid input.  Enter '?' for help.\n", c);
-      break;
-    }
-  } while (c != 'q');
-
-  */
-
   game_loop();
-  
-  delete_world();
 
+  delete_world();
   io_reset_terminal();
 
   // For each csv file

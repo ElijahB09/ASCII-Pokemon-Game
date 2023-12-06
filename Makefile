@@ -8,7 +8,7 @@ TERM = "F2023"
 CFLAGS = -Wall -Werror -ggdb -funroll-loops -DTERM=$(TERM)
 CXXFLAGS = -Wall -Werror -ggdb -funroll-loops -DTERM=$(TERM)
 
-LDFLAGS = -lncurses -ldl -lpthread -lm -lX11
+LDFLAGS = -lncurses
 
 BIN = poke327
 OBJS = poke327.o heap.o io.o character.o
@@ -17,7 +17,7 @@ all: $(BIN) etags
 
 $(BIN): $(OBJS)
 	@$(ECHO) Linking $@
-	@$(CXX) $^ -o $@ libraylib.a $(LDFLAGS)
+	@$(CXX) $^ -o $@ $(LDFLAGS)
 
 -include $(OBJS:.o=.d)
 

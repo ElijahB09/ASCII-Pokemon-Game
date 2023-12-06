@@ -105,6 +105,7 @@ class world {
   int rival_dist[MAP_Y][MAP_X];
   class pc pc;
   int quit;
+  int reset;
   int add_trainer_prob;
   int char_seq_num;
 };

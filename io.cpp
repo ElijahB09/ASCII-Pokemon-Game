@@ -1,5 +1,3 @@
-#include "raylib.h"
-
 #include <unistd.h>
 #include <ncurses.h>
 #include <cctype>
@@ -49,56 +47,8 @@ void io_reset_terminal(void)
   io_tail = NULL;
 }
 
-void io_deliver_justice() {
-  endwin();
-
-  // Initialization
-  InitAudioDevice(); // Initialize the audio device
-
-  // Load the MP3 file
-  Music music = LoadMusicStream("./vine-boom.mp3");
-
-  // Play the loaded music
-  PlayMusicStream(music);
-
-  // Wait for the music to finish playing (or any key press to stop)
-  while (!WindowShouldClose() && !IsKeyPressed(KEY_SPACE))
-  {
-      // Update the music stream
-      UpdateMusicStream(music);
-  }
-
-  // Stop the music and unload resources
-  StopMusicStream(music);
-  UnloadMusicStream(music);
-
-  // Close the audio device
-  CloseAudioDevice();
-
-  const char* unicodeCharacters = "\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u287F\u283F\u281B\u281B\u281B\u281B\u283F\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\n"
-                                  "\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u287F\u281B\u2809\u2801\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2809\u283B\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\n"
-                                  "\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u285F\u2801\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2818\u28BF\u28FF\u28FF\u28FF\u28FF\n"
-                                  "\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u285F\u2801\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u28FE\u28FF\u28FF\u28FF\u28FF\n"
-                                  "\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u280B\u2808\u2800\u2800\u2800\u2800\u2810\u283A\u28D6\u2884\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u28FF\u28FF\u28FF\u28FF\u28FF\n"
-                                  "\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u284F\u2880\u2846\u2800\u2800\u2800\u288B\u28ED\u28FD\u285A\u28AE\u28F2\u2806\u2800\u2800\u2800\u2800\u2800\u2800\u28B9\u28FF\u28FF\u28FF\u28FF\n"
-                                  "\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u2847\u287C\u2800\u2800\u2800\u2800\u2808\u283B\u28C5\u28E8\u2807\u2808\u2800\u2830\u28C0\u28C0\u28C0\u2840\u2800\u28B8\u28FF\u28FF\u28FF\u28FF\n"
-                                  "\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u2847\u2801\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u28DF\u28B7\u28F6\u2836\u28C3\u2880\u28FF\u28FF\u28FF\u28FF\u28FF\n"
-                                  "\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u2845\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u28BF\u2800\u2808\u2813\u281A\u28B8\u28FF\u28FF\u28FF\u28FF\u28FF\n"
-                                  "\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u2847\u2800\u2800\u2800\u2800\u2880\u2860\u2800\u2844\u28C0\u2800\u2800\u2800\u28BB\u2800\u2800\u2800\u28E0\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\n"
-                                  "\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u2847\u2800\u2800\u2800\u2810\u2809\u2800\u2800\u2819\u2809\u2800\u2820\u2876\u28F8\u2801\u2800\u28E0\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\n"
-                                  "\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28E6\u2846\u2800\u2810\u2812\u2822\u28A4\u28C0\u2870\u2801\u2807\u2808\u2818\u28B6\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\n"
-                                  "\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u2847\u2800\u2800\u2800\u2800\u2820\u28C4\u28C9\u28D9\u2849\u2813\u2880\u28FE\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\n"
-                                  "\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28F7\u28C4\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u28F0\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\n"
-                                  "\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28F7\u28E4\u28C0\u28C0\u2800\u28C0\u28E0\u28FE\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\u28FF\n";
-  printf("%s", unicodeCharacters);
-  io_init_terminal();
-}
-
 int io_starter_screen(void) {
   int input, validInput;
-
-  io_deliver_justice();
-  sleep(1);
   clear();
   
   do {
@@ -860,6 +810,27 @@ void io_battle_options(int curr_pokemon_index, Pokemon *random_pokemon, int wild
   } while (random_pokemon->knocked_out == 0 && world.pc.pokemon[curr_pokemon_index]->knocked_out == 0 && escaped == 0 && caught == 0);
 }
 
+void io_lose_screen() {
+  int input;
+  do {
+    clear();
+    mvprintw(0, 0, "%s", world.pc.pokemon.size() > 1 ? "Nice pokemon do they make them for men?" : "Nice Pokemon do they make it for men?");
+    mvprintw(3, 0, "Would you like to continue? Q to quit, C to continue");
+    refresh();
+    input = getch();
+  } while (input != 'Q' && input != 'C');
+  switch (input) {
+  case 'Q':
+    world.quit = 1;
+    break;
+  case 'C':
+    world.reset = 1;
+    break;
+  default:
+    break;
+  }
+}
+
 void io_battle(character *aggressor, character *defender)
 {
   npc *n = (npc *) ((aggressor == &world.pc) ? defender : aggressor);
@@ -922,10 +893,7 @@ void io_battle(character *aggressor, character *defender)
         n->mtype = move_wander;
       }
     } else {
-      io_display();
-      mvprintw(0, 0, "%s", world.pc.pokemon.size() > 1 ? "Nice pokemon do they make them for men?" : "Nice Pokemon do they make it for men?");
-      refresh();
-      getch();
+      io_lose_screen();
     }
   }
 }
