@@ -940,6 +940,36 @@ void set_pokemon_stats(Pokemon* pokemon) {
   }
 }
 
+void buff_pokemon_stats() {
+  int count;
+  for (Pokemon *pokemon : world.pc.pokemon) {
+    count = 0;
+    for (CSV *pokemon_stat : pokemon_stats) {
+      Pokemon_Stats *temp_stat = dynamic_cast<Pokemon_Stats*>(pokemon_stat);
+      if (temp_stat->pokemon_id == pokemon->id) {
+        switch (count) {
+        case 0:
+          pokemon->max_health = ((((temp_stat->base_stat + pokemon->stat_ivs[count]) * 2) * pokemon->pokemon_level) / 100) + pokemon->pokemon_level + 10 + world.hp_increase;
+          break;
+        case 1:
+          pokemon->stats[count] = ((((temp_stat->base_stat + pokemon->stat_ivs[count]) * 2) * pokemon->pokemon_level) / 100) + 5 + world.str_increase;
+          break;
+        case 2:
+          pokemon->stats[count] = ((((temp_stat->base_stat + pokemon->stat_ivs[count]) * 2) * pokemon->pokemon_level) / 100) + 5 + world.def_increase;
+          break;
+        case 5:
+          pokemon->stats[count] = ((((temp_stat->base_stat + pokemon->stat_ivs[count]) * 2) * pokemon->pokemon_level) / 100) + 5 + world.spd_increase;
+          break;
+        default:
+          pokemon->stats[count] = ((((temp_stat->base_stat + pokemon->stat_ivs[count]) * 2) * pokemon->pokemon_level) / 100) + 5;
+          break;
+        }
+        count++;
+      }
+    }
+  }
+}
+
 void set_pokemon_types(Pokemon *pokemon) {
   for (CSV* pokemon_type : pokemon_types) {
     Pokemon_Type* temp_type = dynamic_cast<Pokemon_Type*>(pokemon_type);
@@ -1392,8 +1422,13 @@ void game_loop()
     if (world.reset == 1) {
       world.reset = 0;
       in_built_level++;
-      world.pc.pokemon[0]->pokemon_level = in_built_level;
-      set_pokemon_stats(world.pc.pokemon[0]);
+      if (in_built_level == 101) {
+        in_built_level = 100;
+      }
+      for (Pokemon *pokemon : world.pc.pokemon) {
+        pokemon->pokemon_level = in_built_level;
+      }
+      buff_pokemon_stats();
     }
     c = (character *) heap_remove_min(&world.cur_map->turn);
     n = dynamic_cast<npc *> (c);
@@ -1661,6 +1696,10 @@ int main(int argc, char *argv[])
 
   io_init_terminal();
   in_built_level = 1;
+  world.str_increase = 0;
+  world.def_increase = 0;
+  world.spd_increase = 0;
+  world.hp_increase = 0;
   choose_starter(pokemon);
   init_world();
   game_loop();

@@ -810,6 +810,34 @@ void io_battle_options(int curr_pokemon_index, Pokemon *random_pokemon, int wild
   } while (random_pokemon->knocked_out == 0 && world.pc.pokemon[curr_pokemon_index]->knocked_out == 0 && escaped == 0 && caught == 0);
 }
 
+void io_buff_stat() {
+  int input;
+  do {
+    clear();
+    mvprintw(0, 0, "Choose a stat to buff");
+    mvprintw(1, 0, "Attack | Defense | Speed | Health");
+    mvprintw(2, 0, "  [1]  |   [2]   |  [3]  |  [4]  ");
+    refresh();
+    input = getch();
+  } while (input != '1' && input != '2' && input != '3' && input != '4');
+  switch (input) {
+    case '1':
+      world.str_increase++;
+      break;
+    case '2':
+      world.def_increase++;
+      break;
+    case '3':
+      world.spd_increase++;
+      break;
+    case '4':
+      world.hp_increase++;
+      break;
+    default:
+      break;
+  }
+}
+
 void io_lose_screen() {
   int input;
   do {
@@ -824,6 +852,7 @@ void io_lose_screen() {
     world.quit = 1;
     break;
   case 'C':
+    io_buff_stat();
     world.reset = 1;
     break;
   default:

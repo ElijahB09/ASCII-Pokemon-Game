@@ -106,6 +106,10 @@ class world {
   class pc pc;
   int quit;
   int reset;
+  int str_increase;
+  int def_increase;
+  int spd_increase;
+  int hp_increase;
   int add_trainer_prob;
   int char_seq_num;
 };
