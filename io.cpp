@@ -594,17 +594,33 @@ void io_battle_options(int curr_pokemon_index, Pokemon *random_pokemon, int wild
           if (get_pokemon_move_priority(world.pc.pokemon[curr_pokemon_index]->moves[move_index]) < get_pokemon_move_priority(random_pokemon->moves[other_move_index])) {
             world.pc.pokemon[curr_pokemon_index]->stats[0] = world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage < 0 ? 0 : world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage;
             world.pc.pokemon[curr_pokemon_index]->knocked_out = world.pc.pokemon[curr_pokemon_index]->stats[0] == 0 ? 1 : 0;
+            clear();
+            printw("Enemy %s used %s for %d damage", (random_pokemon->identifier).c_str(), get_pokemon_move_name(random_pokemon->moves[other_move_index]).c_str(), other_move_damage);
+            refresh();
+            getch();
             if (world.pc.pokemon[curr_pokemon_index]->knocked_out == 0) {
               random_pokemon->stats[0] = random_pokemon->stats[0] - move_damage < 0 ? 0 : random_pokemon->stats[0] - move_damage;
               random_pokemon->knocked_out = random_pokemon->stats[0] == 0 ? 1 : 0;
+              clear();
+              printw("Your %s used %s for %d damage", (world.pc.pokemon[curr_pokemon_index]->identifier).c_str(), get_pokemon_move_name(world.pc.pokemon[curr_pokemon_index]->moves[move_index]).c_str(), move_damage);
+              refresh();
+              getch();
             }
           // player goes first
           } else if (get_pokemon_move_priority(world.pc.pokemon[curr_pokemon_index]->moves[move_index]) > get_pokemon_move_priority(random_pokemon->moves[other_move_index])) {
             random_pokemon->stats[0] = random_pokemon->stats[0] - move_damage < 0 ? 0 : random_pokemon->stats[0] - move_damage;
             random_pokemon->knocked_out = random_pokemon->stats[0] == 0 ? 1 : 0;
+            clear();
+            printw("Your %s used %s for %d damage", (world.pc.pokemon[curr_pokemon_index]->identifier).c_str(), get_pokemon_move_name(world.pc.pokemon[curr_pokemon_index]->moves[move_index]).c_str(), move_damage);
+            refresh();
+            getch();
             if (random_pokemon->knocked_out == 0) {
               world.pc.pokemon[curr_pokemon_index]->stats[0] = world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage < 0 ? 0 : world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage;
               world.pc.pokemon[curr_pokemon_index]->knocked_out = world.pc.pokemon[curr_pokemon_index]->stats[0] == 0 ? 1 : 0;
+              clear();
+              printw("Enemy %s used %s for %d damage", (random_pokemon->identifier).c_str(), get_pokemon_move_name(random_pokemon->moves[other_move_index]).c_str(), other_move_damage);
+              refresh();
+              getch();
             }
           // speed calc
           } else {
@@ -612,17 +628,33 @@ void io_battle_options(int curr_pokemon_index, Pokemon *random_pokemon, int wild
             if (world.pc.pokemon[curr_pokemon_index]->stats[5] < random_pokemon->stats[5]) {
               world.pc.pokemon[curr_pokemon_index]->stats[0] = world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage < 0 ? 0 : world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage;
               world.pc.pokemon[curr_pokemon_index]->knocked_out = world.pc.pokemon[curr_pokemon_index]->stats[0] == 0 ? 1 : 0;
+              clear();
+              printw("Enemy %s used %s for %d damage", (random_pokemon->identifier).c_str(), get_pokemon_move_name(random_pokemon->moves[other_move_index]).c_str(), other_move_damage);
+              refresh();
+              getch();
               if (world.pc.pokemon[curr_pokemon_index]->knocked_out == 0) {
                 random_pokemon->stats[0] = random_pokemon->stats[0] - move_damage < 0 ? 0 : random_pokemon->stats[0] - move_damage;
                 random_pokemon->knocked_out = random_pokemon->stats[0] == 0 ? 1 : 0;
+                clear();
+                printw("Your %s used %s for %d damage", (world.pc.pokemon[curr_pokemon_index]->identifier).c_str(), get_pokemon_move_name(world.pc.pokemon[curr_pokemon_index]->moves[move_index]).c_str(), move_damage);
+                refresh();
+                getch();
               }
             // player is faster
             } else if (world.pc.pokemon[curr_pokemon_index]->stats[5] > random_pokemon->stats[5]) {
               random_pokemon->stats[0] = random_pokemon->stats[0] - move_damage < 0 ? 0 : random_pokemon->stats[0] - move_damage;
               random_pokemon->knocked_out = random_pokemon->stats[0] == 0 ? 1 : 0;
+              clear();
+              printw("Your %s used %s for %d damage", (world.pc.pokemon[curr_pokemon_index]->identifier).c_str(), get_pokemon_move_name(world.pc.pokemon[curr_pokemon_index]->moves[move_index]).c_str(), move_damage);
+              refresh();
+              getch();
               if (random_pokemon->knocked_out == 0) {
                 world.pc.pokemon[curr_pokemon_index]->stats[0] = world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage < 0 ? 0 : world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage;
                 world.pc.pokemon[curr_pokemon_index]->knocked_out = world.pc.pokemon[curr_pokemon_index]->stats[0] == 0 ? 1 : 0;
+                clear();
+                printw("Enemy %s used %s for %d damage", (random_pokemon->identifier).c_str(), get_pokemon_move_name(random_pokemon->moves[other_move_index]).c_str(), other_move_damage);
+                refresh();
+                getch();
               }
             // same speeds
             } else {
@@ -632,17 +664,33 @@ void io_battle_options(int curr_pokemon_index, Pokemon *random_pokemon, int wild
               if (turn_decide == 0) {
                 world.pc.pokemon[curr_pokemon_index]->stats[0] = world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage < 0 ? 0 : world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage;
                 world.pc.pokemon[curr_pokemon_index]->knocked_out = world.pc.pokemon[curr_pokemon_index]->stats[0] == 0 ? 1 : 0;
+                clear();
+                printw("Enemy %s used %s for %d damage", (random_pokemon->identifier).c_str(), get_pokemon_move_name(random_pokemon->moves[other_move_index]).c_str(), other_move_damage);
+                refresh();
+                getch();
                 if (world.pc.pokemon[curr_pokemon_index]->knocked_out == 0) {
                   random_pokemon->stats[0] = random_pokemon->stats[0] - move_damage < 0 ? 0 : random_pokemon->stats[0] - move_damage;
                   random_pokemon->knocked_out = random_pokemon->stats[0] == 0 ? 1 : 0;
+                  clear();
+                  printw("Your %s used %s for %d damage", (world.pc.pokemon[curr_pokemon_index]->identifier).c_str(), get_pokemon_move_name(world.pc.pokemon[curr_pokemon_index]->moves[move_index]).c_str(), move_damage);
+                  refresh();
+                  getch();
                 }
               // player goes first
               } else {
                 random_pokemon->stats[0] = random_pokemon->stats[0] - move_damage < 0 ? 0 : random_pokemon->stats[0] - move_damage;
                 random_pokemon->knocked_out = random_pokemon->stats[0] == 0 ? 1 : 0;
+                clear();
+                printw("Your %s used %s for %d damage", (world.pc.pokemon[curr_pokemon_index]->identifier).c_str(), get_pokemon_move_name(world.pc.pokemon[curr_pokemon_index]->moves[move_index]).c_str(), move_damage);
+                refresh();
+                getch();
                 if (random_pokemon->knocked_out == 0) {
                   world.pc.pokemon[curr_pokemon_index]->stats[0] = world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage < 0 ? 0 : world.pc.pokemon[curr_pokemon_index]->stats[0] - other_move_damage;
                   world.pc.pokemon[curr_pokemon_index]->knocked_out = world.pc.pokemon[curr_pokemon_index]->stats[0] == 0 ? 1 : 0;
+                  clear();
+                  printw("Enemy %s used %s for %d damage", (random_pokemon->identifier).c_str(), get_pokemon_move_name(random_pokemon->moves[other_move_index]).c_str(), other_move_damage);
+                  refresh();
+                  getch();
                 }
               }
             }
@@ -681,6 +729,10 @@ void io_battle_options(int curr_pokemon_index, Pokemon *random_pokemon, int wild
             
             random_pokemon->knocked_out = random_pokemon->stats[0] == 0 ? 1 : 0;
             world.pc.pokemon[curr_pokemon_index]->knocked_out = world.pc.pokemon[curr_pokemon_index]->stats[0] == 0 ? 1 : 0;
+            clear();
+            printw("Enemy %s used %s for %d damage", (random_pokemon->identifier).c_str(), get_pokemon_move_name(random_pokemon->moves[other_move_index]).c_str(), other_move_damage);
+            refresh();
+            getch();
           }
           break;
         case 'r':
@@ -709,6 +761,10 @@ void io_battle_options(int curr_pokemon_index, Pokemon *random_pokemon, int wild
               
               random_pokemon->knocked_out = random_pokemon->stats[0] == 0 ? 1 : 0;
               world.pc.pokemon[curr_pokemon_index]->knocked_out = world.pc.pokemon[curr_pokemon_index]->stats[0] == 0 ? 1 : 0;
+              clear();
+              printw("Enemy %s used %s for %d damage", (random_pokemon->identifier).c_str(), get_pokemon_move_name(random_pokemon->moves[other_move_index]).c_str(), other_move_damage);
+              refresh();
+              getch();
             }
           } else {
             // I know its messy to do it this way, but I aint got all day
@@ -732,6 +788,10 @@ void io_battle_options(int curr_pokemon_index, Pokemon *random_pokemon, int wild
             
             random_pokemon->knocked_out = random_pokemon->stats[0] == 0 ? 1 : 0;
             world.pc.pokemon[curr_pokemon_index]->knocked_out = world.pc.pokemon[curr_pokemon_index]->stats[0] == 0 ? 1 : 0;
+            clear();
+            printw("Enemy %s used %s for %d damage", (random_pokemon->identifier).c_str(), get_pokemon_move_name(random_pokemon->moves[other_move_index]).c_str(), other_move_damage);
+            refresh();
+            getch();
           }
           break;
         case 'p':
@@ -801,6 +861,10 @@ void io_battle_options(int curr_pokemon_index, Pokemon *random_pokemon, int wild
             
             random_pokemon->knocked_out = random_pokemon->stats[0] == 0 ? 1 : 0;
             world.pc.pokemon[curr_pokemon_index]->knocked_out = world.pc.pokemon[curr_pokemon_index]->stats[0] == 0 ? 1 : 0;
+            clear();
+            printw("Enemy %s used %s for %d damage", (random_pokemon->identifier).c_str(), get_pokemon_move_name(random_pokemon->moves[other_move_index]).c_str(), other_move_damage);
+            refresh();
+            getch();
           }
           break;
         default:
