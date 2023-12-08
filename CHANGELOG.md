@@ -1,3 +1,45 @@
+commit 102c5b3b12f049e27a20da1a7c2050dcbef01100
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Fri Dec 8 16:38:37 2023 -0600
+
+    Update README
+
+commit 1d53c48061760a0f6fce16b596d8159bba781dc3
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Fri Dec 8 16:28:39 2023 -0600
+
+    Added some more intricate pokemon battling
+
+commit 00e464a42598a3932115c02e71d232b41601f052
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Thu Dec 7 13:08:19 2023 -0600
+
+    Added in elements for increasing a specific stat of all pokemon
+
+commit f83ffe1473471257879140f18036fb2d82091982
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Wed Dec 6 15:07:01 2023 -0600
+
+    Removed raylib stuff, starting rouge-lite idea
+
+commit 8a6245e983ec1cb3f14702c9a883c489fb888119
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Fri Dec 1 17:07:23 2023 -0600
+
+    Big changes, trying raylib out to make some funny sfx's
+
+commit a18a98dd3eba1de75e68636de1698aa7db1cf9c1
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Tue Nov 28 16:21:41 2023 -0600
+
+    My dumb idea is coming together, little rough around the edges tho
+
+commit b985ac6132e5c2e87eeb5bc8ba42ca0ec69b8ba2
+Author: Elijah Brady <bradyeli09@gmail.com>
+Date:   Sun Nov 26 21:53:09 2023 -0600
+
+    Update Changelog
+
 commit 53155638d4d4574408f899a485c3fb363e2207f5
 Author: Elijah Brady <bradyeli09@gmail.com>
 Date:   Sun Nov 26 21:52:38 2023 -0600
